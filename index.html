@@ -334,71 +334,10 @@
     color:#C7CEE8;
   }
 
-  .subtool-item .status-row{
-    margin-top:0;
-    flex-shrink:0;
-    white-space:nowrap;
-  }
-
   @media (max-width:560px){
     .subtool-item{
       flex-wrap:wrap;
     }
-    .subtool-item .status-row{
-      width:100%;
-      padding-left:50px;
-    }
-  }
-
-  .status-row{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    margin-top:10px;
-    font-size:10.5px;
-    letter-spacing:0.04em;
-    color:#8B96C2;
-  }
-
-  .status-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#8C949E;
-    flex-shrink:0;
-    box-shadow:0 0 0 rgba(0,0,0,0);
-    transition:background 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .status-dot.checking{
-    background:#8C949E;
-    animation:pulse 1.2s ease-in-out infinite;
-  }
-
-  .status-dot.up{
-    background:#1F8A55;
-    box-shadow:0 0 8px rgba(31,138,85,0.7);
-  }
-
-  .status-dot.down{
-    background:#C41E3A;
-    box-shadow:0 0 8px rgba(196,30,58,0.7);
-  }
-
-  /* Answered too slowly to judge — not the same claim as "down". */
-  .status-dot.slow{
-    background:#C8862B;
-    box-shadow:0 0 8px rgba(200,134,43,0.7);
-  }
-
-  /* Not probed at all, e.g. the browser itself is offline. */
-  .status-dot.unknown{
-    background:#8C949E;
-  }
-
-  @keyframes pulse{
-    0%, 100%{ opacity:0.4; }
-    50%{ opacity:1; }
   }
 
   /* Entrance animation */
@@ -584,7 +523,7 @@
 
         <div class="dropdown-content">
 
-          <a class="subtool-item" href="mission-companion/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="mission-companion/">
             <div class="subtool-number">01</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -597,13 +536,9 @@
               <h3 class="subtool-title">Mission Companion</h3>
               <div class="subtool-desc">In-bridge reference companion for active missions — procedures, guides, and operational tools.</div>
             </div>
-            <div class="status-row" data-status-url="mission-companion/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
-            </div>
           </a>
 
-          <a class="subtool-item" href="engineering/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="engineering/">
             <div class="subtool-number">02</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -614,13 +549,9 @@
               <h3 class="subtool-title">Engineering Reference</h3>
               <div class="subtool-desc">Power, thermal, warp, and damage control reference tools for engineering watch.</div>
             </div>
-            <div class="status-row" data-status-url="engineering/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
-            </div>
           </a>
 
-          <a class="subtool-item" href="navigation/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="navigation/">
             <div class="subtool-number">03</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -632,13 +563,9 @@
               <h3 class="subtool-title">Nav Reference</h3>
               <div class="subtool-desc">Navigation and radar reference tool for plotting and interpreting bridge instruments.</div>
             </div>
-            <div class="status-row" data-status-url="navigation/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
-            </div>
           </a>
 
-          <a class="subtool-item" href="commslog/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="commslog/">
             <div class="subtool-number">04</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -650,13 +577,9 @@
               <h3 class="subtool-title">Comms Log</h3>
               <div class="subtool-desc">Log and reference bridge communications during a mission.</div>
             </div>
-            <div class="status-row" data-status-url="commslog/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
-            </div>
           </a>
 
-          <a class="subtool-item" href="generallog/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="generallog/">
             <div class="subtool-number">05</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -669,13 +592,9 @@
               <h3 class="subtool-title">General Log</h3>
               <div class="subtool-desc">Keep your own mission log from any station you're assigned to.</div>
             </div>
-            <div class="status-row" data-status-url="generallog/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
-            </div>
           </a>
 
-          <a class="subtool-item" href="tactical-aids/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="tactical-aids/">
             <div class="subtool-number">06</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -687,10 +606,6 @@
             <div class="subtool-text">
               <h3 class="subtool-title">Tactical Aids Archive</h3>
               <div class="subtool-desc">Searchable library of tactical aid PDFs — navigation, engineering, identification, ship layouts, and more.</div>
-            </div>
-            <div class="status-row" data-status-url="tactical-aids/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
             </div>
           </a>
 
@@ -721,7 +636,7 @@
 
         <div class="dropdown-content">
 
-          <a class="subtool-item" href="songbook/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="songbook/">
             <div class="subtool-number">01</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -734,13 +649,9 @@
               <h3 class="subtool-title">Shanty Songbook</h3>
               <div class="subtool-desc">The full digital songbook — searchable lyrics, favourites, chorus highlighting, and offline-ready access for every watch.</div>
             </div>
-            <div class="status-row" data-status-url="songbook/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
-            </div>
           </a>
 
-          <a class="subtool-item" href="messtracker/" target="_blank" rel="noopener">
+          <a class="subtool-item" href="messtracker/">
             <div class="subtool-number">02</div>
             <div class="subtool-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -751,10 +662,6 @@
             <div class="subtool-text">
               <h3 class="subtool-title">Mess Drink Tracker</h3>
               <div class="subtool-desc">Keep a running tally of drinks on the mess deck.</div>
-            </div>
-            <div class="status-row" data-status-url="messtracker/">
-              <div class="status-dot checking"></div>
-              <span class="status-text">Checking…</span>
             </div>
           </a>
 
@@ -775,11 +682,7 @@
       <div class="card-desc">
         Build and print a fleet-standard crew ID card — rank, division, clearance level, photo, and barcode or QR, formatted to true CR-80 size.
       </div>
-      <a class="card-btn" href="idcard/" target="_blank" rel="noopener">Open Tool →</a>
-      <div class="status-row" data-status-url="idcard/">
-        <div class="status-dot checking"></div>
-        <span class="status-text">Checking status…</span>
-      </div>
+      <a class="card-btn" href="idcard/">Open Tool →</a>
     </div>
 
     <div class="card">
@@ -795,11 +698,7 @@
       <div class="card-desc">
         Look up which ship — UCS Havock or UCS Takanami — is running at a given date and time, or view the full day's timetable.
       </div>
-      <a class="card-btn" href="shipsearch/" target="_blank" rel="noopener">Open Tool →</a>
-      <div class="status-row" data-status-url="shipsearch/">
-        <div class="status-dot checking"></div>
-        <span class="status-text">Checking status…</span>
-      </div>
+      <a class="card-btn" href="shipsearch/">Open Tool →</a>
     </div>
 
     <div class="card">
@@ -814,11 +713,7 @@
       <div class="card-desc">
         Import a CSV of your deployments from the Bridge Command portal and track your mission history.
       </div>
-      <a class="card-btn" href="missionstats/" target="_blank" rel="noopener">Open Tool →</a>
-      <div class="status-row" data-status-url="missionstats/">
-        <div class="status-dot checking"></div>
-        <span class="status-text">Checking status…</span>
-      </div>
+      <a class="card-btn" href="missionstats/">Open Tool →</a>
     </div>
 
   </main>
@@ -985,68 +880,6 @@
     });
   }
 
-  // ---- Reachability check for each tool ----
-  // These tools are cross-origin and send no CORS headers, so a no-cors fetch
-  // is the only probe available to us and its response is opaque: it tells us
-  // the host answered, not that it answered with a 200. Say "Reachable" rather
-  // than "Online" so the label matches what was actually measured, and keep a
-  // timeout visually distinct from an outright failure so that a slow-but-alive
-  // site is not reported as down.
-  const PROBE_TIMEOUT_MS = 8000;
-
-  function setStatus(row, state, label, detail){
-    row.querySelector('.status-dot').className = 'status-dot ' + state;
-    row.querySelector('.status-text').textContent = label;
-    row.title = detail;
-  }
-
-  async function checkStatus(row){
-    const url = row.getAttribute('data-status-url');
-
-    // Without a connection every probe would fail, which would paint all seven
-    // tools red and blame them for the browser's own state.
-    if(navigator.onLine === false){
-      setStatus(row, 'unknown', 'No connection',
-        'This browser is offline, so ' + url + ' could not be probed.');
-      return;
-    }
-
-    setStatus(row, 'checking', row.dataset.checkingLabel, 'Probing ' + url + '…');
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
-    try{
-      await fetch(url, { mode:'no-cors', cache:'no-store', signal:controller.signal });
-      setStatus(row, 'up', 'Reachable',
-        url + ' answered. The response is opaque, so this confirms the host '
-        + 'responded — not that the tool itself loaded correctly.');
-    }catch(err){
-      if(controller.signal.aborted){
-        setStatus(row, 'slow', 'No response',
-          url + ' did not answer within ' + (PROBE_TIMEOUT_MS / 1000)
-          + ' seconds. It may be slow rather than down.');
-      }else{
-        setStatus(row, 'down', 'Unreachable',
-          url + ' could not be reached.');
-      }
-    }finally{
-      clearTimeout(timer);
-    }
-  }
-
-  const statusRows = Array.from(document.querySelectorAll('.status-row'));
-  statusRows.forEach(row => {
-    // Announce the result, not every intermediate "Checking…" repaint.
-    row.setAttribute('role', 'status');
-    row.setAttribute('aria-live', 'polite');
-    // Cards and sub-tool rows use slightly different wording while checking.
-    row.dataset.checkingLabel = row.querySelector('.status-text').textContent;
-    checkStatus(row);
-  });
-
-  // Re-probe when connectivity changes rather than leaving a stale verdict.
-  window.addEventListener('online',  () => statusRows.forEach(r => checkStatus(r)));
-  window.addEventListener('offline', () => statusRows.forEach(r => checkStatus(r)));
 </script>
 
 

@@ -124,6 +124,8 @@ main{
 
 .panel{ display:none; padding:12px 12px 24px; }
 .panel.on{ display:block; animation:fadeUp .18s ease-out; }
+.portal-link{ display:inline-block; margin:12px 12px 0; padding:4px 0; font-size:13px; color:var(--muted); text-decoration:none; }
+.portal-link:hover, .portal-link:focus-visible{ color:var(--orange); }
 @keyframes fadeUp{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
 @media (prefers-reduced-motion: reduce){
   .panel.on{ animation:none; }
@@ -429,6 +431,7 @@ src:url(data:font/woff2;base64,d09GMgABAAAAABgYABAAAAAAPNQAABe4AAIAQgAAAAAAAAAAA
 </header>
 
 <main>
+  <a class="portal-link" href="../">&larr; Back to Tool Portal</a>
 
   <!-- ============================== SETUP ============================== -->
   <section class="panel on" id="p-setup" role="tabpanel" aria-labelledby="t-setup" tabindex="-1">

@@ -90,6 +90,9 @@ main{
   padding-bottom:calc(84px + var(--safe-bottom));
 }
 .panel{ display:none; padding:12px 12px 24px; }
+.portal-row{ padding:12px 12px 0; }
+.portal-link{ display:inline-block; margin:0; padding:4px 0; font-size:13px; color:var(--muted); text-decoration:none; }
+.portal-link:hover, .portal-link:focus-visible{ color:var(--orange); }
 .panel.active{ display:block; animation:fadeUp .18s ease-out; }
 @keyframes fadeUp{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
 @media (prefers-reduced-motion: reduce){ .panel.active{ animation:none; } }
@@ -398,6 +401,7 @@ nav{
     padding-bottom:48px;
   }
   .panel{ max-width:1180px; margin:0 auto; padding:18px 24px 48px; }
+  .portal-row{ max-width:1180px; margin:0 auto; padding:18px 24px 0; }
   /* Forms stay legible instead of stretching to the full width. */
   #tab-setup, #tab-more{ max-width:640px; margin:0; }
   #tab-import{ max-width:900px; margin:0; }
@@ -428,7 +432,7 @@ nav{
 }
 
 @media (min-width:1400px){
-  .panel{ max-width:1340px; }
+  .panel, .portal-row{ max-width:1340px; }
   #logBody{ grid-template-columns:1fr 1fr 1fr; }
   .tiles{ grid-template-columns:repeat(4, 1fr); }
 }
@@ -3176,6 +3180,7 @@ if (document.readyState === 'loading'){
 </header>
 
 <main>
+  <div class="portal-row"><a class="portal-link" href="../">&larr; Back to Tool Portal</a></div>
 
   <!-- ============================ SETUP ============================ -->
   <section class="panel" id="tab-setup" role="tabpanel" aria-labelledby="nav-setup">
@@ -3402,5 +3407,11 @@ if (document.readyState === 'loading'){
        aria-labelledby="sheetTitle" tabindex="-1"></div>
 </div>
 
+<script>
+  // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
 </body>
 </html>

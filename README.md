@@ -64,7 +64,7 @@ All tools share one web origin, so each must keep its own `localStorage` keys an
 
 - No build step and no dependencies to install — `index.html` carries all of its own CSS, JavaScript, and imagery, with `sw.js` alongside it for offline support
 - UCN dark navy theme with orange/red accent colours, Exo 2 + Orbitron typography, and an animated starfield background
-- Reachability indicators on each tool card. These sites send no CORS headers, so the probe can only confirm that the host answered — not that it answered with a working page — and the wording ("Reachable", "No response", "Unreachable") reflects that
+- Tools open in the same tab, so a home-screen install of the portal keeps the whole suite inside one app window
 - Add to Home Screen support (iOS Safari meta tags + inline web app manifest for Android/Chrome), backed by a service worker so the installed app still opens offline
 - Staggered entrance animation on load, and a starfield that both honour `prefers-reduced-motion`
 - Fully responsive card grid

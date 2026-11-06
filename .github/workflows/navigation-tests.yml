@@ -11,6 +11,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Installing a browser's system libraries has hung for hours on a runner before.
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: navigation
