@@ -47,11 +47,10 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `generallog/` | General Log | GENERAL-LOG-TOOL repo |
 | `tactical-aids/` | Tactical Aids Archive | TACTICAL-AID-TOOL repo |
 | `songbook/` | Shanty Songbook | shantysongbook repo |
+| `messtracker/` | Mess Drink Tracker | UCN-DRINK-TRACKER- repo |
 | `idcard/` | ID Card Generator | propidcard repo |
 | `shipsearch/` | Ship Search | SHIPSEARCH repo |
 | `missionstats/` | Mission Stats | MISSIONTRACKER repo |
-
-The Mess Drink Tracker is not in this repo and is still linked at its own address.
 
 ## Deploying
 
