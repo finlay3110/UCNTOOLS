@@ -302,6 +302,13 @@
     gap:22px;
   }
   .preview-panel .eyebrow{text-align:center;color:var(--glow);}
+  /* Never let the fixed-size card preview widen the layout; js/app.js zooms it to fit. */
+  .preview-panel{min-width:0;}
+  .stage{max-width:100%;}
+  @media (max-width:600px){
+    .preview-panel{padding:32px 14px 48px;}
+    .stage{padding:14px;}
+  }
   .stage{
     padding:34px;
     background:

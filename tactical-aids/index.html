@@ -105,6 +105,19 @@
     white-space:nowrap;
   }
 
+  /* Phones: the desktop header wrapped to ~340px and stayed pinned over a
+     third of the screen, so it shrinks and the tabs scroll in one row. */
+  @media (max-width:600px){
+    header{ padding:12px 16px 0; }
+    .brand-row{ gap:10px; }
+    .logo-badge{ width:34px; height:34px; }
+    .logo-badge svg{ width:18px; height:18px; }
+    .brand-text h1{ font-size:16px; letter-spacing:1px; }
+    .brand-text p{ font-size:9px; letter-spacing:2px; }
+    /* Decorative, and it ran off the edge of the screen. */
+    .classified-strip{ display:none; }
+  }
+
   /* ---- tabs ---- */
   .tabs{
     max-width:1200px;
@@ -157,6 +170,7 @@
   .search-wrap{
     position:relative;
     max-width:420px;
+    margin-left:32px;
   }
   .search-wrap input{
     width:100%;
@@ -188,6 +202,16 @@
     padding:28px 32px 80px;
   }
 
+  @media (max-width:600px){
+    .tabs{ margin-top:12px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+    .tabs::-webkit-scrollbar{ display:none; }
+    .tab{ flex-shrink:0; padding:9px 14px; }
+    .toolbar{ padding:14px 16px 16px; }
+    .search-wrap{ margin-left:0; max-width:none; }
+    .portal-link{ margin-left:0; }
+    main{ padding:16px 16px 64px; }
+  }
+
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
@@ -213,8 +237,10 @@
 
   .ribbon{
     position:absolute;
-    top:10px;
-    right:-30px;
+    top:16px;
+    right:-34px;
+    width:120px;
+    text-align:center;
     transform:rotate(45deg);
     background:var(--black);
     color:var(--orange);
@@ -222,7 +248,7 @@
     font-size:8px;
     font-weight:600;
     letter-spacing:2px;
-    padding:2px 34px;
+    padding:2px 0;
     border-top:1px solid var(--orange);
     border-bottom:1px solid var(--orange);
   }
@@ -393,7 +419,7 @@
 
 <div class="toolbar">
   <a class="portal-link" href="../">&larr; Back to Tool Portal</a>
-  <div class="search-wrap" style="margin-left:32px;">
+  <div class="search-wrap">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
     </svg>

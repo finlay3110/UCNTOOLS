@@ -757,11 +757,14 @@
   }
   .add-toggle:hover{ border-color:var(--cyan); }
 
-  /* Icon-only header buttons: five labelled pills wrapped to two rows and cost
-     about 100px of a screen that has none to spare. */
+  /* Full labels wrap five pills to two rows and cost about 100px of a screen
+     that has none to spare, so phones get one row of icons with a short caption. */
+  .pill-cap{ display:none; }
   @media (max-width:600px){
     .pill-label{ display:none; }
-    .pill-btn{ padding:8px 12px; }
+    .pill-cap{ display:block; font-size:0.62rem; line-height:1; letter-spacing:0.02em; }
+    .header-actions{ gap:8px; }
+    .pill-btn{ padding:6px 8px; flex-direction:column; justify-content:center; gap:4px; min-width:54px; border-radius:12px; }
     .pill-btn svg{ width:17px; height:17px; }
     header.app-header{ padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top)); gap:8px; }
     header.app-header h1{ font-size:1.02rem; }
@@ -834,24 +837,24 @@
   <div class="header-actions">
     <button class="pill-btn" id="exportBtn" type="button" aria-label="Export waypoints as JSON">
       <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
-      <span class="pill-label">Export</span>
+      <span class="pill-label">Export</span><span class="pill-cap" aria-hidden="true">Export</span>
     </button>
     <button class="pill-btn" id="pdfBtn" type="button" aria-label="Export PDF report">
       <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
-      <span class="pill-label">PDF Report</span>
+      <span class="pill-label">PDF Report</span><span class="pill-cap" aria-hidden="true">PDF</span>
     </button>
     <button class="pill-btn" id="importBtn" type="button" aria-label="Import waypoints from a file">
       <svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M4 20h16"/></svg>
-      <span class="pill-label">Import</span>
+      <span class="pill-label">Import</span><span class="pill-cap" aria-hidden="true">Import</span>
     </button>
     <input type="file" id="importInput" accept="application/json,.json" class="sr-only" tabindex="-1" aria-hidden="true">
     <button class="pill-btn" id="quickRefBtn" type="button" aria-label="Open quick reference">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
-      <span class="pill-label">Quick Reference</span>
+      <span class="pill-label">Quick Reference</span><span class="pill-cap" aria-hidden="true">Quick ref</span>
     </button>
-    <a class="pill-btn" href="../">
+    <a class="pill-btn" href="../" aria-label="Back to Tool Portal">
       <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
-      <span class="pill-label">Back to Tool Portal</span>
+      <span class="pill-label">Back to Tool Portal</span><span class="pill-cap" aria-hidden="true">Portal</span>
     </a>
   </div>
 </header>

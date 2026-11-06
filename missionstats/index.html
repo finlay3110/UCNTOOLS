@@ -3170,7 +3170,7 @@ if (document.readyState === 'loading'){
       </svg>
       <div class="hd-titles">
         <div class="hd-title">UCN Mission Analytics</div>
-        <div class="hd-sub">United Command Navy — Service Record</div>
+        <div class="hd-sub">United Confederation Navy — Service Record</div>
       </div>
       <button type="button" class="hd-btn" id="hdToggle" aria-expanded="true"
               aria-controls="hdMeta"><span class="ic">🙈</span>Hide</button>
@@ -3411,6 +3411,9 @@ if (document.readyState === 'loading'){
   // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    // Ask the browser not to clear saved data when storage runs low. Granted
+    // silently once installed, harmless if refused; covers every UCN tool on this site.
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
   }
 </script>
 </body>

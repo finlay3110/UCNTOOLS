@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+  // maximum-scale=1 stops iOS zooming in when a small text box is tapped, and iOS still lets
+  // people pinch-zoom with it set. Anywhere else it would block zoom, so add it on iOS only.
+  if (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)))
+    document.querySelector('meta[name=viewport]').content += ', maximum-scale=1';
+</script>
 <title>UCN Mission Companion</title>
 
 <!-- PWA install support, two layers:
@@ -1048,7 +1054,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     <div class="section-title">Mission Briefing</div>
     <div class="two-col">
       <div class="field">
-        <label>Authorisation</label>
+        <label for="authorisationSelect">Authorisation</label>
         <select id="authorisationSelect">
           <option value="">— Select —</option>
           <option value="Diplomatic protocol">Diplomatic protocol</option>
@@ -1057,7 +1063,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
         </select>
       </div>
       <div class="field">
-        <label>Threat Level</label>
+        <label for="threatLevelSelect">Threat Level</label>
         <select id="threatLevelSelect">
           <option value="">— Select —</option>
           <option value="Monitor (Green)">Monitor (Green)</option>
@@ -5349,6 +5355,9 @@ function initServiceWorker(){
       console.error('UCN Mission Companion: service worker registration failed; the app still runs, just without offline caching.', err);
     });
   });
+  // Ask the browser not to clear saved data when storage runs low. Granted
+  // silently once installed, harmless if refused; covers every UCN tool on this site.
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){});
 }
 
 /* ================= INIT ================= */

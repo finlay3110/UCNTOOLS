@@ -1029,4 +1029,16 @@
 
   $('printA4Btn').addEventListener('click', ()=> downloadCardPdf('a4', $('printA4Btn')));
   $('printCardBtn').addEventListener('click', ()=> downloadCardPdf('card', $('printCardBtn')));
+
+  // The card preview is drawn at a fixed 520px. On a narrower screen, zoom it out
+  // to fit instead of letting it push the whole page wider than the phone.
+  const card = $('card'), stage = card.parentElement;
+  function fitPreview(){
+    card.style.zoom = '';
+    const cs = getComputedStyle(stage);
+    const room = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if(room > 0 && room < card.offsetWidth) card.style.zoom = String(room / card.offsetWidth);
+  }
+  window.addEventListener('resize', fitPreview);
+  fitPreview();
 })();

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-05T23:57:55.606Z",
+  "generated": "2026-11-06T00:51:04.196Z",
   "categories": [
     {
       "id": "engineering",
@@ -63,18 +63,18 @@
       "label": "SHIP LAYOUTS",
       "files": [
         {
-          "name": "HAVOCK LAYOUT",
-          "filename": "HAVOCK LAYOUT.pdf",
-          "path": "pdfs/SHIP LAYOUTS/HAVOCK LAYOUT.pdf",
-          "size": 330027,
-          "modified": "2026-11-05T23:53:32.000Z"
+          "name": "Havock Ship Map",
+          "filename": "havock-ship-map.pdf",
+          "path": "pdfs/SHIP LAYOUTS/havock-ship-map.pdf",
+          "size": 454515,
+          "modified": "2026-11-06T00:51:04.098Z"
         },
         {
-          "name": "Takanami Ship Layout ",
-          "filename": "Takanami ship layout .pdf",
-          "path": "pdfs/SHIP LAYOUTS/Takanami ship layout .pdf",
-          "size": 364768,
-          "modified": "2026-11-05T23:53:32.000Z"
+          "name": "Takanami Ship Map",
+          "filename": "takanami-ship-map.pdf",
+          "path": "pdfs/SHIP LAYOUTS/takanami-ship-map.pdf",
+          "size": 534778,
+          "modified": "2026-11-06T00:51:04.100Z"
         }
       ]
     },
