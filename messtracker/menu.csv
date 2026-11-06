@@ -1,0 +1,56 @@
+Category,Name,Price,Description,Source Menu
+Summer menu,Terra Novan Bloom,£15,"Green apple, Prosecco, Soda. The perfect summer spritz",Summer Menu
+Summer menu,Cosmic Thunderstorm,£15,"Mango, Jalapeño, Tequila, Rum, Ginger, Pineapple - a spicy and fruity storm in a flask",Summer Menu
+Summer menu,Artificial Pollination,£15,"Honey vodka, Lychee, Pink soda - floral lightness with a buzz.",Summer Menu
+Summer menu,Gone Beyond,£15,"Licor 43, Gin, Rhum d'espelette. Warm and nostalgic, perfect for reminiscing together.",Summer Menu
+Regular menu,Warspite,£15,"A grand old mixture of Vodka, Orange juice and a touch of ginger to teleport you to space.",Cocktail List
+Regular menu,Takanami,£15,"Busker Irish Whiskey and Pink Grapefruit delivering a wave of citrus flavour.",Cocktail List
+Regular menu,Havock,£15,"Limoncello, prosecco and soda combining to cause a zesty stir.",Cocktail List
+Regular menu,Homing Missile,£15,"A perfect blend of Coffee, Disaronno Velvet and Tia Maria for a direct hit of flavour.",Cocktail List
+Regular menu,Nebula Storm,£15,"A cosmic blend of Kraken Rum, Lime and Ginger.",Cocktail List
+Regular menu,E.M.P,£15,"A shock-wave of Vodka, Lemonade and Blue Curacao to electrify your evening.",Cocktail List
+Regular menu,Masahirite Crystal,£15,"A delicious take on a Margarita inspired by the Masahirite Crystals.",Cocktail List
+Regular menu,Lethal Beam,£15,"Gin, prosecco, peach and lemon pack a punch to the hit the target.",Cocktail List
+Regular menu,Douglas Adams Memorial Tipple,£30,,Cocktail List
+Mocktails,Arcadian Sunrise,£10,"Pineapple, Blood Orange, Lemon - quintessentially Martian",Summer Menu
+Mocktails,Waypoint One,£10,"Pink soda, blood orange, rose, lime - its a long road ahead",Summer Menu
+Mocktails,Martian Sunset,£10,"Orange Juice, Lemon Juice and Grenadine, simulating the ideal martian sunset.",Mocktail List
+Mocktails,Takanami Shuttle,£10,"Pink grapefruit soda, Lime Juice and Simple Syrup to make Small Waves with.",Mocktail List
+Mocktails,Havock Shuttle,£10,"Elderflower Syrup, Lemonade and Lime Juice mixed at to cause a little Mischief.",Mocktail List
+Mocktails,Shields On,£10,"Lemonade, blue curacao and a dash of Orange Juice calibrated to the correct frequencies.",Mocktail List
+Soft drinks,Coca Cola,£3.50,,Bar List
+Soft drinks,Diet Coke,£3.50,,Bar List
+Soft drinks,Coke Zero,£3.50,,Bar List
+Soft drinks,Ginger Beer,£3.50,,Bar List
+Soft drinks,Sparkling Water (bottled),£3.50,,Bar List
+Soft drinks,Still Water (bottled),£3.50,,Bar List
+Soft drinks,Tap Water,Free,,Bar List
+Mixers,Lemonade,£2.50,,Bar List
+Mixers,Tonic,£2.50,,Bar List
+Mixers,Light Tonic,£2.50,,Bar List
+Mixers,Soda Water,£2.50,,Bar List
+Mixers,Grapefruit Soda,£2.50,,Bar List
+Mixers,Red Bull,£2.50,,Bar List
+Spirits,Busker Irish Whiskey,£6,,Bar List
+Spirits,Glenfiddich Scotch,£6,,Bar List
+Spirits,Grey Goose Vodka,£6,,Bar List
+Spirits,Engine Gin,£6,,Bar List
+Spirits,Captain Morgan's Spiced Rum,£6,,Bar List
+Spirits,Kraken Dark Rum,£6,,Bar List
+Spirits,Jose Cuervo Gold Tequila,£6,,Bar List
+Spirits,Disaronno,£6,,Bar List
+Spirits,Disaronno Velvet,£6,,Bar List
+Ensign wine,Ensign Red,£8 / £12 / £30,"175ml £8, 250ml £12, bottle £30.",Bar List
+Ensign wine,Ensign White,£8 / £12 / £30,"175ml £8, 250ml £12, bottle £30.",Bar List
+Ensign wine,Ensign Rosé,£8 / £12 / £30,"175ml £8, 250ml £12, bottle £30.",Bar List
+Ensign wine,Ensign Prosecco,£8 / £12 / £30,"175ml £8, 250ml £12, bottle £30.",Bar List
+Officers wine,Officers White,£55,Bottle only.,Bar List
+Officers wine,Officers Red,£55,Bottle only.,Bar List
+Officers wine,Officers Champagne,£55,Bottle only.,Bar List
+Beer,India Pale Ale,,,Bar List
+Beer,Hazy Pale Ale,,,Bar List
+Beer,Pilsner,,,Bar List
+Beer,Lager,,,Bar List
+Beer,Alcohol Free Lager,,,Bar List
+Beer,Gluten Free Hazy Pale Ale,,,Bar List
+Cider,Alcohol Free Cider,,,Bar List
