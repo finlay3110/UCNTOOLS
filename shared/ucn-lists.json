@@ -1,0 +1,183 @@
+{
+  "_readme": "The one place to edit the UCN operations and rank ladder. On deploy, .github/scripts/sync-shared-lists.js writes these into every tool that uses them. alt is an extra search term (Navigation).",
+  "operations": [
+    {
+      "name": "OPERATION TEDDER",
+      "type": "Military"
+    },
+    {
+      "name": "ITHAKA MINING FACILITY",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION ALCHEMIST",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION CLAYMORE",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION COPIAPO",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION HANUMAN",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION MENDICANT",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION QUICKSTEP",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION SILK ROAD",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION TECUMSEH",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION VIA MARIS",
+      "type": "Military"
+    },
+    {
+      "name": "OPERATION AMUNDSEN",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION OBELISK",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION SARGASSO",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION ADAMAN",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION MARCONI",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION SISTEMA",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION VANGUARD",
+      "type": "Exploration"
+    },
+    {
+      "name": "OPERATION REDENTOR",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "OPERATION BARATARIA",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "OPERATION CLARITY",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "OPERATION KISMET",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "OPERATION PHILBY",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "OPERATION PITCHFORK",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "TERRA NOVAN DIPLOMATIC INCIDENT",
+      "type": "Diplomacy"
+    },
+    {
+      "name": "OPERATION ANTIMONY",
+      "type": "Intrigue"
+    },
+    {
+      "name": "OPERATION CAMINO",
+      "type": "Intrigue"
+    },
+    {
+      "name": "OPERATION EURYDICE",
+      "type": "Intrigue"
+    },
+    {
+      "name": "OPERATION MOCKINGBIRD",
+      "type": "Intrigue"
+    },
+    {
+      "name": "OPERATION TELEGRAM",
+      "type": "Intrigue"
+    },
+    {
+      "name": "OPERATION ARGUS",
+      "type": "Intrigue"
+    },
+    {
+      "name": "OPERATION RECOIL",
+      "type": "Intrigue"
+    }
+  ],
+  "ranks": [
+    {
+      "name": "Cadet",
+      "alt": "Cdt"
+    },
+    {
+      "name": "Ensign",
+      "alt": "Ens"
+    },
+    {
+      "name": "Sub Lt",
+      "alt": "Sub Lieutenant"
+    },
+    {
+      "name": "Lieutenant",
+      "alt": "Lt"
+    },
+    {
+      "name": "Lt Cmdr",
+      "alt": "Lieutenant Commander"
+    },
+    {
+      "name": "Commander",
+      "alt": "Cmdr"
+    },
+    {
+      "name": "Captain",
+      "alt": "Capt"
+    },
+    {
+      "name": "Commodore",
+      "alt": "Cdre"
+    },
+    {
+      "name": "Rear Admiral",
+      "alt": "RAdm"
+    },
+    {
+      "name": "Vice Admiral",
+      "alt": "VAdm"
+    },
+    {
+      "name": "Admiral",
+      "alt": "Adm"
+    },
+    {
+      "name": "Admiral of the Fleet",
+      "alt": "AF"
+    }
+  ]
+}

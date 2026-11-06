@@ -1,5 +1,6 @@
 // Songbook, Tactical Aids and Mess Log serve their files from the offline cache
-// until their service worker's version string changes. Stamp each one with a
+// until their service worker's version string changes, and Mission Companion
+// and Engineering ask for a bump on every change too. Stamp each one with a
 // hash of the files it caches, so every deploy that changes them reaches
 // phones that already have the tool, without anyone bumping a version by hand.
 const fs = require('fs');
@@ -38,3 +39,5 @@ stamp('messtracker', /(var CACHE_VERSION = 'ucn-mess-log-)[0-9a-f]+(';)/, h => h
 stamp('songbook', /(var VERSION = 'ucn-songbook-)[^']+(';)/, h => h, inTool('songbook', ['sw.js', 'songs.json']));
 // manifest.json is fetched network-first and rebuilt on deploy.
 stamp('tactical-aids', /(const CACHE_VERSION = ')[^']+(';)/, h => h, inTool('tactical-aids', ['sw.js', 'manifest.json']));
+stamp('mission-companion', /(const CACHE_VERSION = 'ucn-mission-companion-)[^']+(';)/, h => h, inTool('mission-companion', ['sw.js']));
+stamp('engineering', /(const CACHE = 'ucn-eng-)[^']+(';)/, h => h, inTool('engineering', ['sw.js']));

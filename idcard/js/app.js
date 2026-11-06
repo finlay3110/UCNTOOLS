@@ -177,6 +177,7 @@
       photoThumb.style.backgroundImage = cssUrl(url);
       photoThumb.textContent = '';
       clearBtn.style.display = 'inline';
+      queueSave();
     };
     reader.readAsDataURL(file);
   });
@@ -1041,4 +1042,88 @@
   }
   window.addEventListener('resize', fitPreview);
   fitPreview();
+
+  // ---- remember the card on this device ----
+  // Saved after every edit and put back on the next visit, so closing the tab
+  // no longer loses the card. Same shape as a card file.
+  const SAVE_KEY = 'ucnIdCard_v1';
+  let saveTimer = null, shrunkFrom = null, shrunk = null;
+
+  // A phone photo is several MB as text, more than a browser lets one site
+  // store, so the saved copy is scaled down. 1000px is still far more than a
+  // printed card photo needs; the full-size photo stays in use until reload.
+  function shrinkPhoto(dataUrl){
+    return new Promise(resolve=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const k = Math.min(1, 1000 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * k);
+        c.height = Math.round(img.naturalHeight * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        try{ resolve(c.toDataURL('image/jpeg', 0.9)); }catch(e){ resolve(null); }
+      };
+      img.onerror = ()=> resolve(null);
+      img.src = dataUrl;
+    });
+  }
+  async function saveCard(){
+    const data = getCurrentCardData();
+    if(data.photo && data.photo.length > 400000){
+      if(shrunkFrom !== data.photo){ shrunkFrom = data.photo; shrunk = await shrinkPhoto(data.photo); }
+      data.photo = shrunk;
+    }
+    try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }
+    catch(e){
+      // storage full or blocked: keep the text at least
+      try{ data.photo = null; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e2){}
+    }
+  }
+  function queueSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveCard, 300); }
+  const formPanel = document.querySelector('.form-panel');
+  ['input', 'change', 'click'].forEach(type => formPanel.addEventListener(type, queueSave));
+
+  // Put a value back through the same events a person's typing would fire,
+  // so every preview and "Other" box updates exactly as it does by hand.
+  function put(el, value, type){
+    el.value = value;
+    el.dispatchEvent(new Event(type, {bubbles:true}));
+  }
+  function putChoice(select, other, value){
+    if(!value) return;
+    if(Array.from(select.options).some(o => o.value === value)){ put(select, value, 'change'); return; }
+    if(other){ put(select, '__other__', 'change'); put(other, value, 'input'); }
+  }
+  function applyCard(data){
+    const str = v => typeof v === 'string' ? v : '';
+    put(fields.name, str(data.name), 'input');
+    putChoice(pronounsSelect, pronounsOther, str(data.pronouns));
+    putChoice(rankSelect, null, str(data.rank));
+    putChoice(shipSelect, shipOther, str(data.ship));
+    putChoice(divisionSelect, divisionOther, str(data.division));
+    putChoice(watchSelect, null, str(data.watch));
+    put(fields.task, str(data.task), 'input');
+    (data.codeMode === 'qr' ? qrBtn : barcodeBtn).click();
+    put(fields.id, str(data.id), 'input');
+    if(isLocalImageDataUrl(data.photo)){
+      photoDataUrl = data.photo;
+      photoBox.style.backgroundImage = cssUrl(data.photo);
+      photoBox.textContent = '';
+      photoThumb.style.backgroundImage = cssUrl(data.photo);
+      photoThumb.textContent = '';
+      clearBtn.style.display = 'inline';
+    }
+  }
+  try{
+    const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(saved && typeof saved === 'object') applyCard(saved);
+  }catch(e){ /* nothing saved, or storage blocked */ }
+  clearTimeout(saveTimer); // restoring is not an edit
+
+  $('newCardBtn').addEventListener('click', e=>{
+    e.stopPropagation();
+    if(!confirm('Clear the form and start a new card? Export this one first if you want to keep it.')) return;
+    try{ localStorage.removeItem(SAVE_KEY); }catch(err){}
+    location.reload();
+  });
 })();

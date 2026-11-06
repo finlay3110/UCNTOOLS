@@ -1299,6 +1299,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
           ⬆ Import Comms Log (JSON)
           <input type="file" id="importCommsLogInput" accept="application/json,.json" style="display:none;">
         </label>
+        <button type="button" class="add-btn" id="btnPhoneCommsLog" style="display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:8px;">📱 Use the Comms Log on this phone</button>
         <div id="commsLogSummary" style="display:none; margin-top:12px;">
           <div class="card">
             <div class="card-head"><span class="card-role">Comms Log Loaded</span>
@@ -1328,6 +1329,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
           <span class="eng-import-text">⬆ Import Power Management Log</span>
           <input type="file" id="engImportInput_power" accept="application/json,.json" style="display:none;">
         </label>
+        <button type="button" class="add-btn" id="btnPhoneEngLog" style="display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:8px;">📱 Use the Engineering log on this phone</button>
         <div id="engLogSummary" style="display:none; margin-top:12px;">
           <div class="card">
             <div class="card-head"><span class="card-role">Engineering Logs Loaded</span></div>
@@ -1348,11 +1350,34 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
           ⬆ Import Navigation Log (JSON)
           <input type="file" id="importNavLogInput" accept="application/json,.json" style="display:none;">
         </label>
+        <button type="button" class="add-btn" id="btnPhoneNavLog" style="display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:8px;">📱 Use the Navigation log on this phone</button>
         <div id="navLogSummary" style="display:none; margin-top:12px;">
           <div class="card">
             <div class="card-head"><span class="card-role">Navigation Log Loaded</span>
               <button type="button" class="del-x" id="btnRemoveNavLog">✕</button></div>
             <div id="navLogSummaryText" style="font-size:13px; color:var(--text); padding:0 2px 4px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nested-section" id="genLogSection">
+      <button type="button" class="nested-toggle" id="genLogToggle" aria-expanded="false" aria-controls="genLogBody">
+        <span>📓 General Log Import (optional)</span>
+        <span class="nested-chevron">▾</span>
+      </button>
+      <div class="nested-body" id="genLogBody" style="display:none;">
+        <div class="empty-hint" style="margin-top:12px;">Import a personal log (JSON) from the UCN General Log to include it as its own section in the PDF report.</div>
+        <label class="add-btn" id="btnImportGenLogLabel" style="display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:10px;">
+          ⬆ Import General Log (JSON)
+          <input type="file" id="importGenLogInput" accept="application/json,.json" style="display:none;">
+        </label>
+        <button type="button" class="add-btn" id="btnPhoneGenLog" style="display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:8px;">📱 Use the General Log on this phone</button>
+        <div id="genLogSummary" style="display:none; margin-top:12px;">
+          <div class="card">
+            <div class="card-head"><span class="card-role">General Log Loaded</span>
+              <button type="button" class="del-x" id="btnRemoveGenLog">✕</button></div>
+            <div id="genLogSummaryText" style="font-size:13px; color:var(--text); padding:0 2px 4px;"></div>
           </div>
         </div>
       </div>
@@ -1498,7 +1523,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
 var LOGO_SRC = "data:image/png;base64,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";
 
+// ucn-lists:mc-ranks (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
 var RANKS = ['Cadet','Ensign','Sub Lt','Lieutenant','Lt Cmdr','Commander','Captain','Commodore','Rear Admiral','Vice Admiral','Admiral','Admiral of the Fleet'];
+// ucn-lists:end
 
 var SHIP_ROLES = ['Captain','First Officer','Helm','Navigation','Comms','Power Management','Damage Control','Radar','Drone Operator','Beams','Missiles'];
 
@@ -1510,6 +1537,7 @@ var SHUTTLE_ROLES = ['Shuttle Helm','Shuttle Generalist','Shuttle Engineer'];
 
    Grouped and ordered exactly as supplied rather than alphabetised, so the list stays diffable
    against the source it came from. */
+// ucn-lists:mc-operations (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
 var OPERATIONS_BY_TYPE = [
   {type:'Military', names:[
     'OPERATION TEDDER',
@@ -1552,6 +1580,7 @@ var OPERATIONS_BY_TYPE = [
     'OPERATION RECOIL'
   ]}
 ];
+// ucn-lists:end
 
 /* Flat name -> type lookup, built once. */
 var OPERATION_TYPES = (function(){
@@ -1692,6 +1721,7 @@ function defaultState(){
     engineeringLog: null,
     engineeringLogs: [],
     navigationLog: null,
+    generalLog: null,
     trainingComplete: false
   };
 }
@@ -3222,6 +3252,8 @@ function initDebrief(){
   initCommsLog();
   initEngineeringLog();
   initNavigationLog();
+  initGeneralLog();
+  initPhoneLogs();
 }
 
 /* ================= COMMS LOG IMPORT ================= */
@@ -3288,18 +3320,9 @@ function initCommsLog(){
     if(!file) return;
     var reader = new FileReader();
     reader.onload = function(){
-      try{
-        var parsed = JSON.parse(reader.result);
-        if(!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.ships)){
-          throw new Error('Missing ships array');
-        }
-        state.commsLog = parsed;
-        scheduleSave();
-        renderCommsLogSummary();
-        toast('Comms log imported ✔');
-      }catch(err){
-        alert('Could not read that file — make sure it\'s a UCN Comms Log JSON export.');
-      }
+      var parsed = null;
+      try{ parsed = JSON.parse(reader.result); }catch(err){ /* reported by applyCommsLog */ }
+      applyCommsLog(parsed);
       e.target.value = '';
     };
     reader.readAsText(file);
@@ -3311,6 +3334,18 @@ function initCommsLog(){
     scheduleSave();
     renderCommsLogSummary();
   });
+}
+
+/* Shared by the file import and "Use the Comms Log on this phone". */
+function applyCommsLog(parsed){
+  if(!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.ships)){
+    alert('Could not read that file — make sure it\'s a UCN Comms Log JSON export.');
+    return;
+  }
+  state.commsLog = parsed;
+  scheduleSave();
+  renderCommsLogSummary();
+  toast('Comms log imported ✔');
 }
 
 /* ================= ENGINEERING LOG IMPORT ================= */
@@ -3710,6 +3745,28 @@ function syncEngImportButtons(){
   });
 }
 
+/* Shared by the file imports and "Use the Engineering log on this phone". */
+function addEngineeringLog(normalised, role){
+  var logs = state.engineeringLogs || [];
+  var existingIdx = -1;
+  for(var i=0;i<logs.length;i++){ if(logs[i].role === role) existingIdx = i; }
+  if(existingIdx > -1 && !confirm('A ' + ENG_ROLE_LABELS[role] + ' log is already loaded. Replace it with this one?')) return;
+  if(existingIdx > -1) logs.splice(existingIdx, 1, normalised);
+  else logs.push(normalised);
+  /* Keep a stable Combined / Damage Control / Power Management order in the summary,
+     independent of which was imported first. */
+  logs.sort(function(a,b){ return ENG_ROLE_ORDER.indexOf(a.role) - ENG_ROLE_ORDER.indexOf(b.role); });
+  state.engineeringLogs = logs;
+  if(!persist()){
+    /* persist() reports quota failures loudly; a large log is the likely cause here. */
+    toast('Log imported but could not be saved — storage is full ⚠️');
+  } else {
+    toast(ENG_ROLE_LABELS[role] + ' log imported ✔');
+  }
+  renderEngLogSummary();
+  syncEngImportButtons();
+}
+
 function initEngineeringLog(){
   renderEngLogSummary();
   syncEngImportButtons();
@@ -3743,27 +3800,7 @@ function initEngineeringLog(){
           e.target.value = '';
           return;
         }
-        var logs = state.engineeringLogs || [];
-        var existingIdx = -1;
-        for(var i=0;i<logs.length;i++){ if(logs[i].role === role) existingIdx = i; }
-        if(existingIdx > -1 && !confirm('A ' + ENG_ROLE_LABELS[role] + ' log is already loaded. Replace it with this one?')){
-          e.target.value = '';
-          return;
-        }
-        if(existingIdx > -1) logs.splice(existingIdx, 1, normalised);
-        else logs.push(normalised);
-        /* Keep a stable Combined / Damage Control / Power Management order in the summary,
-           independent of which was imported first. */
-        logs.sort(function(a,b){ return ENG_ROLE_ORDER.indexOf(a.role) - ENG_ROLE_ORDER.indexOf(b.role); });
-        state.engineeringLogs = logs;
-        if(!persist()){
-          /* persist() reports quota failures loudly; a large log is the likely cause here. */
-          toast('Log imported but could not be saved — storage is full ⚠️');
-        } else {
-          toast(ENG_ROLE_LABELS[role] + ' log imported ✔');
-        }
-        renderEngLogSummary();
-        syncEngImportButtons();
+        addEngineeringLog(normalised, role);
         e.target.value = '';
       };
       reader.readAsText(file);
@@ -3954,6 +3991,18 @@ function renderNavLogSummary(){
   wrap.style.display = '';
 }
 
+/* Shared by the file import and "Use the Navigation log on this phone". */
+function addNavigationLog(normalised){
+  if(state.navigationLog && !confirm('A navigation log is already loaded. Replace it with this one?')) return;
+  state.navigationLog = normalised;
+  if(!persist()){
+    toast('Log imported but could not be saved — storage is full ⚠️');
+  } else {
+    toast('Navigation log imported ✔');
+  }
+  renderNavLogSummary();
+}
+
 function initNavigationLog(){
   renderNavLogSummary();
 
@@ -3981,17 +4030,7 @@ function initNavigationLog(){
         e.target.value = '';
         return;
       }
-      if(state.navigationLog && !confirm('A navigation log is already loaded. Replace it with this one?')){
-        e.target.value = '';
-        return;
-      }
-      state.navigationLog = normalised;
-      if(!persist()){
-        toast('Log imported but could not be saved — storage is full ⚠️');
-      } else {
-        toast('Navigation log imported ✔');
-      }
-      renderNavLogSummary();
+      addNavigationLog(normalised);
       e.target.value = '';
     };
     reader.readAsText(file);
@@ -4002,6 +4041,256 @@ function initNavigationLog(){
     state.navigationLog = null;
     scheduleSave();
     renderNavLogSummary();
+  });
+}
+
+/* ================= GENERAL LOG IMPORT ================= */
+/* Imports an export from the UCN General Log: one keeper's own timestamped log, from whichever
+   station they were on. One log at a time, a summary card here, every entry in the PDF. */
+
+var GEN_APP = 'ucn-general-log';
+var GEN_VERSION = 1;
+
+function normaliseGeneralLog(parsed){
+  if(!parsed || typeof parsed !== 'object' || Array.isArray(parsed)){
+    throw new Error('That file isn\'t a UCN General Log export — it should be a single JSON object.');
+  }
+  if(!parsed.app){
+    throw new Error('That file has no "app" field, so it isn\'t a UCN General Log export.');
+  }
+  if(parsed.app !== GEN_APP){
+    throw new Error('That file came from "' + String(parsed.app) + '", not the UCN General Log.');
+  }
+  if(parsed.version !== GEN_VERSION){
+    throw new Error('Unsupported General Log version "' + String(parsed.version) + '". This app reads version ' + GEN_VERSION + '.');
+  }
+  if(!Array.isArray(parsed.entries)){
+    throw new Error('That file has no "entries" list, so there is no log to import.');
+  }
+
+  var m = (parsed.meta && typeof parsed.meta === 'object' && !Array.isArray(parsed.meta)) ? parsed.meta : {};
+  var b = (parsed.briefing && typeof parsed.briefing === 'object' && !Array.isArray(parsed.briefing)) ? parsed.briefing : {};
+  var meta = {};
+  ['loggedBy','rank','role','ship','missionName','missionType','authorisation','date','time'].forEach(function(k){
+    meta[k] = navStr(m[k]);
+  });
+
+  var dropped = 0;
+  var entries = [];
+  parsed.entries.forEach(function(e, i){
+    if(!e || typeof e !== 'object' || Array.isArray(e)){ dropped++; return; }
+    var text = navStr(e.text);
+    /* The text is the entry; without it there is nothing to report. */
+    if(!text){ dropped++; return; }
+    var date = navStr(e.date), time = navStr(e.time);
+    entries.push({
+      /* Ids are only unique within one file, so they are namespaced, and the position keeps two
+         copies of one id apart. */
+      id: 'gl:' + i + ':' + navStr(e.id),
+      date: /^\d{1,6}-\d{2}-\d{2}$/.test(date) ? date : '',
+      time: /^\d{2}:\d{2}$/.test(time) ? time : '',
+      type: navStr(e.type),
+      critical: e.critical === true,
+      text: text,
+      order: i
+    });
+  });
+
+  /* The tool lists newest first; a report reads oldest first. Undated entries go last, and
+     anything that ties keeps the order it had in the file. */
+  entries.sort(function(a,c){
+    var ka = a.date ? a.date + ' ' + (a.time || '99:99') : '~';
+    var kc = c.date ? c.date + ' ' + (c.time || '99:99') : '~';
+    if(ka !== kc) return ka < kc ? -1 : 1;
+    return a.order - c.order;
+  });
+
+  return {
+    version: GEN_VERSION,
+    meta: meta,
+    briefing: {threat: navStr(b.threat), notes: navStr(b.notes)},
+    entries: entries,
+    /* Recomputed from the entries, never taken from the file. */
+    critical: entries.filter(function(e){ return e.critical; }).length,
+    dropped: dropped
+  };
+}
+
+/* "2182-11-06" as the report prints dates elsewhere. */
+function genFmtDate(iso){
+  var p = /^(\d{1,6})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return p ? p[3] + '/' + p[2] + '/' + p[1] : '';
+}
+
+function renderGenLogSummary(){
+  var wrap = document.getElementById('genLogSummary');
+  var text = document.getElementById('genLogSummaryText');
+  if(!wrap || !text) return;
+  var log = state.generalLog;
+  if(!log){ wrap.style.display = 'none'; return; }
+
+  var parts = [];
+  var m = log.meta;
+  if(m.loggedBy) parts.push('Kept by: ' + m.loggedBy + (m.rank ? ' (' + m.rank + ')' : '') + (m.role ? ' — ' + m.role : ''));
+  if(m.missionName) parts.push('Mission: ' + m.missionName + (m.missionType ? ' — ' + m.missionType : ''));
+  if(m.ship) parts.push('Ship: ' + m.ship);
+  parts.push(log.entries.length + ' entr' + (log.entries.length===1?'y':'ies') + ' — ' + log.critical + ' critical');
+  if(log.dropped){
+    parts.push('⚠️ ' + log.dropped + ' entr' + (log.dropped===1?'y':'ies') + ' skipped (no text)');
+  }
+  /* Every part is untrusted file input: escaped, and only ever shown as data. */
+  text.innerHTML = parts.map(function(x){ return escHtml(x); }).join('<br>');
+  wrap.style.display = '';
+}
+
+/* Shared by the file import and "Use the General Log on this phone". */
+function addGeneralLog(normalised){
+  if(state.generalLog && !confirm('A general log is already loaded. Replace it with this one?')) return;
+  state.generalLog = normalised;
+  if(!persist()){
+    toast('Log imported but could not be saved — storage is full ⚠️');
+  } else {
+    toast('General log imported ✔');
+  }
+  renderGenLogSummary();
+}
+
+function initGeneralLog(){
+  renderGenLogSummary();
+
+  var toggle = document.getElementById('genLogToggle');
+  var body = document.getElementById('genLogBody');
+  toggle.addEventListener('click', function(){
+    var isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : '';
+    toggle.classList.toggle('open', !isOpen);
+    toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+  });
+
+  document.getElementById('importGenLogInput').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var normalised;
+      try{
+        normalised = normaliseGeneralLog(JSON.parse(reader.result));
+      }catch(err){
+        alert(err instanceof SyntaxError
+          ? 'Could not read that file — it isn\'t valid JSON.'
+          : err.message);
+        e.target.value = '';
+        return;
+      }
+      addGeneralLog(normalised);
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('btnRemoveGenLog').addEventListener('click', function(){
+    if(!confirm('Remove the imported general log? It will no longer appear in the PDF export.')) return;
+    state.generalLog = null;
+    scheduleSave();
+    renderGenLogSummary();
+  });
+}
+
+/* ================= LOGS ALREADY ON THIS PHONE =================
+   The UCN tools share one site, and with it this browser's storage, so a log kept on this same
+   phone can be read straight from the tool's saved data instead of exporting a file and
+   importing it. Each tool's saved data is put into the shape of that tool's own JSON export
+   and then goes through exactly the same checks as a file. Storage keys and shapes are those
+   tools' own: if one changes, its schema/version check here fails loudly rather than guessing. */
+
+function readPhoneLog(key){
+  try{
+    var raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  }catch(err){ return null; }
+}
+
+/* Engineering stores only what it needs; its export adds these derived fields, so they are
+   rebuilt the same way (normaliseEngineeringLog recomputes counts itself). Ship names and the
+   five spare OCPs mirror SHIP_DATA and DEFAULT_SPARES in the Engineering tool. */
+var ENG_PHONE_SHIP_NAMES = {havock:'UCS Havock', takanami:'UCS Takanami'};
+var ENG_PHONE_SPARES_START = 5;
+function engExportFromPhone(saved){
+  var entries = Array.isArray(saved.entries) ? saved.entries.filter(function(e){ return e && typeof e === 'object'; }) : [];
+  var hull = entries.filter(function(e){ return e.kind === 'hull' && typeof e.value === 'number'; })
+    .sort(function(a,c){ return (isoParseDate(a.startedAt) || 0) - (isoParseDate(c.startedAt) || 0); });
+  var last = hull.length ? hull[hull.length-1] : null;
+  var spares = typeof saved.spares === 'number' ? saved.spares : null;
+  return {
+    schema: saved.schema,
+    exportedAt: null,
+    operator: saved.operator,
+    mission: saved.mission,
+    ship: {id: saved.ship || '', name: ENG_PHONE_SHIP_NAMES[saved.ship] || saved.ship || ''},
+    modules: saved.modules,
+    spares: {start: ENG_PHONE_SPARES_START, remaining: spares,
+      used: spares === null ? null : Math.max(0, ENG_PHONE_SPARES_START - spares)},
+    hull: {latest: last ? last.value : null, latestAt: last ? last.startedAt : null,
+      readings: hull.map(function(h){ return {at: h.startedAt, value: h.value}; })},
+    entries: entries.map(function(e){
+      var start = isoParseDate(e.startedAt), end = isoParseDate(e.endedAt);
+      var copy = engShallowCopy(e);
+      copy.durationSeconds = (engIsInstant(e.kind) || !start || !end) ? null : Math.max(0, Math.round((end - start) / 1000));
+      return copy;
+    })
+  };
+}
+
+function initPhoneLogs(){
+  function nothing(label){ toast('No ' + label + ' is saved on this phone yet.'); }
+  function rejected(err){ alert(err.message); }
+
+  document.getElementById('btnPhoneCommsLog').addEventListener('click', function(){
+    var saved = readPhoneLog('ucnCommsLogState_v1');
+    var count = 0;
+    if(saved && Array.isArray(saved.ships)){
+      saved.ships.forEach(function(sh){ if(sh && Array.isArray(sh.entries)) count += sh.entries.length; });
+    }
+    if(!count){ nothing('Comms Log'); return; }
+    applyCommsLog({exportedAt: saved.savedAt || null, briefing: saved.briefing, ships: saved.ships});
+  });
+
+  document.getElementById('btnPhoneEngLog').addEventListener('click', function(){
+    var saved = readPhoneLog('ucn-mission-v1');
+    if(!saved || typeof saved !== 'object' || !Array.isArray(saved.entries) || !saved.entries.length){ nothing('Engineering log'); return; }
+    /* The engineer chose which sections they ran; that is what the log covers. */
+    var mods = (saved.modules && typeof saved.modules === 'object') ? saved.modules : {};
+    var power = mods.power !== false, damage = mods.damage !== false;
+    var role = (power && damage) ? 'combined' : (damage ? 'damage' : 'power');
+    var logs = state.engineeringLogs || [];
+    var clash = role === 'combined'
+      ? logs.some(function(l){ return l.role !== 'combined'; })
+      : logs.some(function(l){ return l.role === 'combined'; });
+    if(clash){
+      alert('The Engineering log on this phone is a ' + ENG_ROLE_LABELS[role] + ' log, which can\'t be mixed with the logs already loaded. Remove those first.');
+      return;
+    }
+    var normalised;
+    try{ normalised = normaliseEngineeringLog(engExportFromPhone(saved), role); }catch(err){ rejected(err); return; }
+    addEngineeringLog(normalised, role);
+  });
+
+  document.getElementById('btnPhoneNavLog').addEventListener('click', function(){
+    var saved = readPhoneLog('ucn_nav_radar_waypoints');
+    if(!saved || !Array.isArray(saved.waypoints) || !saved.waypoints.length){ nothing('Navigation log'); return; }
+    var normalised;
+    try{ normalised = normaliseNavigationLog(saved); }catch(err){ rejected(err); return; }
+    addNavigationLog(normalised);
+  });
+
+  document.getElementById('btnPhoneGenLog').addEventListener('click', function(){
+    var saved = readPhoneLog('ucn.generallog.v1');
+    if(!saved || !Array.isArray(saved.entries) || !saved.entries.length){ nothing('General Log'); return; }
+    var normalised;
+    try{
+      normalised = normaliseGeneralLog({app: GEN_APP, version: GEN_VERSION, meta: saved.meta, briefing: saved.briefing, entries: saved.entries});
+    }catch(err){ rejected(err); return; }
+    addGeneralLog(normalised);
   });
 }
 
@@ -4069,6 +4358,7 @@ function renderAll(){
   renderCommsLogSummary();
   renderEngLogSummary();
   renderNavLogSummary();
+  renderGenLogSummary();
   updateQuickLogButtonsVisibility();
 }
 
@@ -4948,6 +5238,49 @@ function buildDirectPdf(s, navyLogoDataUrl, opts){
         if(w.outcome) body = (body ? body + '\n' : '') + 'Outcome: ' + w.outcome;
         pdfBlockNote(doc, w.number + ' · ' + w.title, body);
       });
+    });
+  }
+
+  if(s.generalLog && s.generalLog.entries){
+    var gl = s.generalLog;
+    pdfSectionStart(doc, 'General Log', tocEntries);
+
+    var glMeta = [];
+    var gm = gl.meta;
+    if(gm.loggedBy) glMeta.push(['KEPT BY', gm.loggedBy + (gm.rank ? ' (' + gm.rank + ')' : '')]);
+    if(gm.role) glMeta.push(['ROLE', gm.role]);
+    if(gm.ship) glMeta.push(['SHIP', gm.ship]);
+    if(gm.missionName) glMeta.push(['MISSION', gm.missionName + (gm.missionType ? ' — ' + gm.missionType : '')]);
+    if(gm.authorisation) glMeta.push(['AUTHORISATION', gm.authorisation]);
+    if(gl.briefing.threat) glMeta.push(['THREAT LEVEL', gl.briefing.threat]);
+    glMeta.push(['ENTRIES', gl.entries.length + ' — ' + gl.critical + ' critical']);
+    pdfTable(doc, ['Field','Value'], glMeta, [42, PDF_CONTENT_W-42]);
+
+    if(gl.dropped){
+      /* Say so rather than quietly reporting fewer entries than the file contained. */
+      pdfParagraph(doc, gl.dropped + ' entr' + (gl.dropped===1?'y was':'ies were') +
+        ' skipped on import (no text).', {italic:true, color:PDF_MUTED});
+    }
+    if(gl.briefing.notes) pdfBlockNote(doc, 'Briefing notes', gl.briefing.notes);
+
+    if(!gl.entries.length){
+      pdfParagraph(doc, 'No log entries recorded.', {italic:true, color:PDF_MUTED});
+    }
+    /* A date heading only when the log runs over more than one day. */
+    var glDates = {};
+    gl.entries.forEach(function(e){ glDates[e.date] = true; });
+    var glMultiDay = Object.keys(glDates).length > 1;
+    var glLastDate = null;
+    gl.entries.forEach(function(e){
+      if(glMultiDay && e.date !== glLastDate){
+        pdfSubHeading(doc, genFmtDate(e.date) || 'Undated');
+        glLastDate = e.date;
+      }
+      /* The type is drawn in Orbitron, which truncates a run at the first glyph its subset lacks
+         (see pdfLogEntry), and General Log types can be typed freely: keep it to plain
+         characters. */
+      pdfLogEntry(doc, {timestamp: e.time || '—', notes: e.text, critical: e.critical,
+        type: e.type.replace(/[^A-Za-z0-9 &'(),.\/:+\-]/g, ' ').replace(/\s+/g, ' ').trim()});
     });
   }
 

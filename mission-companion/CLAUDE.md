@@ -33,7 +33,8 @@ icons/          192 / 512 px
 ## Bump the cache version
 
 Bump `CACHE_VERSION` in `sw.js` **every time `index.html` changes**. Installed copies keep
-serving the old build otherwise. This is the easiest thing in the project to forget.
+serving the old build otherwise. This is the easiest thing in the project to forget. (The site's
+deploy now also stamps it from a hash of the files, so a forgotten bump still ships.)
 
 ## Storage
 
@@ -106,7 +107,10 @@ Every string from an imported file or typed by a user is **data**.
 
 ## Importing JSON from a sibling tool
 
-Three importers exist (Comms, Engineering, Navigation) and share a pattern — follow it.
+Four importers exist (Comms, Engineering, Navigation, General Log) and share a pattern — follow it.
+Each also has a "Use the … on this phone" button: the tools share one site, so `initPhoneLogs()`
+reads the sibling tool's own localStorage key, rebuilds the shape of its JSON export, and sends
+it through the same normaliser as a file.
 
 - A `.nested-section` on the Debrief tab: file input, summary card once loaded, remove button
   behind a `confirm()`.

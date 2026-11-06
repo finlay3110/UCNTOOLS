@@ -58,6 +58,20 @@ Every push to `main` deploys the whole site via `.github/workflows/deploy.yml`, 
 
 Each tool's old CI checks still run, but only when that tool's folder changes.
 
+## Shared between the tools
+
+Edit these, not the copies inside the tools. The deploy writes them into every tool that uses them (`.github/scripts/sync-shared-lists.js`, between `ucn-lists:` marker comments), so each tool stays one self-contained page that works offline. Run `node .github/scripts/sync-shared-lists.js` to update the copies in the repo too.
+
+| File | What it is |
+|---|---|
+| `shared/ucn-lists.json` | The known operations (with mission type) and the rank ladder |
+| `shared/profile.js` | Your name and rank, typed once and filled into the other tools |
+| `shared/share.js` | The "Share log" button on phones |
+
+The deploy also stamps the service-worker cache versions of Songbook, Tactical Aids, Mess Log, Mission Companion and Engineering from a hash of their files (`.github/scripts/stamp-cache-versions.js`), so a change always reaches phones that already have the tool.
+
+The homepage's **Back up & restore** card saves every tool's data in one file.
+
 All tools share one web origin, so each must keep its own `localStorage` keys and cache-name prefix, and a service worker must only delete caches carrying its own prefix.
 
 ## Features

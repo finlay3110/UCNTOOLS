@@ -25,6 +25,7 @@ const WARSPITE_QUICK = [
 
 /* Known operations from the campaign, name → type. Picking one fills the
    mission type in; any other mission name can still be typed by hand. */
+// ucn-lists:comms-operations (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
 const OPERATIONS = {
   'OPERATION TEDDER': 'Military',
   'ITHAKA MINING FACILITY': 'Military',
@@ -59,6 +60,7 @@ const OPERATIONS = {
   'OPERATION ARGUS': 'Intrigue',
   'OPERATION RECOIL': 'Intrigue'
 };
+// ucn-lists:end
 
 const STORAGE_KEY = 'ucnCommsLogState_v1';
 const INTRO_SEEN_KEY = 'ucnCommsLogIntroSeen_v1';
@@ -974,23 +976,63 @@ function deleteEntry(shipId, entryId){
 }
 
 /* ---------------- JSON export / import ---------------- */
-function exportJSON(){
+function exportFile(){
   const payload = {
     exportedAt: new Date().toISOString(),
     briefing: state.briefing,
     ships: state.ships
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const safeMission = (state.briefing.missionName || 'mission').replace(/[^a-z0-9]+/gi,'_');
+  return {
+    blob: new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'}),
+    name: `UCN_Comms_Log_${safeMission}.json`
+  };
+}
+
+function exportJSON(){
+  const { blob, name } = exportFile();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const safeMission = (state.briefing.missionName || 'mission').replace(/[^a-z0-9]+/gi,'_');
   a.href = url;
-  a.download = `UCN_Comms_Log_${safeMission}.json`;
+  a.download = name;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
   toast('Log exported as JSON.');
+}
+
+// ucn-lists:share (from shared/share.js, written on deploy: edit that file, not this code)
+/* Sends a log through the phone's own share sheet (WhatsApp, AirDrop, email,
+   Files...), so it reaches whoever is writing the mission report without a
+   download-and-find-the-file step. Only offered where the browser can share
+   files. ucnShareFile resolves false if the person closes the sheet, and
+   rejects if sharing itself failed, so the caller can download instead.
+   Plain ES5, as some of the tools are. */
+function ucnCanShareFiles() {
+  try {
+    return !!(window.navigator.canShare && window.File && window.navigator.canShare({
+      files: [new window.File(['{}'], 'log.json', { type: 'application/json' })]
+    }));
+  } catch (e) { return false; }
+}
+function ucnShareFile(blob, name, title) {
+  var file = new window.File([blob], name, { type: blob.type || 'application/json' });
+  return window.navigator.share({ files: [file], title: title }).then(
+    function () { return true; },
+    function (err) {
+      if (err && err.name === 'AbortError') return false;
+      throw err;
+    });
+}
+// ucn-lists:end
+
+/* The same file as Export, handed to the phone's share sheet. */
+function shareJSON(){
+  const { blob, name } = exportFile();
+  ucnShareFile(blob, name, 'UCN Comms Log')
+    .then(shared => { if(shared) toast('Log shared.'); })
+    .catch(() => { exportJSON(); toast('Sharing failed, so the log was downloaded instead.'); });
 }
 
 function importJSON(){
@@ -1115,6 +1157,11 @@ function wireStaticControls(){
 
   document.getElementById('importJsonBtn').addEventListener('click', importJSON);
   document.getElementById('exportJsonBtn').addEventListener('click', exportJSON);
+  if(ucnCanShareFiles()){
+    const shareBtn = document.getElementById('shareJsonBtn');
+    shareBtn.style.display = '';
+    shareBtn.addEventListener('click', shareJSON);
+  }
   document.getElementById('pdfExportBtn').addEventListener('click', () => exportPDF());
 
   document.getElementById('modalCloseBtn').addEventListener('click', closeShipModal);

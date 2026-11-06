@@ -1,7 +1,7 @@
 /* UCN Comms Log service worker: keeps the tool's files on the device so it
    opens with no signal. Network first, so a new deploy shows up on the next
    online visit; the cache is only the fallback. */
-var CACHE = 'ucn-commslog-v1';
+var CACHE = 'ucn-commslog-v2';
 var PREFIX = 'ucn-commslog-';
 var FILES = [
   "./",
@@ -18,7 +18,11 @@ var FILES = [
   "js/pdf-export.js",
   "js/vendor/jspdf.umd.min.js",
   "js/vendor/ucn-fonts.js",
-  "js/vendor/ucn-logo.js"
+  "js/vendor/ucn-logo.js",
+  "manifest.webmanifest",
+  "img/icon-192.png",
+  "img/icon-512.png",
+  "img/apple-touch-icon.png"
 ];
 // Third-party files the tool loads. Fetched with CORS so they can be stored.
 var REMOTE = [];
