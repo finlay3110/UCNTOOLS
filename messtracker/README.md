@@ -27,9 +27,9 @@ Limited.
 The app files live at the **repository root** and there is no build step, so a
 static host can serve the repository as-is.
 
-`netlify.toml` pins the publish directory to the repository root and marks
-`index.html`, `sw.js` and `manifest.json` as must-revalidate, so a CDN copy can
-never keep serving an old build after an update. Netlify needs no build command.
+It is published at **https://finlay3110.github.io/UCNTOOLS/messtracker/** with the rest of
+the UCN tools; the deploy also stamps `CACHE_VERSION` in `sw.js`, so an installed copy
+never keeps an old build.
 
 Any other static host works the same way — every path the page references is
 relative, so it can be served from a domain root or from a project subpath
@@ -52,7 +52,6 @@ The deploy also writes `menu.csv` into `index.html` as the built-in menu, so a f
 | `manifest.json` | Web app manifest, so it installs to the home screen |
 | `sw.js` | Service worker. `CACHE_VERSION` is a content hash, regenerated whenever the cached files change |
 | `icon-192.png`, `icon-512.png` | Home-screen icons |
-| `netlify.toml` | Publish directory and cache headers for Netlify |
 | `NOTICES.md`, `licences/` | Third-party licences for the embedded fonts and jsPDF |
 
 ## The menu

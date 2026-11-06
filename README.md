@@ -56,7 +56,7 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 
 Every push to `main` deploys the whole site via `.github/workflows/deploy.yml`, which also rebuilds `tactical-aids/manifest.json` from the PDFs in `tactical-aids/pdfs/`. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
-Each tool's old CI checks still run, but only when that tool's folder changes.
+Each tool's old CI checks still run when that tool's folder changes; Engineering's and Navigation's also run when `shared/` changes, after writing the shared files in exactly as the deploy does. Tactical Aids needs no check: the deploy rebuilds its PDF list (and copies in the ship maps from `engineering/ship-maps/`) every time.
 
 ## Shared between the tools
 
@@ -67,6 +67,7 @@ Edit these, not the copies inside the tools. The deploy writes them into every t
 | `shared/ucn-lists.json` | The known operations (with mission type) and the rank ladder |
 | `shared/profile.js` | Your name and rank, typed once and filled into the other tools |
 | `shared/share.js` | The "Share log" button on phones |
+| `shared/offline-sw.js` | The offline copy for Comms Log, ID Card, Ship Search and Mission Stats |
 
 The deploy also stamps the service-worker cache versions of Songbook, Tactical Aids, Mess Log, Mission Companion and Engineering from a hash of their files (`.github/scripts/stamp-cache-versions.js`), so a change always reaches phones that already have the tool.
 

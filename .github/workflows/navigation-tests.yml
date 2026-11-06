@@ -3,10 +3,10 @@ name: Navigation tests
 on:
   pull_request:
     branches: [main]
-    paths: ['navigation/**', '.github/workflows/navigation-tests.yml']
+    paths: ['navigation/**', 'shared/**', '.github/scripts/**', '.github/workflows/navigation-tests.yml']
   push:
     branches: [main]
-    paths: ['navigation/**', '.github/workflows/navigation-tests.yml']
+    paths: ['navigation/**', 'shared/**', '.github/scripts/**', '.github/workflows/navigation-tests.yml']
 
 jobs:
   test:
@@ -29,6 +29,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # Test what ships: the deploy writes the shared files (shared/) into the tools.
+      - name: Write the shared files in, as the deploy does
+        working-directory: .
+        run: node .github/scripts/sync-shared-lists.js
 
       - uses: actions/setup-node@v4
         with:

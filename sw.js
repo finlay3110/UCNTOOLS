@@ -38,15 +38,22 @@ self.addEventListener('fetch', event => {
 
   // Network first, so a redeployed portal is picked up on the next online
   // visit rather than being pinned to whatever was cached at install time.
-  event.respondWith(
-    fetch(request)
-      .then(response => {
-        if(response.ok){
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(request, copy));
-        }
-        return response;
-      })
-      .catch(() => caches.match(request).then(hit => hit || caches.match(SHELL)))
-  );
+  const saved = () => caches.match(request).then(hit => hit || caches.match(SHELL));
+  const network = fetch(request).then(response => {
+    if(response.ok){
+      const copy = response.clone();
+      caches.open(CACHE).then(cache => cache.put(request, copy));
+    }
+    return response;
+  });
+  // On Wi-Fi that is joined but passes nothing, the fetch hangs rather than
+  // failing, so after 3 seconds the saved page is used; the network still
+  // refreshes it when it answers.
+  event.respondWith(new Promise(resolve => {
+    let done = false;
+    const answer = res => { if(!done && res){ done = true; resolve(res); } };
+    const timer = setTimeout(() => saved().then(answer), 3000);
+    network.then(res => { clearTimeout(timer); answer(res); },
+                 () => { clearTimeout(timer); saved().then(hit => answer(hit || Response.error())); });
+  }));
 });

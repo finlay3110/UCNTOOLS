@@ -5,7 +5,7 @@ A browser-based tool for generating United Confederation Navy crew ID cards.
 **Fan-made project.** Not affiliated with, endorsed by, or approved by Bridge
 Command / The London Space Elevator Limited. The UCN logo is their property.
 
-Live at **[toolportal.netlify.app](https://toolportal.netlify.app)**
+Live at **[finlay3110.github.io/UCNTOOLS/idcard](https://finlay3110.github.io/UCNTOOLS/idcard/)**
 
 ---
 

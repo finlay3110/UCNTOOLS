@@ -2,7 +2,7 @@
 
 A fan-made digital songbook for the **United Confederation Navy (UCN)** community — a Bridge Command LARP group. Browse, search, and export the full songbook as a print-ready PDF, right from your phone or desktop.
 
-🔗 **Live app:** [shantysongbook.netlify.app](https://shantysongbook.netlify.app)
+🔗 **Live app:** [finlay3110.github.io/UCNTOOLS/songbook](https://finlay3110.github.io/UCNTOOLS/songbook/)
 
 > **Disclaimer:** This is a fan-made project and is not approved by or affiliated with Bridge Command / The London Space Elevator Limited. The UCN logo is the property of Bridge Command / The London Space Elevator Limited. Song lyrics are the property of their respective copyright holders; UCN-themed songs are reproduced here as original fan parodies.
 
@@ -56,9 +56,9 @@ Songs live in `songs.json` as a plain JSON array. To add one:
 1. Open `songs.json`
 2. Paste a new entry before the closing `]`, separated from the previous entry by a comma
 3. **Run `node tools/validate-songs.mjs`** — catches the mistakes that silently break rendering
-4. Commit and push — Netlify redeploys automatically
+4. Commit and push — the site redeploys automatically
 
-Step 3 also runs automatically on every push via GitHub Actions (`.github/workflows/validate.yml`).
+Step 3 also runs automatically on every push via GitHub Actions (`.github/workflows/songbook-validate.yml` at the repo root).
 
 ### Song entry format
 

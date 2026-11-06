@@ -3982,11 +3982,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   
     if (name) name.addEventListener('input', function () { save('name', name.value); });
     // Rank text boxes are searchable pickers: only keep what is left once the
-    // person moves on, not each half-typed search.
+    // person moves on, not each half-typed search, and only after the tool's own
+    // handlers have run, since some (Engineering's) clear a rank that isn't real.
     [rank, other].forEach(function (el) {
       if (!el) return;
       ['change', 'blur'].forEach(function (type) {
-        el.addEventListener(type, function () { save('rank', rankText()); });
+        el.addEventListener(type, function () { setTimeout(function () { save('rank', rankText()); }, 0); });
       });
     });
     // After the tool has put its own saved values back.

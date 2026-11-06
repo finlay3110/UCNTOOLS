@@ -10,6 +10,20 @@ const ROOT = __dirname;
 const PDFS_DIR = path.join(ROOT, 'pdfs');
 const OUT_FILE = path.join(ROOT, 'manifest.json');
 
+// The ship maps are kept once, in the Engineering tool, and copied in here so
+// the two tools can never show different maps. The copies are not committed.
+const SHIP_MAPS = [
+  ['HAVOCK_SHIP_MAP.pdf', 'havock-ship-map.pdf'],
+  ['Takanami_Ship_Map.pdf', 'takanami-ship-map.pdf'],
+];
+function copyShipMaps() {
+  const from = path.join(ROOT, '..', 'engineering', 'ship-maps');
+  const to = path.join(PDFS_DIR, 'SHIP LAYOUTS');
+  if (!fs.existsSync(from)) return;   // this folder used on its own
+  fs.mkdirSync(to, { recursive: true });
+  for (const [src, dest] of SHIP_MAPS) fs.copyFileSync(path.join(from, src), path.join(to, dest));
+}
+
 function titleCase(str) {
   return str
     .replace(/[-_]/g, ' ')
@@ -19,6 +33,7 @@ function titleCase(str) {
 }
 
 function buildManifest() {
+  copyShipMaps();
   const manifest = {
     generated: new Date().toISOString(),
     categories: [],

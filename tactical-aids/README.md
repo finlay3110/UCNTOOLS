@@ -42,14 +42,13 @@ To keep a category visible while it's still empty, put a `.gitkeep` file in it
 the manifest. Serve the folder instead:
 
 ```sh
-node build-manifest.js   # refresh manifest.json
+node build-manifest.js   # build manifest.json (and copy in the ship maps)
 npx serve .              # or: python3 -m http.server
 ```
 
-`node check-manifest.js` rebuilds the manifest and fails if the committed copy
-no longer matches the `pdfs/` folder. CI runs it on every push and pull request
-(`.github/workflows/manifest-check.yml`), so a stale `manifest.json` gets caught
-before it reaches the site.
+`manifest.json` is not committed: the deploy builds it from `pdfs/` every time,
+so there is nothing to keep in step by hand. The **SHIP LAYOUTS** maps come from
+`engineering/ship-maps/`, copied in by the same script, so update them there.
 
 ## Sharing links
 
