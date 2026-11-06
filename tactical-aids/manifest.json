@@ -1,0 +1,87 @@
+{
+  "generated": "2026-11-05T23:57:55.606Z",
+  "categories": [
+    {
+      "id": "engineering",
+      "label": "Engineering",
+      "files": [
+        {
+          "name": "Warp Guide",
+          "filename": "warp-guide.pdf",
+          "path": "pdfs/engineering/warp-guide.pdf",
+          "size": 611815,
+          "modified": "2026-11-05T23:53:32.000Z"
+        }
+      ]
+    },
+    {
+      "id": "general-info",
+      "label": "General Info",
+      "files": [
+        {
+          "name": "BC Resource Index",
+          "filename": "BC-Resource-Index.pdf",
+          "path": "pdfs/general-info/BC-Resource-Index.pdf",
+          "size": 127137,
+          "modified": "2026-11-05T23:53:32.000Z"
+        }
+      ]
+    },
+    {
+      "id": "identification",
+      "label": "Identification",
+      "files": [
+        {
+          "name": "Identification Guide",
+          "filename": "identification-guide.pdf",
+          "path": "pdfs/identification/identification-guide.pdf",
+          "size": 936375,
+          "modified": "2026-11-05T23:53:32.000Z"
+        }
+      ]
+    },
+    {
+      "id": "medical",
+      "label": "Medical",
+      "files": []
+    },
+    {
+      "id": "navigation",
+      "label": "Navigation",
+      "files": [
+        {
+          "name": "Navigation Guide",
+          "filename": "navigation-guide.pdf",
+          "path": "pdfs/navigation/navigation-guide.pdf",
+          "size": 1599386,
+          "modified": "2026-11-05T23:53:32.000Z"
+        }
+      ]
+    },
+    {
+      "id": "SHIP LAYOUTS",
+      "label": "SHIP LAYOUTS",
+      "files": [
+        {
+          "name": "HAVOCK LAYOUT",
+          "filename": "HAVOCK LAYOUT.pdf",
+          "path": "pdfs/SHIP LAYOUTS/HAVOCK LAYOUT.pdf",
+          "size": 330027,
+          "modified": "2026-11-05T23:53:32.000Z"
+        },
+        {
+          "name": "Takanami Ship Layout ",
+          "filename": "Takanami ship layout .pdf",
+          "path": "pdfs/SHIP LAYOUTS/Takanami ship layout .pdf",
+          "size": 364768,
+          "modified": "2026-11-05T23:53:32.000Z"
+        }
+      ]
+    },
+    {
+      "id": "weapons-systems",
+      "label": "Weapons Systems",
+      "files": []
+    }
+  ]
+}

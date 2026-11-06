@@ -1,0 +1,18 @@
+{
+  "name": "UCN Tactical Aids Archive",
+  "short_name": "Tactical Aids",
+  "description": "UCN field reference library — tactical aid PDFs grouped by category.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0a1420",
+  "theme_color": "#0a1420",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}

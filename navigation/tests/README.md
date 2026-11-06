@@ -1,0 +1,110 @@
+# Tests
+
+The tool is a single self-contained `index.html` with no build step. These
+suites drive it in a real browser through Playwright and are the only thing
+standing between a refactor and a silent regression.
+
+## Running them
+
+```
+npm install
+npx playwright install chromium
+npm test
+```
+
+Run one suite, or a few, by name fragment:
+
+```
+npm test iphone
+npm test contrast pdf
+node tests/iphone.test.js        # suites also run standalone
+```
+
+## Engines
+
+The tool is used on an iPhone, so **WebKit is the engine that matters** — it is
+the same family as Safari, and it is where the iOS-specific work lives: the
+`position:fixed` dialog scroll lock, `100dvh`, the blob-URL PDF open,
+`navigator.standalone`, and native date/time inputs.
+
+CI runs the whole suite on **both** Chromium and WebKit and requires both to
+pass. Locally, Chromium is the default because it is what most environments
+have to hand:
+
+```
+npm test                      # chromium
+UCN_BROWSER=webkit npm test   # webkit
+```
+
+A few checks depend on Chromium-only APIs — CDP `Page.getAppManifest` and
+`beforeinstallprompt`. They are reported as **skipped** on other engines rather
+than dropped, so a run never silently loses coverage. The iOS install wording
+is asserted on every engine.
+
+The `offline` suite guards on the **feature**, not the engine: it registers a
+service worker wherever `navigator.serviceWorker` exists and only skips on a
+build without it, so a headless engine that does support them is really tested
+rather than assumed incapable.
+
+WebKit runs service workers and passes the registration, control and caching
+checks. It cannot run the checks that need the network **off**: Playwright's
+WebKit offline emulation rejects any request a service worker fulfils, and
+[playwright#42775](https://github.com/microsoft/playwright/issues/42775) (open,
+targeted at 1.64) reports the same for a worker returning a literal response
+with no cache and no network. The suite measures that rather than taking it on
+trust — it registers a throwaway worker on its own origin that answers `/ping`
+with a literal response and checks whether the browser accepts it while
+offline — and skips the offline assertions only when the answer is no.
+
+**So the offline path is verified on Chromium in CI and on the device, not by
+the WebKit leg.** If that Playwright bug is fixed, the probe starts succeeding
+and those checks run on WebKit with no change here.
+
+If your environment ships a Chromium that Playwright did not install itself,
+point at it: `UCN_CHROMIUM=/path/to/chrome npm test`. Some sandboxes block
+`cdn.playwright.dev`, so only a pre-installed engine can run there.
+
+`npm run measure:iphone` prints the layout numbers behind the iPhone targets
+(header height, tab rows, where the first waypoint lands) without asserting
+anything — useful when changing mobile layout.
+
+## The suites
+
+| Suite | Guards |
+|---|---|
+| `behaviour` | Tabs, add/edit/delete, HTML escaping, storage v3, migration from the v0 bare-array and v1/v2 formats, modal accessibility, keyboard navigation, export/import |
+| `completion` | Completion dialog, per-category quick outcomes, cancel leaving the waypoint untouched, restore preserving the outcome, timing, history |
+| `iphone` | Layout targets on three viewports, 44px touch targets, 16px form controls, the add-form disclosure, sticky tab strip, iOS scroll lock, install metadata |
+| `mission-setup` | Mission fields, autosave, import adopting setup only when blank, escaping of imported text |
+| `operations` | The mission name combobox: every operation listed under its type, searching and filtering, keyboard navigation, choosing one filling in the mission type, freetext, unlisted values surviving a reload |
+| `ranks` | The rank combobox: the ladder and its order, matching in both directions ("lt cmdr" and "lieutenant commander" both find Lt Cmdr), the rank storing as written rather than as searched, freetext, and two pickers on one form staying independent |
+| `new-mission` | New Mission clearing the log and setup, the unbacked-up warning, Export-first, cancel leaving everything alone |
+| `data-safety` | Backup state derived from `changedAt`/`lastExportAt`, the export dot, install prompt and persistent-storage request |
+| `offline` | Service worker registration and control, the cached shell, reloading and logging with the network off, the PDF still generating, and a new deploy announcing itself without reloading the page |
+| `quick-reference` | The section accordion, its scoping away from the completion dialog, compass surviving the restructure |
+| `ship-icons` | Ship grid contents, `currentColor` inheritance, viewBox refit, Arrow scaling |
+| `pdf-export` | Report generates, filename slug, fonts embed rather than falling back |
+| `contrast` | Static: category colours meet 3:1 against the card, text meets 4.5:1, and each `--c-*` matches its `CATEGORIES[].hex` |
+
+## Conventions
+
+Suites are plain Node scripts sharing `lib/harness.js`. Each collects
+`ok.push([name, passed, detail])` and ends with `report(ok, errors)`, which
+prints and sets the exit code. `detail` is shown only when the check fails.
+
+Two things have caught me out and are worth remembering:
+
+- **Do not measure geometry inside collapsed or hidden UI.** `getBBox()`
+  returns zero, which looks exactly like broken artwork. Open the section
+  first — this is why `ship-icons` expands Ship Types before measuring.
+- **Prefer `page.evaluate(() => el.click())` when the assertion depends on
+  scroll position.** Playwright's `locator.click()` scrolls the target into
+  view first, which quietly destroys what you were trying to measure.
+
+- **Serve the tool with real content types when a check touches the page's own
+  network behaviour.** `harness.serve()` does; a one-line server that answers
+  everything as `text/html` makes the page's service worker registration fail
+  on MIME type, which shows up as a console error in an unrelated suite.
+
+Also note that expanded state is shared across tabs by design, so use
+`ensureOpen()` rather than clicking a row and assuming it opened.
