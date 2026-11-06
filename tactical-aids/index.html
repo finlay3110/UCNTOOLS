@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCN // Tactical Aids Archive</title>
+<meta name="description" content="UCN field reference library — tactical aid PDFs grouped by category.">
+<meta name="theme-color" content="#0a1420">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="UCN // Tactical Aids Archive">
+<meta property="og:description" content="UCN field reference library — tactical aid PDFs grouped by category.">
+<meta property="og:image" content="icon.svg">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="app.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Exo+2:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0a1420;
+    --navy:#0e1e2f;
+    --navy-panel:#132a40;
+    --navy-line:#22415c;
+    --orange:#e8823c;
+    --ink:#e9eef3;
+    --ink-dim:#8fa3b8;
+    --black:#04070a;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--navy-deep);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(34,65,92,0.25), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(232,130,60,0.06), transparent 55%);
+    color:var(--ink);
+    font-family:'Exo 2', sans-serif;
+    min-height:100vh;
+  }
+
+  /* ---- header ---- */
+  header{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-bottom:2px solid var(--navy-line);
+    padding:28px 32px 0;
+    position:sticky;
+    top:0;
+    z-index:20;
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  .logo-badge{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:2px solid var(--orange);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:radial-gradient(circle, rgba(232,130,60,0.15), transparent 70%);
+  }
+  .logo-badge svg{width:24px;height:24px;}
+
+  .brand-text h1{
+    font-family:'Orbitron', sans-serif;
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:2px;
+    margin:0;
+    color:var(--ink);
+  }
+  .brand-text p{
+    margin:2px 0 0;
+    font-size:11px;
+    letter-spacing:3px;
+    color:var(--orange);
+    text-transform:uppercase;
+    font-weight:600;
+  }
+
+  .classified-strip{
+    margin-left:auto;
+    background:var(--black);
+    border:1px solid var(--orange);
+    color:var(--orange);
+    font-family:'Orbitron', sans-serif;
+    font-size:10px;
+    letter-spacing:3px;
+    font-weight:600;
+    padding:5px 12px;
+    white-space:nowrap;
+  }
+
+  /* ---- tabs ---- */
+  .tabs{
+    max-width:1200px;
+    margin:22px auto 0;
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    padding-bottom:0;
+  }
+
+  .tab{
+    font-family:'Exo 2', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.5px;
+    color:var(--ink-dim);
+    background:var(--navy-panel);
+    border:1px solid var(--navy-line);
+    border-bottom:none;
+    border-radius:6px 6px 0 0;
+    padding:10px 18px;
+    cursor:pointer;
+    position:relative;
+    top:1px;
+    transition:color 0.15s ease, background 0.15s ease;
+  }
+  .tab:hover{ color:var(--ink); }
+  .tab.active{
+    color:var(--ink);
+    background:var(--navy-deep);
+    border-color:var(--navy-line);
+    box-shadow:inset 0 3px 0 var(--orange);
+  }
+  .tab .count{
+    color:var(--ink-dim);
+    font-size:11px;
+    margin-left:6px;
+  }
+  .tab.active .count{ color:var(--orange); }
+
+  /* ---- search ---- */
+  .toolbar{
+    max-width:1200px;
+    margin:0 auto;
+    padding:18px 0 22px;
+    border-bottom:1px solid var(--navy-line);
+  }
+  .search-wrap{
+    position:relative;
+    max-width:420px;
+  }
+  .search-wrap input{
+    width:100%;
+    background:var(--navy-panel);
+    border:1px solid var(--navy-line);
+    color:var(--ink);
+    font-family:'Exo 2', sans-serif;
+    font-size:14px;
+    padding:11px 14px 11px 38px;
+    border-radius:4px;
+    outline:none;
+  }
+  .search-wrap input:focus{ border-color:var(--orange); }
+  .search-wrap input::placeholder{ color:var(--ink-dim); }
+  .search-wrap svg{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    color:var(--ink-dim);
+  }
+
+  /* ---- main ---- */
+  main{
+    max-width:1200px;
+    margin:0 auto;
+    padding:28px 32px 80px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:16px;
+  }
+
+  .card{
+    background:var(--navy-panel);
+    border:1px solid var(--navy-line);
+    border-radius:6px;
+    padding:18px 16px 14px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition:border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover{
+    border-color:var(--orange);
+    transform:translateY(-2px);
+  }
+
+  .ribbon{
+    position:absolute;
+    top:10px;
+    right:-30px;
+    transform:rotate(45deg);
+    background:var(--black);
+    color:var(--orange);
+    font-family:'Orbitron', sans-serif;
+    font-size:8px;
+    font-weight:600;
+    letter-spacing:2px;
+    padding:2px 34px;
+    border-top:1px solid var(--orange);
+    border-bottom:1px solid var(--orange);
+  }
+
+  .card .cat-label{
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--orange);
+    font-weight:600;
+  }
+  .card h3{
+    margin:0;
+    font-size:15px;
+    font-weight:600;
+    line-height:1.35;
+    padding-right:28px;
+  }
+  .card .meta{
+    font-size:11px;
+    color:var(--ink-dim);
+    margin-top:auto;
+  }
+
+  .card-actions{
+    display:flex;
+    gap:8px;
+    margin-top:4px;
+  }
+  .btn{
+    flex:1;
+    text-align:center;
+    font-family:'Exo 2', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.5px;
+    padding:8px 0;
+    border-radius:4px;
+    text-decoration:none;
+    cursor:pointer;
+    border:1px solid var(--navy-line);
+    color:var(--ink);
+    background:transparent;
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  .btn:hover{ border-color:var(--orange); }
+  .btn.primary{
+    background:var(--orange);
+    border-color:var(--orange);
+    color:var(--black);
+  }
+  .btn.primary:hover{ background:#f19552; }
+
+  .empty-state{
+    grid-column:1 / -1;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-dim);
+  }
+  .empty-state strong{
+    display:block;
+    color:var(--ink);
+    font-family:'Orbitron', sans-serif;
+    letter-spacing:1px;
+    font-size:14px;
+    margin-bottom:6px;
+  }
+
+  /* ---- viewer modal ---- */
+  .viewer-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(4,7,10,0.85);
+    z-index:100;
+    padding:24px;
+  }
+  .viewer-overlay.open{ display:flex; flex-direction:column; }
+  .viewer-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    max-width:1000px;
+    width:100%;
+    margin:0 auto 12px;
+  }
+  .viewer-bar h4{
+    margin:0;
+    font-size:14px;
+    color:var(--ink);
+    font-weight:600;
+  }
+  .viewer-bar button{
+    background:var(--navy-panel);
+    border:1px solid var(--navy-line);
+    color:var(--ink);
+    font-family:'Exo 2', sans-serif;
+    font-size:13px;
+    padding:8px 16px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .viewer-bar button:hover{ border-color:var(--orange); }
+  .viewer-frame{
+    flex:1;
+    max-width:1000px;
+    width:100%;
+    margin:0 auto;
+    background:var(--black);
+    border:1px solid var(--navy-line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .viewer-frame iframe{
+    width:100%;
+    height:100%;
+    border:none;
+  }
+
+  footer{
+    text-align:center;
+    padding:20px;
+    font-size:11px;
+    color:var(--ink-dim);
+    letter-spacing:1px;
+  }
+
+  .visually-hidden{
+    position:absolute;
+    width:1px;
+    height:1px;
+    margin:-1px;
+    padding:0;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+    border:0;
+  }
+
+  /* Keyboard focus needs to be visible against the dark panels. */
+  .tab:focus-visible,
+  .btn:focus-visible,
+  .viewer-bar button:focus-visible,
+  .search-wrap input:focus-visible{
+    outline:2px solid var(--orange);
+    outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-row">
+    <div class="logo-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#e8823c" stroke-width="1.5" aria-hidden="true">
+        <path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <h1>TACTICAL AIDS ARCHIVE</h1>
+      <p>UCN Field Reference Library</p>
+    </div>
+    <div class="classified-strip">CLASSIFIED // UCN EYES ONLY</div>
+  </div>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Categories"></nav>
+</header>
+
+<div class="toolbar">
+  <div class="search-wrap" style="margin-left:32px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <label class="visually-hidden" for="search">Search tactical aids</label>
+    <input type="search" id="search" placeholder="Search tactical aids…" autocomplete="off">
+  </div>
+</div>
+
+<main>
+  <div class="grid" id="grid" role="tabpanel" aria-live="polite"></div>
+</main>
+
+<footer>UCN TACTICAL AIDS ARCHIVE — INTERNAL DISTRIBUTION ONLY</footer>
+
+<div class="viewer-overlay" id="viewerOverlay" role="dialog" aria-modal="true"
+     aria-labelledby="viewerTitle" aria-hidden="true">
+  <div class="viewer-bar">
+    <h4 id="viewerTitle"></h4>
+    <button id="viewerClose">Close ✕</button>
+  </div>
+  <div class="viewer-frame">
+    <iframe id="viewerFrame" src="" title="PDF viewer"></iframe>
+  </div>
+</div>
+
+<script>
+let manifest = { categories: [] };
+let activeTab = 'all';
+
+async function loadManifest() {
+  try {
+    const res = await fetch('manifest.json', { cache: 'no-store' });
+    manifest = await res.json();
+  } catch (e) {
+    manifest = { categories: [] };
+  }
+  applyUrl();
+}
+
+function allFiles() {
+  return manifest.categories.flatMap(cat =>
+    cat.files.map(f => ({ ...f, categoryId: cat.id, categoryLabel: cat.label }))
+  );
+}
+
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
+// Category and file names come straight from folder/filenames on disk, so they
+// can contain quotes, ampersands and angle brackets. Escape before interpolating.
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+}
+
+// Encode per segment so spaces, '#', '?' and '&' in filenames survive as a URL
+// while the '/' separators stay intact.
+function encodePath(path) {
+  return path.split('/').map(encodeURIComponent).join('/');
+}
+
+function tabMarkup(id, label, count) {
+  const selected = activeTab === id;
+  return `<button class="tab ${selected ? 'active' : ''}" role="tab" data-tab="${escapeHtml(id)}"` +
+    ` aria-selected="${selected}" tabindex="${selected ? '0' : '-1'}">` +
+    `${escapeHtml(label)} <span class="count">${count}</span></button>`;
+}
+
+function renderTabs() {
+  const tabsEl = document.getElementById('tabs');
+  let html = tabMarkup('all', 'All', allFiles().length);
+  for (const cat of manifest.categories) {
+    html += tabMarkup(cat.id, cat.label, cat.files.length);
+  }
+  tabsEl.innerHTML = html;
+
+  const tabs = [...tabsEl.querySelectorAll('.tab')];
+  tabs.forEach((btn, i) => {
+    btn.addEventListener('click', () => selectTab(btn.dataset.tab));
+    // Arrow-key movement is what makes a role="tablist" behave like one.
+    btn.addEventListener('keydown', (e) => {
+      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      const next = tabs[(i + step + tabs.length) % tabs.length];
+      selectTab(next.dataset.tab);
+      document.querySelector(`.tab[data-tab="${CSS.escape(next.dataset.tab)}"]`).focus();
+    });
+  });
+}
+
+function selectTab(id) {
+  activeTab = id;
+  renderTabs();
+  renderGrid();
+  syncUrl();
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const rawQuery = document.getElementById('search').value.trim();
+  const query = rawQuery.toLowerCase();
+
+  let files = activeTab === 'all'
+    ? allFiles()
+    : allFiles().filter(f => f.categoryId === activeTab);
+
+  if (query) {
+    files = files.filter(f =>
+      f.name.toLowerCase().includes(query) ||
+      f.categoryLabel.toLowerCase().includes(query)
+    );
+  }
+
+  if (files.length === 0) {
+    // A failed search and a genuinely empty category need different advice —
+    // telling a reader who mistyped to go add files to the repo is nonsense.
+    grid.innerHTML = query
+      ? `<div class="empty-state">
+           <strong>NO MATCHING RECORDS</strong>
+           Nothing matches “${escapeHtml(rawQuery)}”. Try a shorter search term, or clear it to see everything.
+         </div>`
+      : `<div class="empty-state">
+           <strong>CATEGORY EMPTY</strong>
+           No aids filed under this category yet.
+         </div>`;
+    return;
+  }
+
+  grid.innerHTML = files.map(f => {
+    const href = encodePath(f.path);
+    return `
+    <div class="card">
+      <div class="ribbon">FIELD USE</div>
+      <div class="cat-label">${escapeHtml(f.categoryLabel)}</div>
+      <h3>${escapeHtml(f.name)}</h3>
+      <div class="meta">${formatSize(f.size)}</div>
+      <div class="card-actions">
+        <button class="btn primary" data-path="${href}" data-name="${escapeHtml(f.name)}">View</button>
+        <a class="btn" href="${href}" download>Download</a>
+      </div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.btn.primary').forEach(btn => {
+    btn.addEventListener('click', () => openViewer(btn.dataset.path, btn.dataset.name));
+  });
+}
+
+// iOS/iPadOS Safari and most mobile browsers render a PDF in an iframe as a
+// blank frame, so those get the PDF in a new tab instead of the modal viewer.
+function supportsInlinePdf() {
+  const ua = navigator.userAgent;
+  const iOS = /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return !iOS && !/Android/.test(ua);
+}
+
+let lastFocused = null;
+let lastFocusedPath = null;
+
+// Closing can re-render the grid, which destroys the button that opened the
+// viewer — so remember its path and re-find the replacement if that happens.
+function restoreFocus() {
+  let target = lastFocused && document.contains(lastFocused) ? lastFocused : null;
+  if (!target && lastFocusedPath) {
+    target = document.querySelector(`.btn.primary[data-path="${CSS.escape(lastFocusedPath)}"]`);
+  }
+  if (target) target.focus();
+  lastFocused = null;
+  lastFocusedPath = null;
+}
+
+function openViewer(path, title, fromHistory) {
+  if (!supportsInlinePdf()) {
+    window.open(path, '_blank', 'noopener');
+    return;
+  }
+  const overlay = document.getElementById('viewerOverlay');
+  lastFocused = document.activeElement;
+  lastFocusedPath = lastFocused && lastFocused.dataset ? lastFocused.dataset.path || null : null;
+  document.getElementById('viewerFrame').src = path;
+  document.getElementById('viewerTitle').textContent = title;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.getElementById('viewerClose').focus();
+  // A history entry means the phone back button closes the viewer rather than
+  // navigating away from the archive entirely.
+  if (!fromHistory) history.pushState({ doc: path }, '', urlFor(path));
+}
+
+function closeViewer(fromHistory) {
+  const overlay = document.getElementById('viewerOverlay');
+  if (!overlay.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.getElementById('viewerFrame').src = '';
+  restoreFocus();
+  if (!fromHistory) history.pushState({}, '', urlFor(null));
+}
+
+// Keep Tab inside the dialog while it is open.
+function trapFocus(e) {
+  const overlay = document.getElementById('viewerOverlay');
+  if (e.key !== 'Tab' || !overlay.classList.contains('open')) return;
+  const focusable = overlay.querySelectorAll('button, iframe, [href], [tabindex]:not([tabindex="-1"])');
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+/* ---- URL state, so a category or a document can be linked to ---- */
+
+function urlFor(docPath) {
+  const params = new URLSearchParams();
+  if (activeTab !== 'all') params.set('cat', activeTab);
+  const q = document.getElementById('search').value.trim();
+  if (q) params.set('q', q);
+  if (docPath) params.set('doc', docPath);
+  const s = params.toString();
+  return s ? '#' + s : location.pathname + location.search;
+}
+
+function syncUrl() {
+  history.replaceState(history.state || {}, '', urlFor(null));
+}
+
+let rendered = false;
+
+function applyUrl() {
+  const params = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const cat = params.get('cat') || 'all';
+  const nextTab = manifest.categories.some(c => c.id === cat) ? cat : 'all';
+  const nextQuery = params.get('q') || '';
+  const searchEl = document.getElementById('search');
+
+  // Only re-render when something actually changed; a needless re-render would
+  // throw away the card the viewer should hand focus back to.
+  if (!rendered || nextTab !== activeTab || nextQuery !== searchEl.value) {
+    activeTab = nextTab;
+    searchEl.value = nextQuery;
+    renderTabs();
+    renderGrid();
+    rendered = true;
+  }
+
+  const doc = params.get('doc');
+  if (doc) {
+    const match = allFiles().find(f => encodePath(f.path) === doc);
+    if (match) {
+      openViewer(doc, match.name, true);
+      return;
+    }
+  }
+  closeViewer(true);
+}
+
+// Route close through history so the back button, Escape and the close button
+// all leave the same trail.
+function requestCloseViewer() {
+  if (history.state && history.state.doc) history.back();
+  else closeViewer(true);
+}
+
+document.getElementById('viewerClose').addEventListener('click', requestCloseViewer);
+document.getElementById('viewerOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'viewerOverlay') requestCloseViewer();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') requestCloseViewer();
+  trapFocus(e);
+});
+window.addEventListener('popstate', () => applyUrl());
+
+document.getElementById('search').addEventListener('input', () => {
+  renderGrid();
+  syncUrl();
+});
+
+if ('serviceWorker' in navigator &&
+    (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+loadManifest();
+</script>
+
+</body>
+</html>

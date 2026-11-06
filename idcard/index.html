@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCN ID Card Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script src="js/vendor/jspdf.umd.min.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ FORM ============ -->
+  <div class="form-panel">
+    <div class="brand">
+      <div class="brand-ring">
+        <img class="ucn-logo-img" src="assets/logo-white.png" alt="UCN logo">
+      </div>
+      <h1>UCN ID CARD<br>GENERATOR</h1>
+    </div>
+    <p class="eyebrow">United Confederation Navy · offline card builder</p>
+    <a class="portal-link" href="../">&larr; Back to Tool Portal</a>
+
+    <fieldset>
+      <legend>Officer details</legend>
+      <div class="field">
+        <label for="f-name">Name</label>
+        <input type="text" id="f-name" placeholder="LASTNAME, FIRSTNAME" maxlength="26">
+      </div>
+      <div class="field">
+        <label for="f-pronouns">Pronouns <span class="optional-tag">(optional)</span></label>
+        <select id="f-pronouns">
+          <option value="">— Select pronouns —</option>
+          <option value="HE/HIM">He/Him</option>
+          <option value="SHE/HER">She/Her</option>
+          <option value="THEY/THEM">They/Them</option>
+          <option value="HE/THEY">He/They</option>
+          <option value="SHE/THEY">She/They</option>
+          <option value="__other__">Other…</option>
+        </select>
+        <input type="text" id="f-pronouns-other" placeholder="Type your own pronouns" maxlength="14" style="margin-top:8px;display:none;">
+      </div>
+      <div class="field">
+        <label for="f-rank">Rank</label>
+        <select id="f-rank">
+          <option value="">— Select rank —</option>
+          <option value="CADET">Cadet</option>
+          <option value="ENSIGN">Ensign</option>
+          <option value="SUB LT">Sub Lt</option>
+          <option value="LIEUTENANT">Lieutenant</option>
+          <option value="LT CMDR">Lt Cmdr</option>
+          <option value="COMMANDER">Commander</option>
+          <option value="CAPTAIN">Captain</option>
+          <option value="COMMODORE">Commodore</option>
+          <option value="REAR ADMIRAL">Rear Admiral</option>
+          <option value="VICE ADMIRAL">Vice Admiral</option>
+          <option value="ADMIRAL">Admiral</option>
+          <option value="ADMIRAL OF THE FLEET">Admiral of the Fleet</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-ship">Ship</label>
+        <select id="f-ship">
+          <option value="">— Select ship —</option>
+          <option value="UCS TAKANAMI">UCS Takanami</option>
+          <option value="UCS HAVOCK">UCS Havock</option>
+          <option value="__other__">Other…</option>
+        </select>
+        <input type="text" id="f-ship-other" placeholder="Type your own ship" maxlength="24" style="margin-top:8px;display:none;">
+      </div>
+      <div class="field">
+        <label for="f-division">Division</label>
+        <select id="f-division">
+          <option value="">— Select division —</option>
+          <option value="COMMAND">Command</option>
+          <option value="SCIENCE">Science</option>
+          <option value="ENGINEERING">Engineering</option>
+          <option value="OPERATIONS">Operations</option>
+          <option value="__other__">Other…</option>
+        </select>
+        <input type="text" id="f-division-other" placeholder="Type your own division" maxlength="26" style="margin-top:8px;display:none;">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Assignment</legend>
+      <div class="field">
+        <label for="f-watch">Clearance level</label>
+        <select id="f-watch">
+          <option value="EMERALD">Emerald</option>
+          <option value="AMBER">Amber</option>
+          <option value="SCARLET">Scarlet</option>
+          <option value="OBSIDIAN">Obsidian</option>
+          <option value="GRAVIUM">Gravium</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-task">Task group</label>
+        <input type="text" id="f-task" placeholder="WARSPITE TASK GROUP" maxlength="30">
+      </div>
+      <div class="field">
+        <label for="f-id">ID number</label>
+        <div class="id-row">
+          <input type="text" id="f-id" placeholder="UCN-000-0000" maxlength="20" value="UCN-000-0000">
+          <button type="button" id="randomizeId" title="Generate a random ID">🎲</button>
+        </div>
+        <p class="hint" id="qr-length-hint" style="display:none;">Character limit lifted while QR code is selected.</p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Photo</legend>
+      <div class="photo-drop">
+        <div class="photo-drop-thumb" id="photoThumb">NO<br>PHOTO</div>
+        <div class="photo-drop-text">
+          Passport-style photo, kept on this device only.
+          <br><button type="button" class="photo-clear" id="clearPhoto" style="display:none;">Remove</button>
+        </div>
+        <button type="button" id="choosePhoto">Upload</button>
+        <input type="file" id="f-photo" accept="image/*">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Code type</legend>
+      <div class="seg">
+        <button type="button" id="codeBarcodeBtn" class="active">Barcode</button>
+        <button type="button" id="codeQrBtn">QR code</button>
+      </div>
+      <p class="hint">Encodes whatever's in the ID number field, and updates as you type.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Batch printing</legend>
+      <p class="hint" style="margin-top:0;">Save a card to send to someone else, load cards other people send you, and print everyone's cards together on one sheet to save paper.</p>
+      <div class="field">
+        <button type="button" id="exportCardBtn" class="wide-btn">Export this card as a file</button>
+      </div>
+      <div class="field">
+        <label for="importCardInput">Import card file(s)</label>
+        <input type="file" id="importCardInput" accept=".json,application/json" multiple style="display:none;">
+        <button type="button" id="importCardBtn" class="wide-btn">Choose files…</button>
+      </div>
+      <div class="field">
+        <button type="button" id="addToBatchBtn" class="wide-btn">+ Add current card to batch</button>
+      </div>
+      <div id="batchList" class="batch-list"></div>
+      <div class="field" id="batchActions" style="display:none;">
+        <button type="button" id="downloadBatchBtn" class="wide-btn primary">Download batch PDF</button>
+        <button type="button" id="clearBatchBtn" class="wide-btn danger">Clear batch</button>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- ============ PREVIEW ============ -->
+  <div class="preview-panel">
+    <p class="eyebrow">Live preview</p>
+
+    <div class="stage">
+      <div class="card" id="card">
+        <img class="card-watermark" aria-hidden="true" src="assets/watermark.png" alt="">
+        <div class="card-header">
+          <div class="card-header-navy">
+            <div class="logo-ring">
+              <img class="ucn-logo-img" src="assets/logo-white.png" alt="UCN logo">
+            </div>
+            <div class="wordmark">UNITED<br>CONFEDERATION<br>NAVY</div>
+          </div>
+          <div class="watch-band"><div class="watch-value" id="p-watch">EMERALD</div></div>
+        </div>
+
+        <div class="card-body">
+          <div class="photo-col">
+            <div class="photo-box" id="p-photo">CLICK TO<br>ADD PHOTO</div>
+            <div class="code-box">
+              <div class="code-render" id="p-codeRender"></div>
+              <div class="id-value" id="p-id">UCN-000-0000</div>
+            </div>
+          </div>
+          <div class="info-col">
+            <div class="info-row name"><span id="p-name">NAME</span><span class="pronoun-tag" id="p-pronouns"></span></div>
+            <div class="info-row rank" id="p-rank">RANK</div>
+            <div class="info-divider"></div>
+            <div class="info-row ship" id="p-ship">SHIP</div>
+            <div class="info-row position" id="p-division">DIVISION</div>
+            <div class="card-notice">This crew member is NOT a permanent member of crew.</div>
+          </div>
+        </div>
+
+        <div class="card-footer"><div class="footer-value" id="p-task">WARSPITE TASK GROUP</div></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="printA4Btn">Download PDF (A4, cut lines)</button>
+      <button id="printCardBtn">Download PDF (card size)</button>
+    </div>
+    <p class="note">Runs entirely in this browser tab — nothing you type or upload here is sent anywhere. "Download PDF" builds a true-to-size CR-80 card with cut marks, ready to print at 100% scale.</p>
+  </div>
+</div>
+
+<p class="page-credit">Designed by Lt Fin "Tetra"</p>
+<p class="page-disclaimer">
+  The UCN logo is the property of Bridge Command / The London Space Elevator Limited.
+  This is a fan-made project and is not approved by or affiliated with Bridge Command / The London Space Elevator Limited.
+</p>
+
+<script src="js/app.js"></script>
+</body>
+</html>

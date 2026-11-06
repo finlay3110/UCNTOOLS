@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCN Portal — United Confederation Navy</title>
+
+<!-- Add to Home Screen support -->
+<meta name="theme-color" content="#1B2A5E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UCN Portal">
+<link rel="apple-touch-icon" id="logoIcon" href="data:image/png;base64,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">
+<link id="faviconLink" rel="icon">
+<link id="manifestLink" rel="manifest">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Orbitron:wght@600;700;800;900&display=swap');
+
+  :root{
+    --navy:#1B2A5E;
+    --navy-deep:#0F1B40;
+    --orange:#DD7A2B;
+    --red:#B23A3A;
+    --white:#FFFFFF;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html,body{
+    min-height:100%;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(221,122,43,0.10), transparent 55%),
+      radial-gradient(ellipse at 100% 110%, rgba(221,122,43,0.08), transparent 50%),
+      linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 55%, #16224A 100%);
+    background-attachment:fixed;
+    font-family:'Exo 2', sans-serif;
+    color:var(--white);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+  }
+
+  /* faint starfield */
+  #stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.5;
+  }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:1100px;
+    padding:48px 24px 40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    margin-bottom:44px;
+    --enter-dur:0.7s;
+  }
+
+  .logo-ring{
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #24356E, #101B42 70%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+    box-shadow:0 0 0 1px rgba(221,122,43,0.35), 0 8px 30px rgba(0,0,0,0.45);
+  }
+  .logo-ring img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    position:relative;
+  }
+
+  .wordmark{
+    font-family:'Orbitron', sans-serif;
+    font-weight:800;
+    letter-spacing:0.14em;
+    font-size:clamp(22px, 4vw, 34px);
+    color:var(--white);
+    text-shadow:0 0 18px rgba(221,122,43,0.25);
+  }
+
+  .wordmark span{ color:var(--orange); }
+
+  .tagline{
+    margin-top:10px;
+    font-size:14px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:#B9C2E0;
+    font-weight:500;
+  }
+
+  .divider{
+    width:100%;
+    max-width:520px;
+    height:2px;
+    margin:26px 0 0;
+    background:linear-gradient(90deg, transparent, var(--orange), transparent);
+    opacity:0.7;
+    --enter-dur:0.7s;
+    --enter-delay:0.15s;
+  }
+
+  main{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:26px;
+  }
+
+  .card{
+    position:relative;
+    background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border:1px solid rgba(221,122,43,0.28);
+    border-radius:14px;
+    padding:28px 26px 26px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    backdrop-filter:blur(2px);
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:100%;
+    height:5px;
+    background:linear-gradient(90deg, var(--orange), var(--red));
+    /* rounded here rather than relying on the card's overflow:hidden, since
+       .dropdown-card needs overflow:visible */
+    border-radius:14px 14px 0 0;
+  }
+
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(221,122,43,0.5);
+    border-color:rgba(221,122,43,0.6);
+  }
+
+  .card-icon{
+    width:46px;
+    height:46px;
+    border-radius:10px;
+    background:linear-gradient(140deg, var(--orange), #B9601E);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:16px;
+    box-shadow:0 4px 14px rgba(221,122,43,0.35);
+  }
+
+  .card-icon svg{
+    width:24px;
+    height:24px;
+  }
+
+  .card-title{
+    font-family:'Orbitron', sans-serif;
+    font-weight:700;
+    font-size:16.5px;
+    letter-spacing:0.05em;
+    margin-bottom:8px;
+    color:var(--white);
+  }
+
+  .card-desc{
+    font-size:13.5px;
+    line-height:1.55;
+    color:#C7CEE8;
+    flex-grow:1;
+    margin-bottom:20px;
+  }
+
+  .card-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:11px 18px;
+    border-radius:8px;
+    background:transparent;
+    border:1.5px solid var(--orange);
+    color:var(--orange);
+    font-family:'Exo 2', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    text-decoration:none;
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+
+  .card-btn:hover{
+    background:var(--orange);
+    color:var(--navy-deep);
+  }
+
+  .card-tag{
+    position:absolute;
+    top:14px;
+    right:16px;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:#8B96C2;
+    font-weight:600;
+  }
+
+  /* Dropdown card: On Mission Tools */
+  .dropdown-card{
+    padding:0;
+    overflow:visible;
+  }
+
+  .tool-dropdown summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:28px 26px 26px;
+  }
+
+  .tool-dropdown summary::-webkit-details-marker{
+    display:none;
+  }
+
+  .dropdown-summary-inner{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .dropdown-summary-inner .card-icon{
+    margin-bottom:0;
+    flex-shrink:0;
+  }
+
+  .chevron{
+    width:20px;
+    height:20px;
+    flex-shrink:0;
+    transition:transform 0.25s ease;
+  }
+
+  .tool-dropdown[open] .chevron{
+    transform:rotate(180deg);
+  }
+
+  .dropdown-content{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding:0 26px 26px;
+  }
+
+  .subtool-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 16px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(221,122,43,0.22);
+    text-decoration:none;
+    transition:background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .subtool-item:hover{
+    background:rgba(221,122,43,0.08);
+    border-color:rgba(221,122,43,0.55);
+    transform:translateX(2px);
+  }
+
+  .subtool-number{
+    font-family:'Orbitron', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    color:rgba(221,122,43,0.55);
+    flex-shrink:0;
+    width:22px;
+  }
+
+  .subtool-icon{
+    width:36px;
+    height:36px;
+    border-radius:8px;
+    background:linear-gradient(140deg, var(--orange), #B9601E);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+
+  .subtool-icon svg{
+    width:18px;
+    height:18px;
+  }
+
+  .subtool-text{
+    flex-grow:1;
+    min-width:0;
+  }
+
+  .subtool-title{
+    font-family:'Exo 2', sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--white);
+    margin-bottom:2px;
+  }
+
+  .subtool-desc{
+    font-size:11.5px;
+    line-height:1.4;
+    color:#C7CEE8;
+  }
+
+  .subtool-item .status-row{
+    margin-top:0;
+    flex-shrink:0;
+    white-space:nowrap;
+  }
+
+  @media (max-width:560px){
+    .subtool-item{
+      flex-wrap:wrap;
+    }
+    .subtool-item .status-row{
+      width:100%;
+      padding-left:50px;
+    }
+  }
+
+  .status-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    font-size:10.5px;
+    letter-spacing:0.04em;
+    color:#8B96C2;
+  }
+
+  .status-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#8C949E;
+    flex-shrink:0;
+    box-shadow:0 0 0 rgba(0,0,0,0);
+    transition:background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .status-dot.checking{
+    background:#8C949E;
+    animation:pulse 1.2s ease-in-out infinite;
+  }
+
+  .status-dot.up{
+    background:#1F8A55;
+    box-shadow:0 0 8px rgba(31,138,85,0.7);
+  }
+
+  .status-dot.down{
+    background:#C41E3A;
+    box-shadow:0 0 8px rgba(196,30,58,0.7);
+  }
+
+  /* Answered too slowly to judge — not the same claim as "down". */
+  .status-dot.slow{
+    background:#C8862B;
+    box-shadow:0 0 8px rgba(200,134,43,0.7);
+  }
+
+  /* Not probed at all, e.g. the browser itself is offline. */
+  .status-dot.unknown{
+    background:#8C949E;
+  }
+
+  @keyframes pulse{
+    0%, 100%{ opacity:0.4; }
+    50%{ opacity:1; }
+  }
+
+  /* Entrance animation */
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* Timing comes from --enter-dur / --enter-delay, which each element sets in
+     its own rule, so nothing needs a second block just to be animated. */
+  header, .divider, .card, .official-card, .section-label, footer{
+    opacity:0;
+    animation:fadeInUp var(--enter-dur, 0.6s) ease var(--enter-delay, 0s) forwards;
+  }
+
+  main .card:nth-of-type(1){ --enter-delay:0.25s; }
+  main .card:nth-of-type(2){ --enter-delay:0.35s; }
+  main .card:nth-of-type(3){ --enter-delay:0.45s; }
+  main .card:nth-of-type(4){ --enter-delay:0.55s; }
+  main .card:nth-of-type(5){ --enter-delay:0.65s; }
+
+  .official-row .official-card:nth-of-type(1){ --enter-delay:0.85s; }
+  .official-row .official-card:nth-of-type(2){ --enter-delay:0.95s; }
+
+  @media (prefers-reduced-motion: reduce){
+    header, .divider, .card, .official-card, .section-label, footer{
+      animation:none;
+      opacity:1;
+      transform:none;
+    }
+  }
+
+  footer{
+    margin-top:44px;
+    text-align:center;
+    font-size:11.5px;
+    /* 5.53:1 on the lightest point of the background gradient (#1B2A5E). */
+    color:#9AA4C8;
+    line-height:1.6;
+    max-width:560px;
+    --enter-delay:1.05s;
+  }
+
+  footer strong{ color:#A6AFD6; }
+
+  /* Dimmer than the footer body, but still 4.61:1. */
+  .version-line{
+    margin-top:14px;
+    color:#8C95B6;
+    font-size:10.5px;
+    letter-spacing:0.04em;
+  }
+
+  /* Official links section */
+  .section-label{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:46px 0 22px;
+    color:#8B96C2;
+    font-family:'Orbitron', sans-serif;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    --enter-delay:0.75s;
+  }
+  .section-label::before,
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:rgba(139,150,194,0.3);
+  }
+
+  .official-row{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:22px;
+  }
+
+  .official-card{
+    position:relative;
+    background:linear-gradient(160deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border:1px solid rgba(140,148,158,0.35);
+    border-radius:14px;
+    padding:22px 24px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    text-decoration:none;
+    transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .official-card:hover{
+    transform:translateY(-3px);
+    border-color:rgba(255,255,255,0.5);
+    box-shadow:0 12px 28px rgba(0,0,0,0.35);
+  }
+
+  .official-icon{
+    width:42px;
+    height:42px;
+    flex-shrink:0;
+    border-radius:10px;
+    background:linear-gradient(140deg, #4FA8C9, #1C3A52);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .official-icon svg{
+    width:20px;
+    height:20px;
+  }
+
+  .official-text{ flex-grow:1; }
+
+  .official-title{
+    font-family:'Exo 2', sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    color:var(--white);
+    margin-bottom:3px;
+  }
+
+  .official-sub{
+    font-size:12px;
+    color:#B9C2E0;
+  }
+
+  .official-badge{
+    font-size:9.5px;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:#4FA8C9;
+    border:1px solid rgba(79,168,201,0.5);
+    border-radius:5px;
+    padding:2px 7px;
+    flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="wrap">
+  <header>
+    <div class="logo-ring">
+      <img id="logoImg" alt="UCN logo">
+    </div>
+    <h1 class="wordmark">UNITED CONFEDERATION <span>NAVY</span></h1>
+    <div class="tagline">Fleet Digital Access Portal</div>
+    <div class="divider"></div>
+  </header>
+
+  <main>
+
+    <div class="card dropdown-card" style="grid-column: 1 / -1;">
+      <details class="tool-dropdown">
+        <summary>
+          <div class="dropdown-summary-inner">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="3.5" width="16" height="5" rx="1.2" stroke="white" stroke-width="1.6"/>
+                <rect x="4" y="9.5" width="16" height="5" rx="1.2" stroke="white" stroke-width="1.6"/>
+                <rect x="4" y="15.5" width="16" height="5" rx="1.2" stroke="white" stroke-width="1.6"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">MISSION TOOLS</h2>
+              <div class="card-desc" style="margin-bottom:0;">Reference tools for use during an active mission.</div>
+            </div>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" stroke="#8B96C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+
+        <div class="dropdown-content">
+
+          <a class="subtool-item" href="mission-companion/" target="_blank" rel="noopener">
+            <div class="subtool-number">01</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="2" stroke="white" stroke-width="1.6"/>
+                <path d="M12 4v2.2M12 17.8V20M4 12h2.2M17.8 12H20" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M7 7l1.5 1.5M17 7l-1.5 1.5M7 17l1.5-1.5M17 17l-1.5-1.5" stroke="white" stroke-width="1.4" stroke-linecap="round" opacity="0.65"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Mission Companion</h3>
+              <div class="subtool-desc">In-bridge reference companion for active missions — procedures, guides, and operational tools.</div>
+            </div>
+            <div class="status-row" data-status-url="mission-companion/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+          <a class="subtool-item" href="engineering/" target="_blank" rel="noopener">
+            <div class="subtool-number">02</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.7 6.3a3.5 3.5 0 0 0-4.9 4l-6.3 6.3 2.5 2.5 6.3-6.3a3.5 3.5 0 0 0 4-4.9l-2.2 2.2-2-.5-.5-2 2.1-2.2z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Engineering Reference</h3>
+              <div class="subtool-desc">Power, thermal, warp, and damage control reference tools for engineering watch.</div>
+            </div>
+            <div class="status-row" data-status-url="engineering/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+          <a class="subtool-item" href="navigation/" target="_blank" rel="noopener">
+            <div class="subtool-number">03</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="1.5"/>
+                <path d="M15.5 8.5l-2.2 5.2-5.2 2.2 2.2-5.2 5.2-2.2z" fill="white"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Nav Reference</h3>
+              <div class="subtool-desc">Navigation and radar reference tool for plotting and interpreting bridge instruments.</div>
+            </div>
+            <div class="status-row" data-status-url="navigation/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+          <a class="subtool-item" href="commslog/" target="_blank" rel="noopener">
+            <div class="subtool-number">04</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 5.5h16a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M7 9.5h10M7 13h6" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Comms Log</h3>
+              <div class="subtool-desc">Log and reference bridge communications during a mission.</div>
+            </div>
+            <div class="status-row" data-status-url="commslog/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+          <a class="subtool-item" href="generallog/" target="_blank" rel="noopener">
+            <div class="subtool-number">05</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4.5" y="3.5" width="15" height="17" rx="1.5" stroke="white" stroke-width="1.5"/>
+                <path d="M8.5 3.5v17" stroke="white" stroke-width="1.4" opacity="0.65"/>
+                <path d="M11.5 8h5M11.5 12h5M11.5 16h3" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">General Log</h3>
+              <div class="subtool-desc">Keep your own mission log from any station you're assigned to.</div>
+            </div>
+            <div class="status-row" data-status-url="generallog/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+          <a class="subtool-item" href="tactical-aids/" target="_blank" rel="noopener">
+            <div class="subtool-number">06</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.5 3.5h7l4 4v12a1 1 0 0 1-1 1h-10a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M13.5 3.5v4h4" stroke="white" stroke-width="1.4" stroke-linejoin="round" opacity="0.65"/>
+                <path d="M8.5 12h7M8.5 15.5h5" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Tactical Aids Archive</h3>
+              <div class="subtool-desc">Searchable library of tactical aid PDFs — navigation, engineering, identification, ship layouts, and more.</div>
+            </div>
+            <div class="status-row" data-status-url="tactical-aids/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+        </div>
+      </details>
+    </div>
+
+    <div class="card dropdown-card" style="grid-column: 1 / -1;">
+      <details class="tool-dropdown">
+        <summary>
+          <div class="dropdown-summary-inner">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.5 6.5h10v11a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-11z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M15.5 9h2.5a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2.5" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M5.5 10h10" stroke="white" stroke-width="1.4" opacity="0.65"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">MESS TOOLS</h2>
+              <div class="card-desc" style="margin-bottom:0;">Tools for the mess deck, off watch.</div>
+            </div>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" stroke="#8B96C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+
+        <div class="dropdown-content">
+
+          <a class="subtool-item" href="songbook/" target="_blank" rel="noopener">
+            <div class="subtool-number">01</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="5.5" r="1.8" stroke="white" stroke-width="1.5"/>
+                <path d="M12 7.3V18M7 10h10" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M5 13c0 3 3 5.5 7 6 4-0.5 7-3 7-6" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Shanty Songbook</h3>
+              <div class="subtool-desc">The full digital songbook — searchable lyrics, favourites, chorus highlighting, and offline-ready access for every watch.</div>
+            </div>
+            <div class="status-row" data-status-url="songbook/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+          <a class="subtool-item" href="https://ucnmesstracker.netlify.app/" target="_blank" rel="noopener">
+            <div class="subtool-number">02</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 4.5h10l-1 14a1.5 1.5 0 0 1-1.5 1.4h-5A1.5 1.5 0 0 1 8 18.5l-1-14z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M7.4 10h9.2" stroke="white" stroke-width="1.4" opacity="0.65"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Mess Drink Tracker</h3>
+              <div class="subtool-desc">Keep a running tally of drinks on the mess deck.</div>
+            </div>
+            <div class="status-row" data-status-url="https://ucnmesstracker.netlify.app/">
+              <div class="status-dot checking"></div>
+              <span class="status-text">Checking…</span>
+            </div>
+          </a>
+
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Personnel</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="5" width="19" height="14" rx="2" stroke="white" stroke-width="1.6"/>
+          <circle cx="8" cy="12" r="2.1" stroke="white" stroke-width="1.5"/>
+          <path d="M13 10h6M13 14h4" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="card-title">ID CARD GENERATOR</h2>
+      <div class="card-desc">
+        Build and print a fleet-standard crew ID card — rank, division, clearance level, photo, and barcode or QR, formatted to true CR-80 size.
+      </div>
+      <a class="card-btn" href="idcard/" target="_blank" rel="noopener">Open Tool →</a>
+      <div class="status-row" data-status-url="idcard/">
+        <div class="status-dot checking"></div>
+        <span class="status-text">Checking status…</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Operations</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 14l1.5 5.5c.2.7 1 1.2 1.8 1H16.7c.8 0 1.6-.5 1.8-1.2L20 14" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 14V6.5c0-.6.4-1 1-1h2v3M12 14V4.5M15 14V8.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M4 14h16" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="card-title">SHIP SEARCH</h2>
+      <div class="card-desc">
+        Look up which ship — UCS Havock or UCS Takanami — is running at a given date and time, or view the full day's timetable.
+      </div>
+      <a class="card-btn" href="shipsearch/" target="_blank" rel="noopener">Open Tool →</a>
+      <div class="status-row" data-status-url="shipsearch/">
+        <div class="status-dot checking"></div>
+        <span class="status-text">Checking status…</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Records</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 3.5V20h16.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8.5 20v-6M13 20v-9.5M17.5 20v-4.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="card-title">MISSION STATS</h2>
+      <div class="card-desc">
+        Import a CSV of your deployments from the Bridge Command portal and track your mission history.
+      </div>
+      <a class="card-btn" href="missionstats/" target="_blank" rel="noopener">Open Tool →</a>
+      <div class="status-row" data-status-url="missionstats/">
+        <div class="status-dot checking"></div>
+        <span class="status-text">Checking status…</span>
+      </div>
+    </div>
+
+  </main>
+
+  <h2 class="section-label">Official Links</h2>
+
+  <div class="official-row">
+
+    <a class="official-card" href="https://bridgecommand.space" target="_blank" rel="noopener">
+      <div class="official-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+          <circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="1.5"/>
+          <path d="M3.5 12h17M12 3.5c2.5 2.3 3.8 5.3 3.8 8.5s-1.3 6.2-3.8 8.5c-2.5-2.3-3.8-5.3-3.8-8.5S9.5 5.8 12 3.5z" stroke="white" stroke-width="1.4"/>
+        </svg>
+      </div>
+      <div class="official-text">
+        <h3 class="official-title">Bridge Command Website</h3>
+        <div class="official-sub">bridgecommand.space</div>
+      </div>
+      <div class="official-badge">Official</div>
+    </a>
+
+    <a class="official-card" href="https://discord.gg/98efv2Tf49" target="_blank" rel="noopener">
+      <div class="official-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+          <path d="M4 5.5C6 4.5 8.2 4 12 4s6 0.5 8 1.5c1.2 3 1.8 6.5 1.6 10.3-2 1.5-4 2.3-6 2.7l-.8-1.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 5.5c-1.2 3-1.8 6.5-1.6 10.3 2 1.5 4 2.3 6 2.7l.8-1.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="9" cy="13" rx="1.4" ry="1.6" fill="white"/>
+          <ellipse cx="15" cy="13" rx="1.4" ry="1.6" fill="white"/>
+        </svg>
+      </div>
+      <div class="official-text">
+        <h3 class="official-title">Bridge Command Discord</h3>
+        <div class="official-sub">Join the community server</div>
+      </div>
+      <div class="official-badge">Official</div>
+    </a>
+
+  </div>
+
+  <footer>
+    <strong>UCN Fleet Digital Suite</strong><br>
+    The eleven tools above are fan-made projects and are not approved by or affiliated with Bridge Command / The London Space Elevator Limited.<br>
+    The Official Links section points to Bridge Command's own website and Discord.
+    <div class="version-line">UCN Portal v1.1 — 17 July 2026</div>
+  </footer>
+</div>
+
+<script>
+  // ---- Subtle starfield ----
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // Positions are normalised to 0..1 and multiplied up at draw time, so a
+  // resize re-lays the field out across the new viewport instead of leaving it
+  // clumped in the old one's top-left corner. Keeping one fixed pool and
+  // varying how much of it is drawn also means a resize never reshuffles the
+  // stars that were already on screen — which matters on mobile, where the
+  // address bar collapsing fires a resize mid-scroll.
+  const STAR_POOL = 260;
+  const stars = Array.from({length: STAR_POOL}, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random() * 0.6 + 0.15,
+    tw: Math.random() * 0.02 + 0.005,
+    dir: Math.random() > 0.5 ? 1 : -1
+  }));
+
+  let viewW = 0, viewH = 0, visible = 0, frame = null;
+
+  function animating(){ return frame !== null; }
+
+  function resize(){
+    viewW = window.innerWidth;
+    viewH = window.innerHeight;
+    // Back the canvas with real device pixels so the stars are not soft on
+    // high-DPI screens, then scale the context so drawing stays in CSS pixels.
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = Math.round(viewW * dpr);
+    canvas.height = Math.round(viewH * dpr);
+    canvas.style.width  = viewW + 'px';
+    canvas.style.height = viewH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Hold density roughly constant instead of a fixed count that thins out on
+    // a large monitor and crowds a phone. /9000 keeps a typical desktop at the
+    // original 110 or so.
+    visible = Math.max(40, Math.min(STAR_POOL, Math.round(viewW * viewH / 9000)));
+    // While animating, the running loop picks the new size up on its own.
+    if(!animating()) render(false);
+  }
+
+  function render(animate){
+    ctx.clearRect(0, 0, viewW, viewH);
+    for(let i = 0; i < visible; i++){
+      const s = stars[i];
+      if(animate){
+        s.a += s.tw * s.dir;
+        if(s.a > 0.75 || s.a < 0.1) s.dir *= -1;
+      }
+      ctx.beginPath();
+      ctx.arc(s.x * viewW, s.y * viewH, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+      ctx.fill();
+    }
+  }
+
+  function loop(){
+    render(true);
+    frame = requestAnimationFrame(loop);
+  }
+
+  // The CSS already drops the entrance animations under reduced motion; the
+  // twinkle loop has to opt out in script, and react if the preference is
+  // toggled while the page is open.
+  function applyMotionPreference(){
+    if(reduceMotion.matches){
+      if(frame !== null){ cancelAnimationFrame(frame); frame = null; }
+      render(false);
+    }else if(frame === null){
+      loop();
+    }
+  }
+
+  resize();
+  applyMotionPreference();
+  window.addEventListener('resize', resize);
+  if(reduceMotion.addEventListener){
+    reduceMotion.addEventListener('change', applyMotionPreference);
+  }else{
+    reduceMotion.addListener(applyMotionPreference);   // Safari < 14
+  }
+
+  // ---- Logo bitmap: stored once on the apple-touch-icon, reused everywhere ----
+  const logoHref = document.getElementById('logoIcon').getAttribute('href');
+  document.getElementById('faviconLink').setAttribute('href', logoHref);
+  document.getElementById('logoImg').setAttribute('src', logoHref);
+
+  // ---- Add to Home Screen: inline manifest (Android/Chrome) ----
+  // start_url must be absolute: a blob: manifest URL is not a usable base for
+  // resolving relative paths. sizes must match the real bitmap or Chrome drops
+  // the icon.
+  const manifest = {
+    name: "UCN Portal",
+    short_name: "UCN Portal",
+    start_url: location.origin + location.pathname,
+    display: "standalone",
+    background_color: "#0F1B40",
+    theme_color: "#1B2A5E",
+    icons: [{ src: logoHref, sizes: "847x847", type: "image/png" }]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+  document.getElementById('manifestLink').setAttribute('href', URL.createObjectURL(manifestBlob));
+
+  // ---- Offline shell for the installed app ----
+  // Without this, "Add to Home Screen" produces an app that shows nothing at
+  // all when opened offline. Registration is best effort: a service worker
+  // needs a secure context and a same-origin script file, so this quietly does
+  // nothing when the page is opened over file:// or plain http.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+
+  // ---- Reachability check for each tool ----
+  // These tools are cross-origin and send no CORS headers, so a no-cors fetch
+  // is the only probe available to us and its response is opaque: it tells us
+  // the host answered, not that it answered with a 200. Say "Reachable" rather
+  // than "Online" so the label matches what was actually measured, and keep a
+  // timeout visually distinct from an outright failure so that a slow-but-alive
+  // site is not reported as down.
+  const PROBE_TIMEOUT_MS = 8000;
+
+  function setStatus(row, state, label, detail){
+    row.querySelector('.status-dot').className = 'status-dot ' + state;
+    row.querySelector('.status-text').textContent = label;
+    row.title = detail;
+  }
+
+  async function checkStatus(row){
+    const url = row.getAttribute('data-status-url');
+
+    // Without a connection every probe would fail, which would paint all seven
+    // tools red and blame them for the browser's own state.
+    if(navigator.onLine === false){
+      setStatus(row, 'unknown', 'No connection',
+        'This browser is offline, so ' + url + ' could not be probed.');
+      return;
+    }
+
+    setStatus(row, 'checking', row.dataset.checkingLabel, 'Probing ' + url + '…');
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
+    try{
+      await fetch(url, { mode:'no-cors', cache:'no-store', signal:controller.signal });
+      setStatus(row, 'up', 'Reachable',
+        url + ' answered. The response is opaque, so this confirms the host '
+        + 'responded — not that the tool itself loaded correctly.');
+    }catch(err){
+      if(controller.signal.aborted){
+        setStatus(row, 'slow', 'No response',
+          url + ' did not answer within ' + (PROBE_TIMEOUT_MS / 1000)
+          + ' seconds. It may be slow rather than down.');
+      }else{
+        setStatus(row, 'down', 'Unreachable',
+          url + ' could not be reached.');
+      }
+    }finally{
+      clearTimeout(timer);
+    }
+  }
+
+  const statusRows = Array.from(document.querySelectorAll('.status-row'));
+  statusRows.forEach(row => {
+    // Announce the result, not every intermediate "Checking…" repaint.
+    row.setAttribute('role', 'status');
+    row.setAttribute('aria-live', 'polite');
+    // Cards and sub-tool rows use slightly different wording while checking.
+    row.dataset.checkingLabel = row.querySelector('.status-text').textContent;
+    checkStatus(row);
+  });
+
+  // Re-probe when connectivity changes rather than leaving a stale verdict.
+  window.addEventListener('online',  () => statusRows.forEach(r => checkStatus(r)));
+  window.addEventListener('offline', () => statusRows.forEach(r => checkStatus(r)));
+</script>
+
+
+</body>
+</html>

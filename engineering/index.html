@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Quick-reference tool for UCN engineering officers: power management, thermal limits, warp setups and manual damage control.">
+<title>UCN Engineering Reference Tool</title>
+<meta name="theme-color" content="#0E1626">
+<link rel="icon" href="assets/ucn-logo-white.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="hdr">
+    <div class="hdr-brand">
+      <div class="brand-ring">
+        <img src="assets/ucn-logo-white.png" alt="UCN logo" class="brand-ring-img">
+      </div>
+      <div class="hdr-titles">
+        <p class="eyebrow">United Confederation Navy</p>
+        <h1>Engineering Reference Tool</h1>
+      </div>
+    </div>
+    <a class="pill-btn" href="../">&larr; Back to Tool Portal</a>
+  </header>
+
+  <!-- ============ STORAGE HEALTH BANNER ============ -->
+  <!-- In the page flow rather than a fixed toast, and outside .panels, so it
+       is visible no matter which tab is open - the whole point is that saving
+       can fail while the user is on the Log tab, which is where they spend
+       most of a mission, and a warning buried on the Setup tab is as good as
+       no warning at all. -->
+  <div id="storageBanner" class="storage-banner" role="alert" hidden>
+    <p id="storageBannerText"></p>
+    <div class="storage-banner-actions">
+      <button type="button" id="storageBannerExport" class="pill-btn solid sm">Export JSON now</button>
+      <button type="button" id="storageBannerReload" class="ghost-btn sm" hidden>Reload this tab</button>
+      <button type="button" id="storageBannerDismiss" class="mini-btn ghost" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+
+  <!-- ============ TABS (desktop/tablet, top) ============ -->
+  <!-- data-module marks tabs that Setup shows or hides. Untagged tabs are
+       always available. -->
+  <nav class="tabs" role="tablist" aria-label="Reference sections">
+    <button class="tab-btn active" id="tab-setup" data-tab="setup" role="tab" aria-selected="true" aria-controls="panel-setup" tabindex="0">Setup</button>
+    <button class="tab-btn" id="tab-log" data-tab="log" role="tab" aria-selected="false" aria-controls="panel-log" tabindex="-1">Action Log</button>
+    <button class="tab-btn" id="tab-power" data-tab="power" data-module="power" role="tab" aria-selected="false" aria-controls="panel-power" tabindex="-1">Power Management</button>
+    <button class="tab-btn" id="tab-thermal" data-tab="thermal" data-module="power" role="tab" aria-selected="false" aria-controls="panel-thermal" tabindex="-1">Thermal &amp; Power Guide</button>
+    <button class="tab-btn" id="tab-warp" data-tab="warp" data-module="power" role="tab" aria-selected="false" aria-controls="panel-warp" tabindex="-1">Warp Guide</button>
+    <button class="tab-btn" id="tab-damage" data-tab="damage" data-module="damage" role="tab" aria-selected="false" aria-controls="panel-damage" tabindex="-1">Damage Control</button>
+  </nav>
+
+  <!-- ============ TABS (phone, fixed bottom bar) ============ -->
+  <nav class="bottom-tabs" role="tablist" aria-label="Reference sections">
+    <button class="bottom-tab-btn active" data-tab="setup" role="tab" aria-selected="true" aria-controls="panel-setup" tabindex="0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg>
+      <span>Setup</span>
+    </button>
+    <button class="bottom-tab-btn" data-tab="log" role="tab" aria-selected="false" aria-controls="panel-log" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6a1 1 0 0 1 1 1v1H8V4a1 1 0 0 1 1-1z"/><path d="M16 5h2a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h2"/><path d="M9 11h6M9 15h4"/></svg>
+      <span>Log</span>
+    </button>
+    <button class="bottom-tab-btn" data-tab="power" data-module="power" role="tab" aria-selected="false" aria-controls="panel-power" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+      <span>Power</span>
+    </button>
+    <button class="bottom-tab-btn" data-tab="thermal" data-module="power" role="tab" aria-selected="false" aria-controls="panel-thermal" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4a2 2 0 0 0-4 0v10.54a4 4 0 1 0 4 0V4z"/><path d="M12 15v-5"/></svg>
+      <span>Thermal</span>
+    </button>
+    <button class="bottom-tab-btn" data-tab="warp" data-module="power" role="tab" aria-selected="false" aria-controls="panel-warp" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11l4.5-2.5z"/></svg>
+      <span>Warp</span>
+    </button>
+    <button class="bottom-tab-btn" data-tab="damage" data-module="damage" role="tab" aria-selected="false" aria-controls="panel-damage" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3-3a6 6 0 0 1-8 8l-6.5 6.5a2.1 2.1 0 0 1-3-3L9.7 11a6 6 0 0 1 8-8l-3 3z"/></svg>
+      <span>Damage</span>
+    </button>
+  </nav>
+
+  <main class="panels">
+
+    <!-- ======== TAB: SETUP ======== -->
+    <section class="panel active" id="panel-setup" role="tabpanel" aria-labelledby="tab-setup" tabindex="0">
+      <h2>Mission Setup</h2>
+      <p class="panel-sub">Identify the watch and choose which sections you need. Everything here is saved on this device only, and stays until you clear it.</p>
+
+      <form id="setupForm" novalidate>
+        <div class="field-grid">
+          <div class="field">
+            <label for="opName">Name</label>
+            <input type="text" id="opName" name="opName" autocomplete="name" placeholder="e.g. Fin">
+          </div>
+          <div class="field">
+            <label for="opRank">Rank</label>
+            <!-- A searchable dropdown rather than a plain <select>: clicking in
+                 shows the full list, typing filters it down, but (unlike Mission
+                 Name) what ends up in the field is still locked to that list -
+                 see the rank combobox logic in mission.js. -->
+            <div class="combobox" id="opRankBox">
+              <input type="text" id="opRank" name="opRank" role="combobox" aria-expanded="false" aria-controls="opRankListbox" aria-autocomplete="list" autocomplete="off" placeholder="e.g. Commander">
+              <ul class="combobox-list" id="opRankListbox" role="listbox" aria-label="Rank" hidden></ul>
+            </div>
+          </div>
+          <div class="field">
+            <label for="missionStart">Date and time</label>
+            <div class="field-row">
+              <input type="datetime-local" id="missionStart" name="missionStart">
+              <button type="button" id="nowBtn" class="ghost-btn">Now</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="missionName">Mission name</label>
+            <!-- The datalist offers known operations but never restricts input -
+                 anything typed that isn't on the list is just an ordinary free-text
+                 mission name. autocomplete="off" so the browser's own form-fill
+                 memory doesn't compete with the datalist suggestions. -->
+            <input type="text" id="missionName" name="missionName" list="operationNames" autocomplete="off" placeholder="e.g. Kestrel Relief, or a listed operation">
+            <datalist id="operationNames"></datalist>
+            <div class="op-hint" id="operationHint" hidden>
+              <span id="operationHintText"></span>
+              <button type="button" id="operationHintApply" class="mini-btn" hidden></button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="missionType">Mission type</label>
+            <select id="missionType" name="missionType">
+              <option value="">Not set</option>
+              <option value="Frontline">Frontline</option>
+              <option value="Diplomacy">Diplomacy</option>
+              <option value="Exploration">Exploration</option>
+              <option value="Intrigue">Intrigue</option>
+              <option value="Military">Military</option>
+              <option value="Campaign">Campaign</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="setupShip">Ship</label>
+            <select id="setupShip" name="setupShip">
+              <option value="havock">UCS Havock</option>
+              <option value="takanami">UCS Takanami</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="modules">
+          <legend>Sections in use</legend>
+          <p class="field-hint">Unticking a section hides its tabs. It does not delete anything already logged.</p>
+          <label class="check">
+            <input type="checkbox" id="modPower" checked>
+            <span><strong>Power Management</strong><small>Shows Power Management, Thermal &amp; Power Guide and Warp Guide</small></span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="modDamage" checked>
+            <span><strong>Damage Control</strong><small>Shows Damage Control, and the repair buttons on the Action Log</small></span>
+          </label>
+        </fieldset>
+
+        <div class="setup-actions">
+          <button type="button" id="newMissionBtn" class="pill-btn solid">New mission</button>
+          <button type="button" id="clearSessionBtn" class="danger-btn">Clear mission data</button>
+          <span class="hint" id="setupSaved" role="status" aria-live="polite"></span>
+        </div>
+        <p class="field-hint setup-actions-note">
+          <strong>New mission</strong> keeps your name, rank, ship and section choices, and clears
+          the mission name, type and log ready for the next one.
+          <strong>Clear mission data</strong> wipes everything, including who you are.
+        </p>
+      </form>
+    </section>
+
+    <!-- ======== TAB: ACTION LOG ======== -->
+    <section class="panel" id="panel-log" role="tabpanel" aria-labelledby="tab-log" tabindex="0">
+      <h2>Action Log</h2>
+      <p class="panel-sub" id="logSummary"></p>
+
+      <div class="stat-row" id="statRow">
+        <div class="stat">
+          <span class="stat-label">OCP repairs</span>
+          <span class="stat-value" id="statOcp">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Crystal repairs</span>
+          <span class="stat-value" id="statCrystal">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Conduit repairs</span>
+          <span class="stat-value" id="statConduit">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Cell swaps</span>
+          <span class="stat-value" id="statSwap">0</span>
+        </div>
+        <div class="stat stat-spares" id="spareStat">
+          <span class="stat-label">Spare OCPs</span>
+          <span class="stat-value" id="statSpares">5</span>
+          <div class="spare-controls">
+            <button type="button" id="spareMinus" class="mini-btn" aria-label="Use a spare OCP">&minus;</button>
+            <button type="button" id="sparePlus" class="mini-btn" aria-label="Return a spare OCP">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-actions" id="damageActions">
+        <button type="button" id="manualRepairBtn" class="pill-btn solid">Manual repair</button>
+        <button type="button" id="cellSwapBtn" class="pill-btn">Power cell swapped</button>
+      </div>
+      <div class="log-actions">
+        <button type="button" id="hullBtn" class="pill-btn">Log hull integrity</button>
+        <button type="button" id="noteBtn" class="ghost-btn">Add note</button>
+      </div>
+      <p class="hint" id="damageDisabledNote" hidden>
+        Repair buttons are hidden because Damage Control is not ticked on the Setup tab.
+      </p>
+
+      <h3 class="log-h3">
+        In progress <span class="count-pill" id="activeCount">0</span>
+        <button type="button" id="completeAllBtn" class="ghost-btn sm" hidden>Complete all</button>
+      </h3>
+      <div id="activeList" class="active-list"></div>
+
+      <h3 class="log-h3">Logged actions <span class="count-pill" id="loggedCount">0</span></h3>
+      <div class="table-wrap">
+        <table class="ref-table log-table">
+          <thead>
+            <tr><th>Time</th><th>Action</th><th>Detail</th><th>Duration</th><th><span class="sr-only">Row actions</span></th></tr>
+          </thead>
+          <tbody id="logTableBody"></tbody>
+        </table>
+      </div>
+
+      <h3 class="log-h3">Export</h3>
+      <div class="log-actions">
+        <button type="button" id="exportPdfBtn" class="pill-btn">Export PDF</button>
+        <button type="button" id="exportChartBtn" class="pill-btn">Export hull chart</button>
+        <button type="button" id="exportJsonBtn" class="pill-btn">Export JSON</button>
+      </div>
+      <p class="hint" id="exportNote" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ======== TAB 1: POWER MANAGEMENT ======== -->
+    <section class="panel" id="panel-power" role="tabpanel" aria-labelledby="tab-power" tabindex="0">
+      <h2>System Effectiveness</h2>
+      <p class="panel-sub">How additional power allocation affects each system's performance. Power levels are not capped at 100% &mdash; systems can be overdriven well beyond it, at a coolant cost (see the Thermal &amp; Power Guide).</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>System</th><th>Effect of Power Increase</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="sys" data-label="System">Reactor</td><td data-label="Effect of Power Increase">Power generation increases effectiveness, with diminishing returns.</td></tr>
+            <tr><td class="sys" data-label="System">Beams</td><td data-label="Effect of Power Increase">Rate of fire scales linearly.</td></tr>
+            <tr><td class="sys" data-label="System">Missiles</td><td data-label="Effect of Power Increase">Reload speed scales linearly.</td></tr>
+            <tr><td class="sys" data-label="System">Manoeuvring</td><td data-label="Effect of Power Increase">Rotation speed scales linearly.</td></tr>
+            <tr><td class="sys" data-label="System">Impulse</td><td data-label="Effect of Power Increase">Forward/backward speed scales linearly.</td></tr>
+            <tr><td class="sys" data-label="System">Warp</td><td data-label="Effect of Power Increase">Linear for power drain; non-linear in practical use.</td></tr>
+            <tr><td class="sys" data-label="System">Shield Generator</td><td data-label="Effect of Power Increase">Recharge speed scales linearly; defensive return is non-linear.</td></tr>
+            <tr><td class="sys" data-label="System">Scanner</td><td data-label="Effect of Power Increase">Scanner range and alignment time scale linearly; increased power dramatically increases drone range.</td></tr>
+            <tr><td class="sys" data-label="System">Cargo Docks</td><td data-label="Effect of Power Increase">Inter-dock transfer speed and tractor beam movement scale linearly.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======== TAB 2: THERMAL & POWER GUIDE ======== -->
+    <section class="panel" id="panel-thermal" role="tabpanel" aria-labelledby="tab-thermal" tabindex="0">
+      <h2>Coolant Guide</h2>
+      <p class="panel-sub">Coolant required at a given power level. Power levels can exceed 100% &mdash; anything past 230% is unsustainable.</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Power Level</th><th>Coolant Required</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Power Level">100%</td><td data-label="Coolant Required">0%</td></tr>
+            <tr><td data-label="Power Level">150%</td><td data-label="Coolant Required">30%</td></tr>
+            <tr><td data-label="Power Level">200%</td><td data-label="Coolant Required">70%</td></tr>
+            <tr><td data-label="Power Level">230%</td><td data-label="Coolant Required">100%</td></tr>
+            <tr class="danger-row"><td data-label="Power Level">&gt;230%</td><td data-label="Coolant Required">DANGER ZONE &mdash; UNSUSTAINABLE</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="mt">Cooling Behaviour</h2>
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Power Level</th><th>Behaviour</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Power Level">&lt;100%</td><td data-label="Behaviour">System cools naturally.</td></tr>
+            <tr><td data-label="Power Level">150%</td><td data-label="Behaviour">Stable with modest coolant.</td></tr>
+            <tr><td data-label="Power Level">200%</td><td data-label="Behaviour">Requires significant coolant.</td></tr>
+            <tr class="danger-row"><td data-label="Power Level">&gt;230%</td><td data-label="Behaviour">Overheating unavoidable.</td></tr>
+            <tr class="danger-row"><td data-label="Power Level">300%</td><td data-label="Behaviour">Rapid overheating.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======== TAB 3: WARP GUIDE ======== -->
+    <section class="panel" id="panel-warp" role="tabpanel" aria-labelledby="tab-warp" tabindex="0">
+      <h2>Warp Travel Setups</h2>
+      <!-- Text is owned by MODE_INTROS in js/app.js and set on first render. -->
+      <p class="panel-sub" id="warpIntro"></p>
+
+      <div class="warp-mode-tabs">
+        <button type="button" class="mode-btn active" data-mode="distance" aria-pressed="true">By Distance</button>
+        <button type="button" class="mode-btn" data-mode="level" aria-pressed="false">By Warp Level</button>
+        <button type="button" class="mode-btn" data-mode="all" aria-pressed="false">Show All</button>
+      </div>
+
+      <div class="warp-controls" id="distanceControls">
+        <label for="sectorInput">Sectors to travel</label>
+        <input type="number" id="sectorInput" min="1" placeholder="e.g. 6">
+        <button type="button" id="sectorClear" class="ghost-btn">Reset to &infin;</button>
+      </div>
+
+      <div class="warp-controls" id="levelControls" style="display:none;">
+        <span class="seg-label" id="warpLevelLabel">Warp level</span>
+        <div class="seg-btns" id="warpLevelBtns" role="group" aria-labelledby="warpLevelLabel">
+          <button type="button" data-level="1" aria-pressed="false">Warp 1</button>
+          <button type="button" data-level="2" aria-pressed="false">Warp 2</button>
+          <button type="button" data-level="3" aria-pressed="false">Warp 3</button>
+          <button type="button" data-level="4" aria-pressed="false">Warp 4</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="ref-table warp-table">
+          <thead>
+            <tr>
+              <th>Distance</th><th>Warp Level</th><th>Warp Power</th><th>Warp Coolant</th>
+              <th>Reactor Power</th><th>Reactor Coolant</th><th>Top Speed</th><th>Travel Time</th>
+            </tr>
+          </thead>
+          <tbody id="warpTableBody"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="warpNote" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ======== TAB 4: DAMAGE CONTROL ======== -->
+    <section class="panel" id="panel-damage" role="tabpanel" aria-labelledby="tab-damage" tabindex="0">
+      <h2>Manual Repair Locations</h2>
+      <div class="dc-controls">
+        <label for="shipSelect">Ship</label>
+        <select id="shipSelect">
+          <option value="havock">UCS Havock</option>
+          <option value="takanami">UCS Takanami</option>
+        </select>
+        <button type="button" id="viewMapBtn" class="pill-btn">View ship map (PDF)</button>
+      </div>
+
+      <div class="dc-groups" id="dcGroups"></div>
+    </section>
+
+  </main>
+
+  <!-- ============ REPAIR PICKER ============ -->
+  <!-- A native dialog so Esc, focus trapping and the backdrop come for free. -->
+  <dialog id="repairDialog" class="repair-dialog" aria-labelledby="repairDialogTitle">
+    <div class="dialog-head">
+      <button type="button" id="dialogBack" class="mini-btn ghost" hidden>&larr; Back</button>
+      <h3 id="repairDialogTitle">Manual repair</h3>
+      <button type="button" id="dialogClose" class="mini-btn ghost" aria-label="Close">&times;</button>
+    </div>
+    <p class="dialog-sub" id="repairDialogSub"></p>
+    <div id="repairDialogBody" class="dialog-body"></div>
+    <div class="dialog-foot" id="repairDialogFoot" hidden>
+      <button type="button" id="dialogConfirm" class="pill-btn solid">Confirm</button>
+    </div>
+  </dialog>
+
+  <!-- ============ EDIT ENTRY ============ -->
+  <dialog id="editDialog" class="repair-dialog" aria-labelledby="editDialogTitle">
+    <div class="dialog-head">
+      <h3 id="editDialogTitle">Edit entry</h3>
+      <button type="button" id="editClose" class="mini-btn ghost" aria-label="Close">&times;</button>
+    </div>
+    <p class="dialog-sub" id="editDialogSub"></p>
+    <form id="editForm" novalidate>
+      <div class="field" id="editTargetField">
+        <label for="editTarget">Detail</label>
+        <input type="text" id="editTarget" autocomplete="off">
+      </div>
+      <div class="field" id="editValueField" hidden>
+        <label for="editValue">Hull integrity (%)</label>
+        <input type="number" id="editValue" min="0" max="100" step="1" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label for="editStart">Started</label>
+        <input type="time" id="editStart" step="1">
+      </div>
+      <div class="field" id="editEndField">
+        <label for="editEnd">Ended</label>
+        <div class="field-row">
+          <input type="time" id="editEnd" step="1">
+          <button type="button" id="editClearEnd" class="ghost-btn">Still running</button>
+        </div>
+      </div>
+      <p class="field-hint">Times are on the day the entry was logged. Leave <strong>Ended</strong> blank for a repair that is still running.</p>
+      <p class="hint" id="editError" role="alert"></p>
+      <div class="dialog-foot">
+        <button type="submit" class="pill-btn solid">Save changes</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ============ UNDO TOAST ============ -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span id="toastText"></span>
+    <button type="button" id="toastUndo" class="toast-btn">Undo</button>
+  </div>
+
+  <!-- ============ HULL INTEGRITY ============ -->
+  <dialog id="hullDialog" class="repair-dialog narrow" aria-labelledby="hullDialogTitle">
+    <div class="dialog-head">
+      <h3 id="hullDialogTitle">Hull integrity</h3>
+      <button type="button" id="hullClose" class="mini-btn ghost" aria-label="Close">&times;</button>
+    </div>
+    <p class="dialog-sub">Records a reading at the current time. Readings are kept, not overwritten, so the log shows how the hull changed over the mission.</p>
+    <!-- novalidate so the handler below owns the messages; the min/max/required
+         attributes stay for the numeric keypad and spinner behaviour. -->
+    <form id="hullForm" novalidate>
+      <div class="field">
+        <label for="hullValue">Integrity now (%)</label>
+        <input type="number" id="hullValue" min="0" max="100" step="1" inputmode="numeric" placeholder="e.g. 72" required>
+      </div>
+      <div class="quick-values" id="hullQuick">
+        <button type="button" data-value="100">100</button>
+        <button type="button" data-value="75">75</button>
+        <button type="button" data-value="50">50</button>
+        <button type="button" data-value="25">25</button>
+        <button type="button" data-value="0">0</button>
+      </div>
+      <p class="hint" id="hullError" role="alert"></p>
+      <div class="dialog-foot">
+        <button type="submit" class="pill-btn solid">Log reading</button>
+      </div>
+    </form>
+  </dialog>
+
+  <p class="credit">Designed by Lt Fin "Tetra"</p>
+  <p class="disclaimer">This is a fan-made project and is not approved by or affiliated with Bridge Command / The London Space Elevator Limited. All figures are community reference data and are subject to change.</p>
+</div>
+
+<script>
+// Registered inline and outside the module graph so a browser without service
+// worker support (or a page opened over file://) still runs the app normally.
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {
+      // Offline support is a bonus; the tool works without it.
+    });
+  });
+}
+</script>
+<script src="js/app.js"></script>
+<!-- A module so its top-level declarations get their own scope. Classic
+     scripts share one, and this file needs names app.js already uses.
+     Modules are deferred, so app.js has published window.UCN by the time
+     this runs. -->
+<script type="module" src="js/mission.js"></script>
+</body>
+</html>
