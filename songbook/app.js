@@ -24,6 +24,7 @@
     query: '',
     currentSong: null,
     favourites: [],
+    setlist: [],
     highlightChorus: true,
     chorusDisplay: 'once',
     fontSize: 16,
@@ -37,6 +38,7 @@
     try {
       var s = JSON.parse(localStorage.getItem('ucn_s') || '{}');
       if (Array.isArray(s.f)) state.favourites = s.f;
+      if (Array.isArray(s.sl)) state.setlist = s.sl.filter(function (id) { return typeof id === 'number' && id % 1 === 0; });
       if (s.hc !== undefined) state.highlightChorus = !!s.hc;
       if (s.cd) state.chorusDisplay = s.cd;
       if (s.fs) state.fontSize = s.fs;
@@ -50,7 +52,7 @@
   function saveState() {
     try {
       localStorage.setItem('ucn_s', JSON.stringify({
-        f: state.favourites, hc: state.highlightChorus, cd: state.chorusDisplay,
+        f: state.favourites, sl: state.setlist, hc: state.highlightChorus, cd: state.chorusDisplay,
         fs: state.fontSize, fn: state.font, th: state.theme,
         wk: state.wakeLockEnabled, ss: state.scrollSpeed
       }));
@@ -160,9 +162,21 @@
 
   /* Title matches rank above tune/author, which rank above lyrics-only
      matches, so searching "grog" still puts the song called Grog first. */
+  /* ── SET LIST ───────────────────────────────────────────────
+     An ordered list of songs for one evening, kept like favourites and
+     shown as a pseudo-category. A set list opened from a shared link
+     (#/set/12,4,31) is shown as sent until the reader saves it as theirs. */
+  var SET = 'Set list';
+  var sharedSet = null;
+  function activeSet() { return sharedSet || state.setlist; }
+  function setSongs() {
+    return activeSet().map(function (id) { return songById[id]; }).filter(Boolean);
+  }
+
   function filteredSongs() {
     var q = fold(state.query.trim());
-    var pool = SONGS.filter(function (s) {
+    var inSet = state.category === SET;
+    var pool = inSet ? setSongs() : SONGS.filter(function (s) {
       if (state.category === 'Favourites') return state.favourites.indexOf(s.id) > -1;
       if (state.category !== 'All' && s.category !== state.category) return false;
       return true;
@@ -182,7 +196,8 @@
                       s._l.words.indexOf(lq) > -1 || s._l.lyrics.indexOf(lq) > -1)) rank = 3;
       if (rank > -1) scored.push({ s: s, rank: rank, i: i });
     });
-    scored.sort(function (a, b) { return a.rank - b.rank || a.i - b.i; });
+    /* A set list keeps its running order, matches or not. */
+    if (!inSet) scored.sort(function (a, b) { return a.rank - b.rank || a.i - b.i; });
     return scored.map(function (x) { x.s._rank = x.rank; return x.s; });
   }
 
@@ -192,14 +207,27 @@
     var el = $('song-list');
     var q = fold(state.query.trim());
 
-    $('list-meta').textContent = songs.length === SONGS.length
-      ? SONGS.length + ' songs'
-      : songs.length + ' of ' + SONGS.length + ' songs';
+    var inSet = state.category === SET;
+    var editable = inSet && !sharedSet && !q;   // reordering a filtered set would be confusing
+    $('list-meta').textContent = inSet
+      ? songs.length + (songs.length === 1 ? ' song' : ' songs') + ' in the set'
+      : songs.length === SONGS.length
+        ? SONGS.length + ' songs'
+        : songs.length + ' of ' + SONGS.length + ' songs';
 
     /* Either filter alone is worth offering to clear — this used to
        require both a query AND a category before it would appear. */
     $('clear-all-btn').classList.toggle('vis', !!state.query || state.category !== 'All');
 
+    var bar = inSet ? setBarHtml() : '';
+    if (inSet && !songs.length) {
+      el.innerHTML = bar + '<div class="no-res"><div class="nr-icon">' + icon('list', 'icn icn-lg') + '</div><div>' +
+        (sharedSet ? 'None of the songs in that link are in this songbook'
+          : state.query ? 'No songs in the set match that' : 'No songs in the set list yet') +
+        '</div>' + (sharedSet || state.query ? '' : '<div style="font-size:.8rem;margin-top:6px;color:var(--text-dim);">Open a song and tap ' +
+        icon('list') + ' to add it, in the order you want to sing them</div>') + '</div>';
+      return;
+    }
     if (!songs.length) {
       el.innerHTML = state.category === 'Favourites'
         ? '<div class="no-res"><div class="nr-icon" style="color:var(--star)">' + icon('starOutline', 'icn icn-lg') +
@@ -209,17 +237,19 @@
       return;
     }
 
-    var html = '';
+    var html = bar;
+    var running = activeSet();
     for (var i = 0; i < songs.length; i++) {
       var s = songs[i];
       var isFav = state.favourites.indexOf(s.id) > -1;
       var snip = (q && s._rank === 2) ? lyricSnippet(s, q) : '';
+      var setNo = inSet ? running.indexOf(s.id) + 1 : 0;
 
       html += '<div class="song-card' + (isFav ? ' fav' : '') + '">' +
         '<button class="cmain" data-id="' + s.id + '">' +
           '<span class="ci">' + icon(catIconName(s.category)) + '</span>' +
           '<span class="cb">' +
-            '<span class="ct">' + highlight(s.title, q) +
+            '<span class="ct">' + (setNo ? '<span class="setno">' + setNo + '</span>' : '') + highlight(s.title, q) +
               (s.category === 'Traditional Songs' ? '<span class="trad-badge">trad</span>' : '') +
             '</span>' +
             '<span class="cs">' + icon('musicnote') + ' ' + highlight(s.tune || 'Tune unknown', q) + '</span>' +
@@ -230,11 +260,17 @@
             (snip ? '<span class="csnip">' + icon('musicnote') + ' ' + snip + '</span>' : '') +
           '</span>' +
         '</button>' +
-        '<button class="cstar' + (isFav ? ' active' : '') + '" data-fav="' + s.id + '"' +
-          ' aria-pressed="' + (isFav ? 'true' : 'false') + '"' +
-          ' aria-label="' + (isFav ? 'Remove ' : 'Add ') + esc(s.title) + (isFav ? ' from' : ' to') + ' favourites">' +
-          icon(isFav ? 'starFilled' : 'starOutline') +
-        '</button>' +
+        (editable
+          ? '<span class="setctl">' +
+              '<button data-set-move="-1" data-id="' + s.id + '" aria-label="Move ' + esc(s.title) + ' up"' + (setNo === 1 ? ' disabled' : '') + '>&#8593;</button>' +
+              '<button data-set-move="1" data-id="' + s.id + '" aria-label="Move ' + esc(s.title) + ' down"' + (setNo === running.length ? ' disabled' : '') + '>&#8595;</button>' +
+              '<button data-set-remove="' + s.id + '" aria-label="Remove ' + esc(s.title) + ' from the set list">' + icon('close') + '</button>' +
+            '</span>'
+          : '<button class="cstar' + (isFav ? ' active' : '') + '" data-fav="' + s.id + '"' +
+              ' aria-pressed="' + (isFav ? 'true' : 'false') + '"' +
+              ' aria-label="' + (isFav ? 'Remove ' : 'Add ') + esc(s.title) + (isFav ? ' from' : ' to') + ' favourites">' +
+              icon(isFav ? 'starFilled' : 'starOutline') +
+            '</button>') +
       '</div>';
     }
     el.innerHTML = html;
@@ -250,18 +286,19 @@
     for (i = 0; i < SONGS.length; i++) {
       if (seen.indexOf(SONGS[i].category) === -1) seen.push(SONGS[i].category);
     }
-    var cats = ['All', 'Favourites'].concat(seen);
+    var cats = ['All', 'Favourites', SET].concat(seen);
     var html = '';
     for (i = 0; i < cats.length; i++) {
       var c = cats[i], label;
       if (c === 'All') label = 'All';
       else if (c === 'Favourites') label = icon('starFilled') + ' Favourites';
+      else if (c === SET) label = icon('list') + ' Set list';
       else {
         label = icon(catIconName(c)) + ' ' +
           esc(c.split('/')[0].replace(' Songs', '').replace(' Ballads', '').replace(' in Progress', '').trim());
       }
       html += '<button class="cpill' + (state.category === c ? ' active' : '') +
-        (c === 'Favourites' ? ' fav-pill' : '') + '" role="tab" data-cat="' + esc(c) +
+        (c === 'Favourites' ? ' fav-pill' : '') + (c === SET ? ' set-pill' : '') + '" role="tab" data-cat="' + esc(c) +
         '" aria-selected="' + (state.category === c ? 'true' : 'false') + '">' + label + '</button>';
     }
     $('cat-tabs').innerHTML = html;
@@ -330,7 +367,10 @@
       (song.words ? '<div class="ir"><span>' + icon('pencil') + '</span><span>' + highlight(song.words, q) + '</span></div>' : '') +
       source;
 
-    $('lw').innerHTML = renderLyrics(song.lyrics);
+    var next = nextInSet(id);
+    $('lw').innerHTML = renderLyrics(song.lyrics) + (next
+      ? '<button class="next-in-set" data-next="' + next.id + '">Next in the set: ' + esc(next.title) + ' &#8594;</button>'
+      : '');
     /* Deliberately no scroll reset here. renderSong() also runs when a
        setting changes mid-song (chorus display, highlighting), and yanking
        the reader back to verse one halfway through a shanty is worse than
@@ -338,6 +378,7 @@
     document.title = song.title + ' — UCN Songbook';
     $('detail-view').setAttribute('aria-label', song.title);
     updateFavBtn();
+    updateSetBtn();
     return true;
   }
 
@@ -372,6 +413,79 @@
     btn.classList.toggle('active', isFav);
     btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
     btn.setAttribute('aria-label', isFav ? 'Remove from favourites' : 'Add to favourites');
+  }
+
+  function updateSetBtn() {
+    var btn = $('btn-set');
+    var inList = state.setlist.indexOf(state.currentSong) > -1;
+    btn.classList.toggle('active', inList);
+    btn.setAttribute('aria-pressed', inList ? 'true' : 'false');
+    btn.setAttribute('aria-label', inList ? 'Remove from set list' : 'Add to set list');
+  }
+
+  function toggleSet(id) {
+    var i = state.setlist.indexOf(id);
+    if (i === -1) { state.setlist.push(id); toast('Added to the set list, number ' + state.setlist.length + '.'); }
+    else { state.setlist.splice(i, 1); toast('Removed from the set list.'); }
+    saveState();
+    renderList();
+    if (state.currentSong === id) updateSetBtn();
+  }
+
+  function moveInSet(id, delta) {
+    var i = state.setlist.indexOf(id), j = i + delta;
+    if (i < 0 || j < 0 || j >= state.setlist.length) return;
+    state.setlist[i] = state.setlist[j];
+    state.setlist[j] = id;
+    saveState();
+    renderList();
+    /* Keep the same arrow under the thumb for the next tap. */
+    var again = $('song-list').querySelector('[data-set-move="' + delta + '"][data-id="' + id + '"]');
+    if (again && !again.disabled) again.focus();
+  }
+
+  /* Only while singing through the set list itself. */
+  function nextInSet(id) {
+    if (state.category !== SET) return null;
+    var ids = activeSet();
+    for (var i = ids.indexOf(id) + 1; i > 0 && i < ids.length; i++) {
+      if (songById[ids[i]]) return songById[ids[i]];
+    }
+    return null;
+  }
+
+  function setBarHtml() {
+    if (sharedSet) {
+      return '<div class="set-bar shared"><span>' + icon('list') + ' A set list shared with you</span>' +
+        '<button data-set-act="save">Save as my set list</button>' +
+        '<button data-set-act="close" aria-label="Close the shared set list">' + icon('close') + '</button></div>';
+    }
+    if (!state.setlist.length) return '';
+    return '<div class="set-bar"><button data-set-act="share">' + icon('share') + ' Share set list</button>' +
+      '<button data-set-act="clear">Clear</button></div>';
+  }
+
+  function leaveSharedSet() {
+    sharedSet = null;
+    try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+  }
+
+  function setAction(act) {
+    if (act === 'share') { shareSetList(); return; }
+    if (act === 'clear') {
+      if (!confirm('Clear the set list?')) return;
+      state.setlist = [];
+      saveState();
+    } else if (act === 'save') {
+      if (state.setlist.length && !confirm('Replace your set list (' + state.setlist.length + ' songs) with this one?')) return;
+      state.setlist = sharedSet.slice();
+      saveState();
+      leaveSharedSet();
+      toast('Saved as your set list.');
+    } else if (act === 'close') {
+      leaveSharedSet();
+    }
+    renderList();
   }
 
   function toggleFav(id) {
@@ -420,7 +534,28 @@
     location.hash = '#/song/' + id;   // pushes a history entry; route() runs on hashchange
   }
 
+  /* #/set/12,4,31 — unknown or repeated ids are dropped rather than shown as gaps. */
+  function setFromHash() {
+    var m = /^#\/set\/([\d,]+)$/.exec(location.hash);
+    if (!m) return null;
+    var seen = {}, ids = [];
+    m[1].split(',').forEach(function (x) {
+      var id = +x;
+      if (x && songById[id] && !seen[id] && ids.length < 200) { seen[id] = true; ids.push(id); }
+    });
+    return ids;
+  }
+
   function route() {
+    var shared = setFromHash();
+    if (shared) {
+      sharedSet = shared;
+      state.category = SET;
+      syncCategoryPills();
+      renderList();
+      showList();
+      return;
+    }
     var id = songIdFromHash();
     if (id != null && songById[id]) showDetail(id);
     else showList();
@@ -655,9 +790,19 @@
   function shareCurrentSong() {
     var song = songById[state.currentSong];
     if (!song) return;
-    var url = location.origin + location.pathname + '#/song/' + song.id;
+    shareLink(song.title, song.title + ' — UCN Songbook', location.origin + location.pathname + '#/song/' + song.id);
+  }
+
+  function shareSetList() {
+    var ids = activeSet();
+    if (!ids.length) return;
+    shareLink('UCN set list', ids.length + ' songs from the UCN Songbook',
+      location.origin + location.pathname + '#/set/' + ids.join(','));
+  }
+
+  function shareLink(title, text, url) {
     if (navigator.share) {
-      navigator.share({ title: song.title, text: song.title + ' — UCN Songbook', url: url })
+      navigator.share({ title: title, text: text, url: url })
         .catch(function () { /* user dismissed the sheet */ });
       return;
     }
@@ -785,6 +930,11 @@
     $('btn-drand').addEventListener('click', randomSong);
     $('btn-share').addEventListener('click', shareCurrentSong);
     $('btn-fav').addEventListener('click', function () { toggleFav(state.currentSong); });
+    $('btn-set').addEventListener('click', function () { toggleSet(state.currentSong); });
+    $('lw').addEventListener('click', function (e) {
+      var nx = e.target.closest('[data-next]');
+      if (nx) navigateToSong(+nx.dataset.next);
+    });
     $('btn-scroll').addEventListener('click', function () {
       if (autoScrollActive()) stopAutoScroll(); else startAutoScroll();
     });
@@ -827,6 +977,12 @@
       syncFilterUrl();
     });
     $('song-list').addEventListener('click', function (e) {
+      var act = e.target.closest('[data-set-act]');
+      if (act) { setAction(act.dataset.setAct); return; }
+      var mv = e.target.closest('[data-set-move]');
+      if (mv) { moveInSet(+mv.dataset.id, +mv.dataset.setMove); return; }
+      var rm = e.target.closest('[data-set-remove]');
+      if (rm) { toggleSet(+rm.dataset.setRemove); return; }
       var fav = e.target.closest('[data-fav]');
       if (fav) { toggleFav(+fav.dataset.fav); return; }
       var card = e.target.closest('[data-id]');

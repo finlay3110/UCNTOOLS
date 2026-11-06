@@ -83,6 +83,16 @@ const FORMAT = {
   'spaced-ranks': () => pack('var RANKS = [', names.map(q), ', ', 94, '  ').map((l, i, a) => i === a.length - 1 ? l + '];' : l),
   'compact-ranks': () => pack('var RANKS = [', names.map(q), ',', 86, '  ').map((l, i, a) => i === a.length - 1 ? l + '];' : l),
   'option-ranks': () => names.map(n => `<option value="${html(n.toUpperCase())}">${html(n)}</option>`),
+  // The Mess Log's built-in menu (used before it has ever been online) is the
+  // published messtracker/menu.csv, so the two can never drift apart.
+  'mess-menu': () => {
+    const csv = fs.readFileSync(path.join(ROOT, 'messtracker/menu.csv'), 'utf8');
+    const header = csv.split('\n')[0].toLowerCase().split(',').map(h => h.trim());
+    if (!header.includes('name') || csv.trim().split('\n').length < 2)
+      throw new Error('messtracker/menu.csv needs a header row with a Name column, and at least one drink');
+    if (/<\/script/i.test(csv)) throw new Error('messtracker/menu.csv cannot contain a closing script tag');
+    return [`var DEFAULT_MENU_CSV = ${JSON.stringify(csv)};`];
+  },
   profile: () => sharedCode('profile.js'),
   share: () => sharedCode('share.js'),
 };
@@ -101,7 +111,7 @@ const TARGETS = [
   ['commslog/js/app.js', ['comms-operations', 'share']],
   ['commslog/index.html', ['profile']],
   ['generallog/index.html', ['glog-operations', 'spaced-ranks', 'profile', 'share']],
-  ['messtracker/index.html', ['spaced-ranks', 'profile']],
+  ['messtracker/index.html', ['spaced-ranks', 'profile', 'mess-menu']],
   ['idcard/index.html', ['option-ranks', 'profile']],
   ['missionstats/src/index.template.html', ['compact-ranks', 'profile']],
   ['missionstats/index.html', ['compact-ranks', 'profile']], // the built copy, so no rebuild is needed

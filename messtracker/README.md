@@ -38,6 +38,12 @@ without configuration.
 Open the deployed URL on a phone and use **Add to Home Screen** to install it.
 It then launches full-screen and runs offline.
 
+## The published menu
+
+`menu.csv` is the mess menu as published on the site, in the same format as **Export CSV**. To change the menu for everyone, edit or replace that file and push. Anyone whose list is still the built-in or site menu gets the new one on their next visit with signal, keeping their log, tried marks and any drinks they added by hand. Anyone who imported their own CSV keeps it, and sees a **Use the site's menu** button.
+
+The deploy also writes `menu.csv` into `index.html` as the built-in menu, so a first visit with no signal starts from the same list.
+
 ## Files
 
 | File | What it is |

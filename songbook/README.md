@@ -13,6 +13,7 @@ A fan-made digital songbook for the **United Confederation Navy (UCN)** communit
 - 🔍 **Search** by title, tune, author **or lyrics** — punctuation- and accent-insensitive, with matches highlighted and a snippet shown for lyric matches
 - 🗂️ **Category filters** (Patriotic, Bar/Drinking, Traditional, Improvised, and more)
 - ⭐ **Favourites** with a dedicated filter tab
+- 📋 **Set lists** — line songs up in the order you'll sing them (the list button on any song), reorder them, step through with "Next in the set", and share the whole set as one link (`#/set/12,4,31`) that the other person can save as theirs
 - 🎨 **Chorus highlighting**, adjustable text size, light/dark/auto themes, and a dyslexia-friendly font option
 - 🔗 **Shareable links** — every song has its own URL (`#/song/45`), and the back button works the way you expect
 - 📖 **Source book & page references** for songs from the physical booklets
