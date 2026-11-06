@@ -7,7 +7,7 @@
    the old version indefinitely, since the whole point of a service worker is
    to keep working without re-fetching from the network.
    ========================================================================= */
-const CACHE_VERSION = 'ucn-mission-companion-v16';
+const CACHE_VERSION = 'ucn-mission-companion-v17';
 
 const CORE_ASSETS = [
   './',

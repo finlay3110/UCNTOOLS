@@ -28,6 +28,10 @@ jobs:
       - name: Build Tactical Aids manifest
         run: node tactical-aids/build-manifest.js
 
+      # shared/ucn-lists.json is the one place the operations and ranks are edited.
+      - name: Write shared operations and ranks into the tools
+        run: node .github/scripts/sync-shared-lists.js
+
       # Tools whose offline cache only refreshes when their worker's version changes.
       - name: Stamp service worker cache versions
         run: node .github/scripts/stamp-cache-versions.js

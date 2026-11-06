@@ -49,11 +49,13 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 
 // Fixed and in seniority order - Rank is a locked list, not free text, so
 // this is the one and only source of what counts as a valid rank.
+// ucn-lists:eng-ranks (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
 const RANKS = [
   'Cadet', 'Ensign', 'Sub Lt', 'Lieutenant', 'Lt Cmdr', 'Commander',
   'Captain', 'Commodore', 'Rear Admiral', 'Vice Admiral', 'Admiral',
   'Admiral of the Fleet',
 ];
+// ucn-lists:end
 
 // ------------------------------------------------------- canon operations --
 
@@ -63,6 +65,7 @@ const RANKS = [
 // is; anything else typed into Mission Name is simply an ordinary free-text
 // name - this list is a convenience layered on top of free text, never a
 // restriction on it.
+// ucn-lists:eng-operations (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
 const OPERATIONS = [
   ['OPERATION TEDDER', 'Military'],
   ['ITHAKA MINING FACILITY', 'Military'],
@@ -97,6 +100,7 @@ const OPERATIONS = [
   ['OPERATION ARGUS', 'Intrigue'],
   ['OPERATION RECOIL', 'Intrigue'],
 ];
+// ucn-lists:end
 
 const OPERATION_TYPE_BY_NAME = new Map(
   OPERATIONS.map(([name, type]) => [name.toUpperCase(), type])
@@ -1555,6 +1559,43 @@ function exportJsonNow() {
 }
 
 $('exportJsonBtn').addEventListener('click', exportJsonNow);
+
+// ucn-lists:share (from shared/share.js, written on deploy: edit that file, not this code)
+/* Sends a log through the phone's own share sheet (WhatsApp, AirDrop, email,
+   Files...), so it reaches whoever is writing the mission report without a
+   download-and-find-the-file step. Only offered where the browser can share
+   files. ucnShareFile resolves false if the person closes the sheet, and
+   rejects if sharing itself failed, so the caller can download instead.
+   Plain ES5, as some of the tools are. */
+function ucnCanShareFiles() {
+  try {
+    return !!(window.navigator.canShare && window.File && window.navigator.canShare({
+      files: [new window.File(['{}'], 'log.json', { type: 'application/json' })]
+    }));
+  } catch (e) { return false; }
+}
+function ucnShareFile(blob, name, title) {
+  var file = new window.File([blob], name, { type: blob.type || 'application/json' });
+  return window.navigator.share({ files: [file], title: title }).then(
+    function () { return true; },
+    function (err) {
+      if (err && err.name === 'AbortError') return false;
+      throw err;
+    });
+}
+// ucn-lists:end
+
+// The same file as Export JSON, handed to the phone's share sheet.
+function shareJsonNow() {
+  const blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' });
+  ucnShareFile(blob, `${fileStem()}.json`, 'UCN Engineering log')
+    .then(shared => { if (shared) note(exportNote, 'JSON shared.'); })
+    .catch(() => { exportJsonNow(); note(exportNote, 'Sharing failed, so the JSON was downloaded instead.'); });
+}
+if (ucnCanShareFiles()) {
+  $('shareJsonBtn').style.display = '';
+  $('shareJsonBtn').addEventListener('click', shareJsonNow);
+}
 
 // jsPDF is 360KB, and most sessions never export, so it is only fetched when
 // the button is actually pressed.

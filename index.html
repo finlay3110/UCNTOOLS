@@ -212,6 +212,11 @@
     color:var(--navy-deep);
   }
 
+  .backup-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .backup-actions .card-btn{ flex:1 1 160px; cursor:pointer; }
+  .backup-status{ margin:12px 0 0; font-size:12.5px; line-height:1.45; color:#C7CEE8; }
+  .backup-status:empty{ display:none; }
+
   .card-tag{
     position:absolute;
     top:14px;
@@ -716,6 +721,26 @@
       <a class="card-btn" href="missionstats/">Open Tool →</a>
     </div>
 
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-tag">Your data</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4v10M8 10l4 4 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="card-title">BACK UP &amp; RESTORE</h2>
+      <div class="card-desc">
+        Every tool keeps its data in this browser only. Save one file with all of it, then restore it on a new phone or after clearing your browser.
+      </div>
+      <div class="backup-actions">
+        <button type="button" class="card-btn" id="backupSave">Save backup</button>
+        <button type="button" class="card-btn" id="backupRestore">Restore backup</button>
+        <input type="file" id="backupFile" accept=".json,application/json" hidden>
+      </div>
+      <p class="backup-status" id="backupStatus" role="status" aria-live="polite"></p>
+    </div>
+
   </main>
 
   <h2 class="section-label">Official Links</h2>
@@ -879,6 +904,75 @@
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
+
+  // ---- Back up & restore every tool's saved data ----
+  // All the tools share this site's browser storage, so one file carries the lot.
+  // Restoring writes only the keys the tools are known to use.
+  const TOOL_KEYS = [
+    ['ucnCommsLog', 'Comms Log'], ['ucn-mission-v1', 'Engineering'], ['ucn.generallog', 'General Log'],
+    ['ucnMissionCompanion', 'Mission Companion'], ['ucnPlayerRoster', 'Mission Companion'],
+    ['ucnHeaderCollapsed', 'Mission Companion'], ['ucnHasSeenIntro', 'Mission Companion'],
+    ['ucn.missionAnalytics', 'Mission Stats'], ['ucn_nav_', 'Navigation'], ['ucn_install_nudge', 'Navigation'],
+    ['ucn_s', 'Songbook'], ['ucn_a2hs', 'Songbook'], ['ucnMess', 'Mess Log'], ['ucnIdCard', 'ID Card'],
+    ['ucnProfile', 'your name and rank'],
+  ];
+  // The Songbook's copy of the song list: it re-downloads that itself, and an
+  // old copy restored over a newer one would only be stale.
+  const NOT_BACKED_UP = ['ucn_songs_cache', 'ucn_songs_cache_time', 'ucn_songs_modified'];
+  const toolOf = key => NOT_BACKED_UP.includes(key) ? null : (TOOL_KEYS.find(([p]) => key.startsWith(p)) || [])[1] || null;
+  const toolsIn = keys => [...new Set(keys.map(toolOf))].join(', ');
+  const backupStatus = document.getElementById('backupStatus');
+
+  document.getElementById('backupSave').addEventListener('click', () => {
+    const data = {};
+    try{
+      for(let i = 0; i < localStorage.length; i++){
+        const key = localStorage.key(i);
+        if(toolOf(key)) data[key] = localStorage.getItem(key);
+      }
+    }catch(e){
+      backupStatus.textContent = 'This browser is blocking saved data, so there is nothing to back up.';
+      return;
+    }
+    const keys = Object.keys(data);
+    if(!keys.length){
+      backupStatus.textContent = 'Nothing to back up yet: no tool has saved anything in this browser.';
+      return;
+    }
+    const file = new Blob([JSON.stringify({ ucnBackup: 1, created: new Date().toISOString(), data })], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = 'ucn-tools-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    backupStatus.textContent = 'Backup saved, with ' + toolsIn(keys) + '. Keep the file somewhere other than this phone.';
+  });
+
+  const backupFile = document.getElementById('backupFile');
+  document.getElementById('backupRestore').addEventListener('click', () => backupFile.click());
+  backupFile.addEventListener('change', async () => {
+    const file = backupFile.files[0];
+    backupFile.value = '';
+    if(!file) return;
+    let backup = null;
+    try{ backup = JSON.parse(await file.text()); }catch(e){ /* reported below */ }
+    const data = backup && backup.ucnBackup === 1 && backup.data && typeof backup.data === 'object' ? backup.data : {};
+    const keys = Object.keys(data).filter(k => toolOf(k) && typeof data[k] === 'string');
+    if(!keys.length){
+      backupStatus.textContent = 'That file is not a UCN tools backup, so nothing was changed.';
+      return;
+    }
+    const when = Date.parse(backup.created) ? new Date(backup.created).toLocaleString() : 'an unknown date';
+    if(!confirm('Restore the backup from ' + when + '?\n\nIt replaces what this browser holds for: ' + toolsIn(keys)
+      + '.\n\nClose any other tabs with UCN tools open first, or they may save over it.')) return;
+    let failed = 0;
+    keys.forEach(k => { try{ localStorage.setItem(k, data[k]); }catch(e){ failed++; } });
+    backupStatus.textContent = failed
+      ? 'Restored, except ' + failed + ' item(s) this browser had no room for.'
+      : 'Restored ' + toolsIn(keys) + '. Open any tool to carry on.';
+  });
 
 </script>
 

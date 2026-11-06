@@ -104,6 +104,9 @@ const FIELDS=['date','time','name','type','navigator','rank','ship'];
   ok.push(['empty state returns', /No mission setup recorded/.test(await p.locator('#missionSummary').textContent())]);
 
   // --- v2 payload (no mission) still loads -------------------------------
+  // The name and rank typed above are now shared with the other UCN tools and would fill this
+  // setup back in; this check is about the old file format, so start without them.
+  await p.evaluate(()=>localStorage.removeItem('ucnProfile_v1'));
   await p.evaluate(()=>localStorage.setItem('ucn_nav_radar_waypoints', JSON.stringify({version:2,waypoints:[
     {id:'a',category:'nav',number:'1',title:'Old leg',sector:'',description:'',createdAt:new Date().toISOString(),completedAt:null,outcome:''}]})));
   await p.reload();

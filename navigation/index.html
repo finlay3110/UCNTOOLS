@@ -1473,6 +1473,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   // every waypoint: it describes the sortie, not any one waypoint.
   // The known operations, grouped by type in the picker. Choosing one fills in
   // the mission type, since the type follows from the operation.
+  // ucn-lists:nav-operations (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
   var MISSION_OPERATIONS = [
     { name:"OPERATION TEDDER", type:"Military" },
     { name:"ITHAKA MINING FACILITY", type:"Military" },
@@ -1507,6 +1508,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     { name:"OPERATION ARGUS", type:"Intrigue" },
     { name:"OPERATION RECOIL", type:"Intrigue" }
   ];
+  // ucn-lists:end
 
   var OPERATION_TYPES = [];
   MISSION_OPERATIONS.forEach(function(o){
@@ -1531,6 +1533,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   // shown. It runs in whichever direction the name does not: Lieutenant is
   // found by "lt", and Lt Cmdr by "lieutenant commander". Without that, the
   // ranks written short would only ever match someone typing them short.
+  // ucn-lists:nav-ranks (from shared/ucn-lists.json, written on deploy: edit that file, not this list)
   var RANKS = [
     { name:'Cadet',                alt:'Cdt' },
     { name:'Ensign',               alt:'Ens' },
@@ -1545,6 +1548,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     { name:'Admiral',              alt:'Adm' },
     { name:'Admiral of the Fleet', alt:'AF' }
   ];
+  // ucn-lists:end
 
   function altForRank(name){
     for(var i = 0; i < RANKS.length; i++){
@@ -1604,6 +1608,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
   function missionIsEmpty(m){
     return MISSION_KEYS.every(function(k){ return !m[k]; });
+  }
+  /* Navigator and rank can be filled in for you from the name and rank shared between the UCN
+     tools (ucnSharedProfile), so on their own they are not a mission: a fresh log holding only
+     your name is still empty for backing up, exporting and adopting an imported setup. */
+  var IDENTITY_KEYS = ['navigator', 'rank'];
+  function missionHasContent(m){
+    return MISSION_KEYS.some(function(k){ return m[k] && IDENTITY_KEYS.indexOf(k) === -1; });
   }
 
   var mission = emptyMission();
@@ -1790,7 +1801,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   }
 
   function hasContent(){
-    return waypoints.length > 0 || !missionIsEmpty(mission);
+    return waypoints.length > 0 || missionHasContent(mission);
   }
 
   function renderBackupState(){
@@ -1953,6 +1964,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
         fields +
         '<div class="form-actions">' +
           '<button type="button" class="btn secondary" id="missionNowBtn">Set date &amp; time to now</button>' +
+          '<button type="button" class="btn secondary" id="shareLogBtn" style="display:none">Share log</button>' +
           '<button type="button" class="btn secondary danger-text" id="missionClearBtn">Clear setup</button>' +
           '<button type="button" class="btn secondary danger-text" id="newMissionBtn">New mission</button>' +
         '</div>' +
@@ -2035,6 +2047,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       initialFocus: function(){ return document.getElementById('newMissionCancel'); }
     });
 
+    if(ucnCanShareFiles()){
+      var shareBtn = document.getElementById('shareLogBtn');
+      shareBtn.style.display = '';
+      shareBtn.addEventListener('click', shareWaypoints);
+    }
     document.getElementById('newMissionBtn').addEventListener('click', function(){
       var n = waypoints.length;
       var unbacked = hasContent() && !isBackedUp();
@@ -2950,23 +2967,29 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
   /* ---------- export / import ---------- */
 
-  function exportWaypoints(){
-    if(waypoints.length === 0 && missionIsEmpty(mission)){
-      setNotice('Nothing to export — no mission setup or waypoints yet.', true);
-      return;
-    }
-    var payload = JSON.stringify({
+  function exportBlob(){
+    return new Blob([JSON.stringify({
       version: SCHEMA_VERSION,
       mission: mission,
       changedAt: changedAt,
       lastExportAt: new Date().toISOString(),
       waypoints: waypoints
-    }, null, 2);
-    var blob = new Blob([payload], {type:'application/json'});
+    }, null, 2)], {type:'application/json'});
+  }
+  function exportFileName(){
+    return 'ucn-waypoints-' + new Date().toISOString().slice(0,10) + '.json';
+  }
+
+  function exportWaypoints(){
+    if(waypoints.length === 0 && !missionHasContent(mission)){
+      setNotice('Nothing to export — no mission setup or waypoints yet.', true);
+      return;
+    }
+    var blob = exportBlob();
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'ucn-waypoints-' + new Date().toISOString().slice(0,10) + '.json';
+    a.download = exportFileName();
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -2975,6 +2998,46 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     lastExportAt = new Date().toISOString();
     saveWaypoints({ keepChangedAt: true });
     setNotice('Exported ' + waypoints.length + ' waypoint' + (waypoints.length === 1 ? '' : 's') + '.');
+  }
+
+  // ucn-lists:share (from shared/share.js, written on deploy: edit that file, not this code)
+  /* Sends a log through the phone's own share sheet (WhatsApp, AirDrop, email,
+     Files...), so it reaches whoever is writing the mission report without a
+     download-and-find-the-file step. Only offered where the browser can share
+     files. ucnShareFile resolves false if the person closes the sheet, and
+     rejects if sharing itself failed, so the caller can download instead.
+     Plain ES5, as some of the tools are. */
+  function ucnCanShareFiles() {
+    try {
+      return !!(window.navigator.canShare && window.File && window.navigator.canShare({
+        files: [new window.File(['{}'], 'log.json', { type: 'application/json' })]
+      }));
+    } catch (e) { return false; }
+  }
+  function ucnShareFile(blob, name, title) {
+    var file = new window.File([blob], name, { type: blob.type || 'application/json' });
+    return window.navigator.share({ files: [file], title: title }).then(
+      function () { return true; },
+      function (err) {
+        if (err && err.name === 'AbortError') return false;
+        throw err;
+      });
+  }
+  // ucn-lists:end
+
+  /* The same file as Export, handed to the phone's share sheet; a completed share counts as
+     the log being backed up, exactly as an export does. */
+  function shareWaypoints(){
+    if(waypoints.length === 0 && !missionHasContent(mission)){
+      setNotice('Nothing to share — no mission setup or waypoints yet.', true);
+      return;
+    }
+    ucnShareFile(exportBlob(), exportFileName(), 'UCN Navigation log').then(function(shared){
+      if(!shared) return;
+      lastExportAt = new Date().toISOString();
+      saveWaypoints({ keepChangedAt: true });
+      setNotice('Shared ' + waypoints.length + ' waypoint' + (waypoints.length === 1 ? '' : 's') + '.');
+    }, function(){ exportWaypoints(); });
   }
 
   function importWaypoints(text){
@@ -2998,7 +3061,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     var importedMission = normaliseMission(parsed && parsed.mission);
     var missionAdopted = false, missionIgnored = false;
     if(!missionIsEmpty(importedMission)){
-      if(missionIsEmpty(mission)){ mission = importedMission; missionAdopted = true; }
+      if(!missionHasContent(mission)){ mission = importedMission; missionAdopted = true; }
       else { missionIgnored = true; }
     }
 
@@ -3808,7 +3871,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       setNotice('PDF export is unavailable — the PDF library did not load.', true);
       return;
     }
-    if(waypoints.length === 0 && missionIsEmpty(mission)){
+    if(waypoints.length === 0 && !missionHasContent(mission)){
       setNotice('Nothing to export — no mission setup or waypoints yet.', true);
       return;
     }
@@ -3883,5 +3946,87 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 })();
 </script>
 
+<script>
+  // ucn-lists:profile (from shared/profile.js, written on deploy: edit that file, not this code)
+  /* Name and rank are shared by the UCN tools on this site: type them into one
+     tool and the others fill them in for you, but only into fields that are
+     still empty, so nothing a tool already holds is ever replaced.
+     Each tool calls ucnSharedProfile({ name, rank, rankOther, write }) with its
+     own field ids; write:false only reads (the ID card is often made for
+     someone else). Plain ES5, as some of the tools are. */
+  function ucnSharedProfile(ids) {
+    var KEY = 'ucnProfile_v1';
+    var get = function (id) { return id ? document.getElementById(id) : null; };
+    var name = get(ids.name), rank = get(ids.rank), other = get(ids.rankOther);
+  
+    function read() {
+      try {
+        var p = JSON.parse(localStorage.getItem(KEY));
+        return p && typeof p === 'object' ? p : {};
+      } catch (e) { return {}; }
+    }
+    function save(field, value) {
+      value = (value || '').trim();
+      if (!value || ids.write === false) return;
+      var p = read();
+      if (p[field] === value) return;
+      p[field] = value;
+      try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* storage blocked */ }
+    }
+    function fire(el, type) {
+      var ev = document.createEvent('Event');
+      ev.initEvent(type, true, true);
+      el.dispatchEvent(ev);
+    }
+    // The rank as a person reads it, whatever form this tool keeps it in.
+    function rankText() {
+      if (!rank) return '';
+      if (rank.tagName !== 'SELECT') return rank.value;
+      if (rank.value === '__other__') return other ? other.value : '';
+      return rank.value ? rank.options[rank.selectedIndex].text : '';
+    }
+    function putRank(value) {
+      if (rank.tagName !== 'SELECT') {
+        // A searchable picker opens its list on 'input' and settles the value
+        // (and closes the list) on 'blur', so finish as if the person moved on.
+        rank.value = value; fire(rank, 'input'); fire(rank, 'change'); fire(rank, 'blur');
+        return;
+      }
+      var want = value.toLowerCase();
+      for (var i = 0; i < rank.options.length; i++) {
+        var o = rank.options[i];
+        if (o.value && o.value !== '__other__' &&
+            (o.value.toLowerCase() === want || o.text.trim().toLowerCase() === want)) {
+          rank.value = o.value; fire(rank, 'change');
+          return;
+        }
+      }
+      if (other) {
+        rank.value = '__other__'; fire(rank, 'change');
+        other.value = value; fire(other, 'input'); fire(other, 'change');
+      }
+    }
+    function fill() {
+      var p = read();
+      if (name && p.name && !name.value.trim()) { name.value = p.name; fire(name, 'input'); fire(name, 'change'); }
+      if (rank && p.rank && !rankText().trim()) putRank(p.rank);
+    }
+  
+    if (name) name.addEventListener('input', function () { save('name', name.value); });
+    // Rank text boxes are searchable pickers: only keep what is left once the
+    // person moves on, not each half-typed search.
+    [rank, other].forEach(function (el) {
+      if (!el) return;
+      ['change', 'blur'].forEach(function (type) {
+        el.addEventListener(type, function () { save('rank', rankText()); });
+      });
+    });
+    // After the tool has put its own saved values back.
+    if (document.readyState === 'complete') setTimeout(fill, 0);
+    else window.addEventListener('load', function () { setTimeout(fill, 0); });
+  }
+  // ucn-lists:end
+  ucnSharedProfile({ name: 'mission-navigator', rank: 'mission-rank' });
+</script>
 </body>
 </html>
