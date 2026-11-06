@@ -3,9 +3,9 @@ name: Engineering tests
 on:
   push:
     branches: [main]
-    paths: ['engineering/**', '.github/workflows/engineering-tests.yml']
+    paths: ['engineering/**', 'shared/**', '.github/scripts/**', '.github/workflows/engineering-tests.yml']
   pull_request:
-    paths: ['engineering/**', '.github/workflows/engineering-tests.yml']
+    paths: ['engineering/**', 'shared/**', '.github/scripts/**', '.github/workflows/engineering-tests.yml']
 
 # A superseded run on the same branch is of no interest once a newer commit
 # has been pushed.
@@ -24,6 +24,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # Test what ships: the deploy writes the shared files (shared/) into the tools.
+      - name: Write the shared files in, as the deploy does
+        working-directory: .
+        run: node .github/scripts/sync-shared-lists.js
 
       - uses: actions/setup-node@v4
         with:

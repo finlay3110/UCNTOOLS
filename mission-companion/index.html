@@ -3268,7 +3268,10 @@ function buildCommsOverallLog(commsLog){
   if(!commsLog || !Array.isArray(commsLog.ships)) return [];
   var flat = [];
   commsLog.ships.forEach(function(ship){
-    (ship.entries||[]).forEach(function(e){
+    /* A file is only checked for a ships list, so an empty slot or a ship without an entry
+       list has to be skipped here: this runs on every start-up and a throw stops the app. */
+    if(!ship || !Array.isArray(ship.entries)) return;
+    ship.entries.forEach(function(e){
       flat.push({
         time: (e && e.time) || '',
         text: (e && e.text) || '',

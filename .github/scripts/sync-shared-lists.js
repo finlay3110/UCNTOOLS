@@ -1,6 +1,7 @@
 // Writes shared/ucn-lists.json (the operations and the rank ladder),
-// shared/profile.js (the shared name and rank) and shared/share.js (the
-// Share log button) into every tool that keeps a
+// shared/profile.js (the shared name and rank), shared/share.js (the Share
+// log button) and shared/offline-sw.js (four tools' offline copy) into every
+// tool that keeps a
 // copy, between "ucn-lists:<part>" and "ucn-lists:end" marker lines, in that
 // tool's own syntax. Each tool stays one self-contained, offline page. The
 // deploy runs it, so editing the shared files alone updates every tool; run it
@@ -95,6 +96,7 @@ const FORMAT = {
   },
   profile: () => sharedCode('profile.js'),
   share: () => sharedCode('share.js'),
+  'offline-sw': () => sharedCode('offline-sw.js'),
 };
 
 function sharedCode(name) {
@@ -115,6 +117,10 @@ const TARGETS = [
   ['idcard/index.html', ['option-ranks', 'profile']],
   ['missionstats/src/index.template.html', ['compact-ranks', 'profile']],
   ['missionstats/index.html', ['compact-ranks', 'profile']], // the built copy, so no rebuild is needed
+  ['commslog/sw.js', ['offline-sw']],
+  ['idcard/sw.js', ['offline-sw']],
+  ['shipsearch/sw.js', ['offline-sw']],
+  ['missionstats/sw.js', ['offline-sw']],
 ];
 
 let changed = 0;

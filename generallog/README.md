@@ -13,13 +13,8 @@ Open `index.html`. That is the whole tool — one file, no build step, no npm, n
 network requests at all. Fonts, the logo and jsPDF are embedded, so it works on a
 cold first launch with the aircraft-mode switch on.
 
-## Hosting on Netlify
-
-The site root is the repository root and `index.html` is the entry point, so there is
-nothing to configure: connect the repo with no build command and a publish directory
-of `.`, or drag the folder onto the Netlify dashboard. `_headers` keeps the shell and
-the service worker on `must-revalidate` so a deploy always reaches a device that
-already has them.
+Live at **https://finlay3110.github.io/UCNTOOLS/generallog/**, published with the rest of the
+UCN tools on every push (see the README at the repository root).
 
 ## Installing it
 

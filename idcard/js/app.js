@@ -1068,11 +1068,18 @@
     });
   }
   async function saveCard(){
-    const data = getCurrentCardData();
-    if(data.photo && data.photo.length > 400000){
-      if(shrunkFrom !== data.photo){ shrunkFrom = data.photo; shrunk = await shrinkPhoto(data.photo); }
-      data.photo = shrunk;
+    const original = photoDataUrl;
+    let photo = original;
+    if(photo && photo.length > 400000){
+      // One shrink per photo, shared by every save that arrives while it runs.
+      if(shrunkFrom !== photo){ shrunkFrom = photo; shrunk = shrinkPhoto(photo); }
+      photo = await shrunk;
+      // The photo changed meanwhile: the save queued for the new one stores it.
+      if(photoDataUrl !== original) return;
     }
+    // Read the form only now, so typing done during the wait is never lost.
+    const data = getCurrentCardData();
+    data.photo = photo;
     try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }
     catch(e){
       // storage full or blocked: keep the text at least
