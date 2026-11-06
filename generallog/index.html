@@ -2646,6 +2646,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     try {
       var p = window.navigator.serviceWorker.register('sw.js');
       if (p && p.then) { p.then(null, function () { /* nothing to do */ }); }
+      /* Ask the browser not to clear saved data when storage runs low. Granted
+         silently once installed, harmless if refused; covers every UCN tool on this site. */
+      var q = window.navigator.storage && window.navigator.storage.persist && window.navigator.storage.persist();
+      if (q && q.then) { q.then(null, function () { /* nothing to do */ }); }
     } catch (err) { /* nothing to do */ }
   }
 

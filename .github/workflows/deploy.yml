@@ -28,6 +28,10 @@ jobs:
       - name: Build Tactical Aids manifest
         run: node tactical-aids/build-manifest.js
 
+      # Tools whose offline cache only refreshes when their worker's version changes.
+      - name: Stamp service worker cache versions
+        run: node .github/scripts/stamp-cache-versions.js
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

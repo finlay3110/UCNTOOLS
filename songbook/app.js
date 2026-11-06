@@ -964,6 +964,9 @@
         /* Registration failing is not fatal — the app just loses offline support. */
       });
     });
+    /* Ask the browser not to clear saved data when storage runs low. Granted
+       silently once installed, harmless if refused; covers every UCN tool on this site. */
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
   }
 
   readState();

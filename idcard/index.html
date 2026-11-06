@@ -216,6 +216,9 @@
   // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    // Ask the browser not to clear saved data when storage runs low. Granted
+    // silently once installed, harmless if refused; covers every UCN tool on this site.
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
   }
 </script>
 </body>
