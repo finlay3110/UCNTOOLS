@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hacking Trainer — UCN</title>
-<meta name="description" content="Practise clearing a network without tripping its traps. Four security levels, from Basic to Fortified.">
+<meta name="description" content="Practise Bridge Command hacking: breach a defensive grid without triggering its defence routines, at four cyber defence levels.">
 <meta name="theme-color" content="#0b0f1c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M9 16l4 4 10-10' stroke='%23DD7A2B' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,33 +40,44 @@
     min-height:40px; padding:0 14px; border-radius:8px; border:1.5px solid var(--orange); background:none;
     color:var(--orange); font:inherit; font-weight:700; cursor:pointer;
   }
-  .btn:hover{ background:var(--orange); color:#1a0e02; }
+  .btn:hover, .btn.apply:not(:disabled){ background:var(--orange); color:#1a0e02; }
+  .btn:disabled{ opacity:.45; cursor:default; }
+  .btn:disabled:hover{ background:none; color:var(--orange); }
 
-  .status{ min-height:1.5em; margin:14px 2px 10px; color:var(--muted); line-height:1.5; }
+  .status{ min-height:3em; margin:14px 2px 8px; color:var(--muted); line-height:1.5; }
+  .progress{ margin:0 2px 10px; }
+  .progress-label{
+    display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    font:700 11px/1.4 'Orbitron', sans-serif; letter-spacing:.5px; text-transform:uppercase; color:var(--muted);
+  }
+  .progress-label b{ color:var(--text); }
+  .bar{ position:relative; height:10px; margin-top:6px; border-radius:5px; background:#1a2346; overflow:hidden; }
+  .fill{ height:100%; width:0; background:var(--muted); transition:width .2s; }
+  .bar.viable .fill{ background:var(--orange); }
+  .bar.full .fill{ background:var(--green); }
+  .mark{ position:absolute; top:0; bottom:0; width:2px; margin-left:-1px; background:var(--text); }
   .status strong{ color:var(--text); }
 
   .board{
     display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:3px; padding:6px;
-    background:#070b16; border:1px solid var(--border); border-radius:12px;
+    background:#000; border:1px solid #3a3a3a; border-radius:12px;
     touch-action:manipulation; user-select:none; -webkit-user-select:none;
   }
   .board.won{ border-color:var(--green); box-shadow:0 0 0 2px rgba(47,181,116,0.35); }
   .board.lost{ border-color:var(--red); box-shadow:0 0 0 2px rgba(214,69,69,0.35); }
   .cell{
-    aspect-ratio:1; min-width:0; padding:0; border:1px solid #2f4384; border-radius:50%; cursor:pointer;
-    background:linear-gradient(160deg, #25397a, #1b2a5e); color:var(--text);
+    aspect-ratio:1; min-width:0; padding:0; border:2px solid #5f5f5f; border-radius:50%; cursor:pointer;
+    background:#000; color:#111;
     font:700 clamp(12px, 3.6vw, 18px)/1 'Orbitron', sans-serif;
     display:flex; align-items:center; justify-content:center;
     -webkit-tap-highlight-color:transparent;
   }
   .cell:focus-visible{ outline:2px solid var(--orange); outline-offset:1px; }
   .cell:disabled{ cursor:default; }
-  .cell.open{ background:var(--open); border-color:#1e2a52; cursor:default; }
+  .cell.open{ background:#f2f2f2; border-color:#fff; cursor:default; }
   .cell svg{ width:62%; height:62%; }
-  .cell.trap{ background:#2a1220; border-color:#5a2238; color:var(--red); }
-  .cell.hit{ background:var(--red); border-color:var(--red); color:#fff; }
-  .n1{ color:#4FA8C9; } .n2{ color:#2FB574; } .n3{ color:#E39A3E; } .n4{ color:#B48CF0; }
-  .n5{ color:#FF6B6B; } .n6{ color:#4FD1C5; } .n7{ color:#e8ecf7; } .n8{ color:#8c98bf; }
+  .cell.trap{ border-color:var(--red); color:var(--red); }
+  .cell.hit{ border-color:#fff; color:#fff; font-family:'Exo 2', sans-serif; }
 
   .records{ margin-top:18px; }
   .records h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
@@ -90,60 +101,66 @@
 <header class="top">
   <a class="back" href="../">&larr; Back to Tool Portal</a>
   <h1>HACKING TRAINER</h1>
-  <p class="sub">Clear the network without tripping a trap</p>
+  <p class="sub">Breach the grid without triggering its defences</p>
 </header>
 
 <main>
   <section class="panel" aria-label="Game controls">
-    <label for="level">Security level</label>
+    <label for="level">Cyber defence level</label>
     <select id="level">
-      <option value="basic">1. Basic &mdash; 6&times;6, 4 traps</option>
-      <option value="secure">2. Secure &mdash; 8&times;8, 10 traps</option>
-      <option value="hardened">3. Hardened &mdash; 10&times;10, 25 traps</option>
-      <option value="fortified">4. Fortified &mdash; 12&times;12, 36 traps</option>
+      <option value="basic">1. Basic &mdash; 6&times;6, 4 defence nodes</option>
+      <option value="secure">2. Secure &mdash; 8&times;8, 10 defence nodes</option>
+      <option value="hardened">3. Hardened &mdash; 10&times;10, 25 defence nodes</option>
+      <option value="fortified">4. Fortified &mdash; 12&times;12, 36 defence nodes</option>
     </select>
     <div class="row">
       <span class="stat">Time <b id="clock" role="timer">0:00</b></span>
-      <span class="stat">Cleared <b id="cleared">0%</b></span>
-      <button type="button" class="btn" id="newGrid">New grid</button>
+      <button type="button" class="btn" id="reset">Reset</button>
+      <button type="button" class="btn apply" id="apply" disabled>Apply</button>
     </div>
   </section>
 
   <p class="status" id="status" role="status" aria-live="polite"></p>
-  <div class="board" id="board" aria-label="Network grid"></div>
+  <div class="progress">
+    <div class="progress-label"><span>Hacking in progress: <b id="cleared">0%</b></span><span id="applyAt"></span></div>
+    <div class="bar" id="bar" aria-hidden="true"><div class="fill" id="fill"></div><div class="mark" id="mark"></div></div>
+  </div>
+  <div class="board" id="board" aria-label="Defensive grid"></div>
 
   <section class="panel records" aria-labelledby="recordsTitle">
     <h2 id="recordsTitle">Your records</h2>
     <table>
-      <thead><tr><th scope="col">Level</th><th scope="col">Best time</th><th scope="col">Best score</th><th scope="col">Wins</th></tr></thead>
+      <thead><tr><th scope="col">Level</th><th scope="col">Best time</th><th scope="col">Best breach</th><th scope="col">Breaches</th></tr></thead>
       <tbody id="records"></tbody>
     </table>
-    <p>Saved on this device after every finished run. Your score is how much of the network you cleared before a trap caught you.</p>
+    <p>Saved on this device after every attempt. Best time is your fastest full breach; best breach is the most progress that took effect; breaches counts attempts that applied anything.</p>
     <button type="button" class="btn" id="shareRecords">Share as an image</button>
   </section>
 
   <section class="panel help">
     <h2>How to play</h2>
     <ol>
-      <li><b>Pick a security level.</b> Each one hides a set number of traps in its grid of nodes.</li>
+      <li><b>Pick a cyber defence level.</b> Higher levels mean a bigger grid, more defence routines, and more progress needed before you can apply a partial breach.</li>
       <li><b>Probe a node</b> by tapping it. Your first probe is always safe, and opens up part of the grid.</li>
-      <li><b>Read the numbers.</b> A number tells you how many of the 8 nodes touching it (diagonals too) hide a trap. A blank node has none, so its neighbours open by themselves.</li>
-      <li><b>Probe every safe node</b> to gain access. Probe a trap and the trace catches you. As in Bridge Command there are no flags, so keep track of the traps in your head.</li>
-      <li><b>Beat your records.</b> The clock starts on your first probe. Your best time and best score for each level are kept below the grid.</li>
+      <li><b>Read the traces.</b> The number on a revealed node is its trace: how many of the 8 nodes touching it (diagonals too) hide a defence routine. A blank node has none, so its neighbours open by themselves.</li>
+      <li><b>Build progress.</b> Hacking in progress is how much of the grid's safe nodes you've cleared. Clear them all for a full breach.</li>
+      <li><b>Apply when it's good enough.</b> Once progress passes the level's mark (Basic 60%, Secure 70%, Hardened 80%), Apply banks the breach at that progress. Fortified only accepts a full breach. In Bridge Command each breach adds half its progress to the target system's hacked level, so a 100% breach gives +50%.</li>
+      <li><b>Two strikes.</b> The first defence routine you trigger is marked X and you carry on. A second ends the attempt; if you'd passed the Apply mark, the breach still applies what it had. There are no flags, as in Bridge Command: keep track of the routines in your head.</li>
     </ol>
 
     <h2>Tips &amp; tricks</h2>
     <ul>
-      <li><b>Work along the edge of the open area.</b> Numbers there touch the fewest hidden nodes, so they give the surest answers.</li>
-      <li><b>Full house:</b> if a number has exactly that many hidden nodes around it, every one of them is a trap. Leave them all alone.</li>
-      <li><b>Already satisfied:</b> once you know where all of a number's traps are, every other hidden node around it is safe. Probe them.</li>
-      <li><b>Compare neighbours:</b> when one number's hidden nodes are all shared with the number next to it, any extra nodes the second one touches hold the difference. Equal numbers mean the extras are safe.</li>
-      <li><b>1-2-1 on a straight edge:</b> the traps sit opposite the two 1s, and the node opposite the 2 is safe.</li>
-      <li><b>1-2-2-1 on a straight edge:</b> the traps sit opposite the two 2s, and the nodes opposite the 1s are safe.</li>
-      <li><b>Finish one area before the next.</b> With no flags to mark them, the traps you've worked out are easy to lose track of. Settle a corner completely, then move on.</li>
-      <li><b>Count the traps near the end.</b> Each level has a fixed number (shown in the level list). If the traps you know about account for all of them, every other hidden node is safe.</li>
-      <li><b>When you must guess</b> (it happens on Hardened and Fortified, where a quarter of the nodes are traps), guess early rather than after lots of work, and pick a node that would tell you the most if it's safe.</li>
-      <li><b>Train up through the levels.</b> On Basic and Secure, practise spotting the patterns until you see them at a glance. That's where fast times come from.</li>
+      <li><b>Start in low-risk areas</b> and use the traces to expand quickly through safe space. Nodes along the edge of the open area touch the fewest hidden nodes, so they give the surest answers.</li>
+      <li><b>Full house:</b> if a trace has exactly that many hidden nodes around it, every one of them is a defence routine. Leave them all alone.</li>
+      <li><b>Already satisfied:</b> once you know where all of a trace's routines are, every other hidden node around it is safe. Probe them.</li>
+      <li><b>1-2-1 in a straight line:</b> the node in front of the 2 is always safe. The nodes in front of the two 1s may be routines.</li>
+      <li><b>1-2-2-1 in a straight line:</b> the nodes in front of the 1s are always safe. If the four nodes behind the pattern are all safe, the nodes in front of the 2s are routines.</li>
+      <li><b>1-1 in a straight line</b>, with the nodes behind both safe: the third node in that line is safe, whatever the next number is. All these patterns work flipped or rotated.</li>
+      <li><b>Compare neighbours:</b> when one trace's hidden nodes are all shared with the trace next to it, any extra nodes the second one touches hold the difference. Equal numbers mean the extras are safe.</li>
+      <li><b>Count the routines near the end.</b> Each level has a fixed number (shown in the level list). If the ones you know about account for all of them, every other hidden node is safe.</li>
+      <li><b>When you must guess</b> (it happens on Hardened and Fortified), guess early rather than after lots of work, and pick the node that would tell you the most if it's safe.</li>
+      <li><b>Speed beats perfection.</b> If Apply is available and the next move is uncertain, bank it. A perfect hack too late is only tidier wreckage.</li>
+      <li><b>Aim for under 40 seconds on Secure</b> without triggering a single defence routine. The Academy Manual reckons that's very achievable with practice.</li>
     </ul>
   </section>
 </main>
@@ -151,11 +168,11 @@
 <footer>Fan-made training game for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
 
 <script type="module">
-  import { LEVELS, newGame, probe, cleared, time, record } from './game.js';
+  import { LEVELS, newGame, probe, apply, canApply, cleared, time, record } from './game.js';
 
   const $ = id => document.getElementById(id);
   const board = $('board');
-  const TRAP = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const ROUTINE = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   const KEY = 'ucnHackingTrainer_v1';
   let game, level, startedAt = 0, ms = 0, ticker = 0, records = {};
   try { records = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: records last this visit only */ }
@@ -163,8 +180,8 @@
 
   function start() {
     level = $('level').value;
-    const { size, traps } = LEVELS[level];
-    game = newGame(size, traps);
+    const { size, traps, apply: at } = LEVELS[level];
+    game = newGame(size, traps, at);
     clearInterval(ticker);
     ms = 0;
     board.style.setProperty('--n', size);
@@ -176,6 +193,8 @@
       b.dataset.i = i;
       board.appendChild(b);
     }
+    $('applyAt').textContent = at < 100 ? 'Apply from ' + at + '%' : 'Full breach only';
+    $('mark').style.left = at + '%';
     draw();
     say('Probe any node to start. The first one is always safe.');
   }
@@ -192,19 +211,27 @@
     [...board.children].forEach((b, i) => {
       const c = game.cells[i];
       let cls = 'cell', html = '', what = 'hidden';
-      if (c.trap && c.open) { cls += ' trap hit'; html = TRAP; what = 'tripped trap'; }
-      else if (game.over && c.trap) { cls += ' trap'; html = TRAP; what = 'trap'; }
-      else if (c.open) { cls += ' open n' + c.near; html = c.near || ''; what = c.near ? c.near + (c.near > 1 ? ' traps' : ' trap') + ' nearby' : 'clear'; }
+      if (c.trap && c.open) { cls += ' hit'; html = 'X'; what = 'triggered defence routine'; }
+      else if (game.over && c.trap) { cls += ' trap'; html = ROUTINE; what = 'defence routine'; }
+      else if (c.open) { cls += ' open'; html = c.near || ''; what = c.near ? 'trace ' + c.near : 'clear'; }
       b.className = cls;
       b.innerHTML = html;
       b.disabled = game.over;
       b.setAttribute('aria-label', `Row ${Math.floor(i / game.size) + 1}, column ${i % game.size + 1}: ${what}`);
     });
-    $('cleared').textContent = cleared(game) + '%';
-    board.classList.toggle('won', game.won);
-    board.classList.toggle('lost', game.over && !game.won);
+    const pct = cleared(game);
+    $('cleared').textContent = pct + '%';
+    $('fill').style.width = pct + '%';
+    $('bar').classList.toggle('viable', pct >= game.apply);
+    $('bar').classList.toggle('full', game.won);
+    $('apply').disabled = !canApply(game);
+    board.classList.toggle('won', game.over && game.applied > 0);
+    board.classList.toggle('lost', game.over && !game.applied);
     showClock();
-    if (game.started && !game.over) say('Probe every safe node. Avoid the traps.');
+    if (game.started && !game.over) say([
+      game.strikes ? '<strong>Defence routine triggered.</strong> One more ends the attempt.' : '',
+      canApply(game) ? 'Breach viable: <strong>Apply</strong> now, or keep going for a full breach.' : '',
+    ].filter(Boolean).join(' ') || 'Clear safe nodes to build the breach. Two defence routines end the attempt.');
   }
 
   function finish() {
@@ -213,9 +240,11 @@
     const beat = record(records, level, game, ms);
     try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (e) { /* storage blocked */ }
     showRecords();
-    say(game.won
-      ? `<strong>ACCESS GRANTED</strong> in ${time(ms)}.${beat.time ? ' New best time!' : ''}`
-      : `<strong>TRACE DETECTED.</strong> You cleared ${cleared(game)}% of the network.${beat.score ? ' New best score!' : ''} Press New grid to try again.`);
+    // In Bridge Command a breach adds half its progress to the target system's hacked level.
+    const effect = ` Target system +${game.applied / 2}% hacked.`;
+    say(game.won ? `<strong>BREACH COMPLETE</strong> in ${time(ms)}.${beat.time ? ' New best time!' : ''}${effect}`
+      : game.applied ? `<strong>BREACH APPLIED</strong> at ${game.applied}%${game.strikes === 2 ? ' as the second defence routine ended the attempt' : ''}.${effect}${beat.score ? ' New best breach!' : ''}`
+      : `<strong>ATTEMPT FAILED.</strong> Two defence routines triggered before the breach ${game.apply < 100 ? 'reached ' + game.apply + '%' : 'was complete'}, so nothing applied. Press Reset to try again.`);
   }
 
   // What a level's records read as, in the table and the picture.
@@ -253,9 +282,9 @@
       x.strokeStyle = '#2a3a66';
       x.stroke();
       text(L.label.toUpperCase(), 104, y + 68, '700 34px Orbitron', '#e8ecf7');
-      text(`${L.size}×${L.size}, ${L.traps} traps`, 104, y + 108, '400 25px "Exo 2"', '#8c98bf');
+      text(`${L.size}×${L.size}, ${L.traps} defence nodes`, 104, y + 108, '400 25px "Exo 2"', '#8c98bf');
       best(key).forEach((v, j) => {
-        text(['BEST TIME', 'BEST SCORE', 'WINS'][j], 460 + j * 185, y + 60, '600 19px "Exo 2"', '#8c98bf');
+        text(['BEST TIME', 'BEST BREACH', 'BREACHES'][j], 460 + j * 185, y + 60, '600 19px "Exo 2"', '#8c98bf');
         text(v, 460 + j * 185, y + 106, '700 32px Orbitron', j ? '#e8ecf7' : '#DD7A2B');
       });
     });
@@ -273,8 +302,14 @@
     if (game.over) finish();
     draw();
   });
+  $('apply').addEventListener('click', () => {
+    apply(game);
+    if (!game.over) return;
+    finish();
+    draw();
+  });
   $('level').addEventListener('change', start);
-  $('newGrid').addEventListener('click', start);
+  $('reset').addEventListener('click', start);
   $('shareRecords').addEventListener('click', () => {
     const png = recordsPng(), name = 'hacking-trainer-records.png';
     const download = () => {

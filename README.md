@@ -31,7 +31,7 @@ The remaining four sit on their own cards:
 | **ID Card Generator** | Build and print a fleet-standard crew ID card — rank, division, clearance level, photo, and barcode/QR, formatted to true CR-80 card size, with print files for ordering it on plastic. |
 | **Ship Search** | Looks up which ship (UCS Havock or UCS Takanami) is running at a given date/time, or shows the full day's schedule. |
 | **Mission Stats** | Import a CSV of your deployments from the Bridge Command portal and track your mission history. |
-| **Hacking Trainer** | A grid puzzle: clear the network without tripping its traps, at four security levels (Basic, Secure, Hardened, Fortified), with best times and scores to share. |
+| **Hacking Trainer** | Practice for Bridge Command hacking, to the UCN Academy Manual's rules: breach a defensive grid at four cyber defence levels (Basic, Secure, Hardened, Fortified), with best times and breaches to share. |
 
 The portal also links out to Bridge Command's official website and Discord server for anyone looking for the source community.
 
