@@ -25,7 +25,8 @@ Space Elevator Limited.
   - The entry pad holds the entry time and every quick action, grouped:
     **Comms** (Opened, Closed) and **Video** (Started, Ended, Transferred to
     Bridge). UCS Warspite additionally gets a priority group: Nuclear
-    Authorization Requested, Nuclear Authorization Declined, FC Advised of
+    Authorization Requested, Nuclear Authorization Granted, Nuclear
+    Authorization Declined, FC Advised of
     Code Omega UVP Activity, FC Advised of Request for Urgent Support.
     Manual entries with a custom message are logged from the same pad.
   - The pad **stays open** after each entry — set the time once and log a
