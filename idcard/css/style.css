@@ -560,6 +560,29 @@
   #printCardBtn{background:#fff;color:var(--navy);}
   #printCardBtn:hover{background:#EEF0F7;}
 
+  .print-shop{
+    max-width:440px;
+    padding:18px 20px 16px;
+    text-align:center;
+    background:var(--console);
+    border:1px solid var(--console-line);
+    border-radius:14px;
+  }
+  .print-shop h2{
+    margin:0 0 8px;
+    font-family:'Orbitron',sans-serif;
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--glow);
+  }
+  .print-shop > p:not(.note){margin:0 0 14px;font-size:12.5px;line-height:1.55;color:#C7D3EA;}
+  .print-shop a{color:var(--amber);}
+  .print-shop .actions{justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+  #printFrontBtn, #printBackBtn{background:var(--orange);border-color:var(--orange);color:#1A0E02;}
+  #printFrontBtn:hover, #printBackBtn:hover{background:var(--amber);}
+  .print-shop .note{margin:0 auto;}
+
   .note{
     max-width:420px;
     text-align:center;

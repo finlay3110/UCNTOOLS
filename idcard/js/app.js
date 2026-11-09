@@ -340,41 +340,74 @@
     return [parseInt(h.substr(0,2),16), parseInt(h.substr(2,2),16), parseInt(h.substr(4,2),16)];
   }
 
-  // measure an actual rendered element (svg/canvas/img) inside a container and return a PNG data URL + aspect ratio
-  function elementToPngDataUrl(container){
-    const canvas = container.querySelector('canvas');
-    const img = container.querySelector('img');
-    const svg = container.querySelector('svg');
-    if(canvas){
-      return Promise.resolve({url: canvas.toDataURL('image/png'), w: canvas.width, h: canvas.height});
+  // Barcodes and QR codes go into the PDF as shapes, not pictures, so they print
+  // sharp at any size and in the PDF's own colours (CMYK in the print files).
+  // Returns the dark parts in module units, or null if the text won't encode.
+  function codeShapes(value, mode){
+    try{
+      const bars = [];
+      if(mode === 'qr'){
+        const qr = new QRCode(document.createElement('div'), {text: value, correctLevel: QRCode.CorrectLevel.M})._oQRCode;
+        const n = qr.getModuleCount();
+        for(let r = 0; r < n; r++){
+          for(let c = 0; c < n; c++){
+            let run = 0;
+            while(c + run < n && qr.isDark(r, c + run)) run++;
+            if(run){ bars.push([c, r, run, 1]); c += run; }
+          }
+        }
+        return {w: n, h: n, bars};
+      }
+      const out = {};
+      JsBarcode(out, value, {format: 'CODE128'});
+      const bits = out.encodings.map(e => e.data).join('');
+      for(let i = 0; i < bits.length; i++){
+        let run = 0;
+        while(bits[i + run] === '1') run++;
+        if(run){ bars.push([i, 0, run, 23]); i += run; }
+      }
+      // 23 modules tall: the on-screen barcode's shape (2px bars, 46px high)
+      return {w: bits.length, h: 23, bars};
+    }catch(e){ return null; }
+  }
+
+  function drawCode(doc, code, x, y, w, h){
+    doc.setFillColor(...hexToRgb('#0B1230'));
+    for(const [bx, by, bw, bh] of code.bars){
+      doc.rect(x + bx*w/code.w, y + by*h/code.h, bw*w/code.w, bh*h/code.h, 'F');
     }
-    if(img && img.src){
-      return Promise.resolve({url: img.src, w: img.naturalWidth || 1, h: img.naturalHeight || 1});
+  }
+
+  // White card with a navy edge, and later drawing clipped to it. A print shop
+  // file (bleed: how far past the cut line, in inches) runs the white past the
+  // edge instead, with no line to cut along.
+  function cardBase(doc, CX, CY, bleed){
+    doc.setFillColor(255,255,255);
+    if(bleed){
+      doc.rect(CX-bleed.x, CY-bleed.y, CARD_W+2*bleed.x, CARD_H+2*bleed.y, 'F');
+      doc.saveGraphicsState();
+      return;
     }
-    if(svg){
-      const w = parseFloat(svg.getAttribute('width')) || 300;
-      const h = parseFloat(svg.getAttribute('height')) || 100;
-      return new Promise((resolve)=>{
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const svgBlob = new Blob([svgData], {type:'image/svg+xml;charset=utf-8'});
-        const url = URL.createObjectURL(svgBlob);
-        const image = new Image();
-        image.onload = ()=>{
-          const scale = 4;
-          const c = document.createElement('canvas');
-          c.width = w*scale; c.height = h*scale;
-          const ctx = c.getContext('2d');
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0,0,c.width,c.height);
-          ctx.drawImage(image,0,0,c.width,c.height);
-          URL.revokeObjectURL(url);
-          resolve({url: c.toDataURL('image/png'), w: c.width, h: c.height});
-        };
-        image.onerror = ()=> resolve(null);
-        image.src = url;
-      });
+    doc.setDrawColor(...hexToRgb('#1B2A5E'));
+    doc.setLineWidth(0.02);
+    doc.roundedRect(CX, CY, CARD_W, CARD_H, 0.06, 0.06, 'FD');
+    doc.saveGraphicsState();
+    doc.roundedRect(CX, CY, CARD_W, CARD_H, 0.06, 0.06);
+    doc.clip();
+    doc.discardPath();
+  }
+
+  // Print shop files: every colour set from here on is written as CMYK, by the
+  // same plain conversion The Plastic Card Factory's own designer uses. Pictures
+  // (photo, logos, header textures) stay RGB for their press to convert.
+  function useCmyk(doc){
+    for(const name of ['setDrawColor', 'setFillColor', 'setTextColor']){
+      const set = doc[name].bind(doc);
+      doc[name] = (r, g, b)=>{
+        const k = 1 - Math.max(r, g, b)/255;
+        return k === 1 ? set(0, 0, 0, 1) : set(...[r, g, b].map(v => (1 - v/255 - k)/(1 - k)), k);
+      };
     }
-    return Promise.resolve(null);
   }
 
   // The preview shows photos with CSS `center/cover` - cropped, aspect kept -
@@ -415,7 +448,8 @@
     return Object.assign({}, card, {photo: await cropPhotoToRatio(card.photo, PHOTO_RATIO)});
   }
 
-  function drawCardFront(doc, CX, CY, codeImgData, imgB64, cardData){
+  function drawCardFront(doc, CX, CY, imgB64, cardData, bleed){
+    const bx = bleed ? bleed.x : 0, by = bleed ? bleed.y : 0;
     const NAVY = hexToRgb('#1B2A5E');
     const NAVY_DARK = hexToRgb('#0B1230');
     const ORANGE = hexToRgb('#DD7A2B');
@@ -424,17 +458,7 @@
     const LINE = hexToRgb('#DADFEC');
     const RED = hexToRgb('#B23A3A');
 
-    // ---- card background ----
-    doc.setDrawColor(...NAVY);
-    doc.setLineWidth(0.02);
-    doc.setFillColor(255,255,255);
-    doc.roundedRect(CX, CY, CARD_W, CARD_H, 0.06, 0.06, 'FD');
-
-    // clip subsequent drawing to the card's rounded-rect bounds
-    doc.saveGraphicsState();
-    doc.roundedRect(CX, CY, CARD_W, CARD_H, 0.06, 0.06);
-    doc.clip();
-    doc.discardPath();
+    cardBase(doc, CX, CY, bleed);
 
     // ---- watermark (faint logo, centered in white body area) ----
     const HEADER_H = HEADER_FRAC * CARD_H;
@@ -449,20 +473,22 @@
     // ---- header band ----
     const clearanceVal = cardData.watch || 'EMERALD';
     const clearanceHex = CLEARANCE_COLORS[clearanceVal] || CLEARANCE_COLORS.EMERALD;
+    const band = [CX-bx, CY-by, CARD_W+2*bx, HEADER_H+by];
     if(clearanceVal === 'GRAVIUM'){
-      doc.addImage('data:image/png;base64,'+imgB64.gravium, 'PNG', CX, CY, CARD_W, HEADER_H);
+      doc.addImage('data:image/png;base64,'+imgB64.gravium, 'PNG', ...band);
     } else if(clearanceVal === 'OBSIDIAN'){
-      doc.addImage('data:image/png;base64,'+imgB64.obsidian, 'PNG', CX, CY, CARD_W, HEADER_H);
+      doc.addImage('data:image/png;base64,'+imgB64.obsidian, 'PNG', ...band);
     } else {
       doc.setFillColor(...hexToRgb(clearanceHex));
-      doc.rect(CX, CY, CARD_W, HEADER_H, 'F');
+      doc.rect(...band, 'F');
     }
-    // navy diagonal wedge
+    // navy diagonal wedge (in a print file, its slant carries on into the bleed)
     const NAVY_W = 0.64 * CARD_W;
+    const wedgeTop = 0.92*NAVY_W + 0.14*NAVY_W*by/HEADER_H;
     doc.setFillColor(...NAVY);
     doc.lines(
-      [[0.92*NAVY_W,0],[-(0.92*NAVY_W-0.78*NAVY_W), HEADER_H],[-0.78*NAVY_W,0]],
-      CX, CY, [1,1], 'F', true
+      [[wedgeTop+bx,0],[-(wedgeTop-0.78*NAVY_W), HEADER_H+by],[-(0.78*NAVY_W+bx),0]],
+      CX-bx, CY-by, [1,1], 'F', true
     );
     // logo
     const logoR = 0.085;
@@ -511,17 +537,20 @@
     // ---- barcode / QR ----
     const codeBoxY = photoY+photoH+0.03;
     const codeBoxH = CY+CARD_H-FOOTER_H-codeBoxY - (cardData.codeMode==='barcode' ? 0.13 : 0);
-    if(codeImgData){
+    const code = codeShapes(cardData.id || defaults.id, cardData.codeMode);
+    if(code){
       let cw = photoW, ch = codeBoxH;
-      const ratio = codeImgData.w/codeImgData.h;
+      const ratio = code.w/code.h;
       if(cardData.codeMode === 'qr'){
-        cw = Math.min(photoW, codeBoxH);
+        // 2 modules of white above and below, or the footer band under it
+        // stops it scanning
+        cw = Math.min(photoW, codeBoxH) * code.w/(code.w + 4);
         ch = cw;
       } else {
         ch = Math.min(codeBoxH, cw/ratio);
         cw = ch*ratio;
       }
-      doc.addImage(codeImgData.url, 'PNG', photoX+(photoW-cw)/2, codeBoxY+(codeBoxH-ch)/2, cw, ch);
+      drawCode(doc, code, photoX+(photoW-cw)/2, codeBoxY+(codeBoxH-ch)/2, cw, ch);
     }
     if(cardData.codeMode === 'barcode'){
       doc.setFont('Exo2','normal');
@@ -635,7 +664,7 @@
 
     // ---- footer ----
     doc.setFillColor(...NAVY);
-    doc.rect(CX, CY+CARD_H-FOOTER_H, CARD_W, FOOTER_H, 'F');
+    doc.rect(CX-bx, CY+CARD_H-FOOTER_H, CARD_W+2*bx, FOOTER_H+by, 'F');
     doc.setFont('OrbitronBold','normal');
     doc.setFontSize(9);
     doc.setTextColor(255,255,255);
@@ -644,20 +673,11 @@
     doc.restoreGraphicsState();
   }
 
-  function drawCardBack(doc, CX, CY, backQrData, imgB64){
+  function drawCardBack(doc, CX, CY, imgB64, bleed){
     const NAVY = hexToRgb('#1B2A5E');
     const MUTED = hexToRgb('#8890A6');
 
-    // card background + border (matches front)
-    doc.setDrawColor(...NAVY);
-    doc.setLineWidth(0.02);
-    doc.setFillColor(255,255,255);
-    doc.roundedRect(CX, CY, CARD_W, CARD_H, 0.06, 0.06, 'FD');
-
-    doc.saveGraphicsState();
-    doc.roundedRect(CX, CY, CARD_W, CARD_H, 0.06, 0.06);
-    doc.clip();
-    doc.discardPath();
+    cardBase(doc, CX, CY, bleed);
 
     const midX = CX + CARD_W/2;
 
@@ -672,9 +692,8 @@
     // QR code, centered
     const qrSize = 1.05;
     const qrY = CY+0.62;
-    if(backQrData){
-      doc.addImage(backQrData.url, 'PNG', midX-qrSize/2, qrY, qrSize, qrSize);
-    }
+    const qr = codeShapes('https://finlay3110.github.io/UCNTOOLS/', 'qr');
+    if(qr) drawCode(doc, qr, midX-qrSize/2, qrY, qrSize, qrSize);
     doc.setFont('Exo2SemiBold','normal');
     doc.setFontSize(7);
     doc.setTextColor(...NAVY);
@@ -688,64 +707,6 @@
     doc.text(disclaimer, midX, CY+CARD_H-0.22, {align:'center', maxWidth: CARD_W-0.3});
 
     doc.restoreGraphicsState();
-  }
-
-  function generateQrDataUrl(text, sizePx){
-    return new Promise((resolve)=>{
-      if(typeof QRCode === 'undefined'){ resolve(null); return; }
-      const holder = document.createElement('div');
-      holder.style.position = 'absolute';
-      holder.style.left = '-9999px';
-      document.body.appendChild(holder);
-      try{
-        new QRCode(holder, {
-          text, width: sizePx, height: sizePx,
-          colorDark: '#0B1230', colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M,
-        });
-      }catch(e){ document.body.removeChild(holder); resolve(null); return; }
-      setTimeout(()=>{
-        elementToPngDataUrl(holder).then(data=>{
-          document.body.removeChild(holder);
-          resolve(data);
-        });
-      }, 50);
-    });
-  }
-
-  // generalized barcode/QR renderer for arbitrary (not-currently-displayed) card
-  // data - used for batch printing, where each card needs its own code image
-  function renderCodeImageFor(idValue, mode){
-    return new Promise((resolve)=>{
-      const value = idValue || 'UCN-000-0000';
-      const holder = document.createElement('div');
-      holder.style.position = 'absolute';
-      holder.style.left = '-9999px';
-      document.body.appendChild(holder);
-      const cleanup = (result)=>{ document.body.removeChild(holder); resolve(result); };
-      if(mode === 'qr'){
-        if(typeof QRCode === 'undefined'){ cleanup(null); return; }
-        try{
-          new QRCode(holder, {
-            text: value, width: 300, height: 300,
-            colorDark: '#0B1230', colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.M,
-          });
-        }catch(e){ cleanup(null); return; }
-        setTimeout(()=>{ elementToPngDataUrl(holder).then(cleanup); }, 50);
-      } else {
-        if(typeof JsBarcode === 'undefined'){ cleanup(null); return; }
-        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-        holder.appendChild(svg);
-        try{
-          JsBarcode(svg, value, {
-            format:'CODE128', displayValue:false, height:46, margin:0,
-            background:'transparent', lineColor:'#0B1230',
-          });
-        }catch(e){ cleanup(null); return; }
-        elementToPngDataUrl(holder).then(cleanup);
-      }
-    });
   }
 
   function getCurrentCardData(){
@@ -769,7 +730,7 @@
     };
   }
 
-  async function buildPdf(mode, codeImgData, backQrData){
+  async function buildPdf(mode){
     const { jsPDF } = window.jspdf;
     const GUTTER = 0.18;
     const cardData = await withCroppedPhoto(getCurrentCardData());
@@ -781,12 +742,25 @@
       obsidian: await loadImageB64('obsidian'),
     };
 
+    if(mode === 'front' || mode === 'back'){
+      // The Plastic Card Factory's artwork size: the card plus 3mm bleed all
+      // round, 92x60mm, one side per file (their designer takes each side as
+      // its own background image).
+      const W = 92/25.4, H = 60/25.4, bleed = {x: (W-CARD_W)/2, y: (H-CARD_H)/2};
+      const doc = new jsPDF({unit:'in', format:[W, H], orientation:'l'});
+      await registerFonts(doc);
+      useCmyk(doc);
+      if(mode === 'front') drawCardFront(doc, bleed.x, bleed.y, imgB64, cardData, bleed);
+      else drawCardBack(doc, bleed.x, bleed.y, imgB64, bleed);
+      return doc;
+    }
+
     if(mode === 'card'){
       const doc = new jsPDF({unit:'in', format:[CARD_W, CARD_H], orientation:'l'});
       await registerFonts(doc);
-      drawCardFront(doc, 0, 0, codeImgData, imgB64, cardData);
+      drawCardFront(doc, 0, 0, imgB64, cardData);
       doc.addPage([CARD_W, CARD_H], 'l');
-      drawCardBack(doc, 0, 0, backQrData, imgB64);
+      drawCardBack(doc, 0, 0, imgB64);
       return doc;
     }
 
@@ -802,7 +776,7 @@
     doc.setLineWidth(0.01);
     doc.rect(MARGIN_LEFT, MARGIN_TOP, CARD_W + GUTTER*2, CARD_H + GUTTER*2, 'D');
     doc.setLineDashPattern([], 0);
-    drawCardFront(doc, CX, CY, codeImgData, imgB64, cardData);
+    drawCardFront(doc, CX, CY, imgB64, cardData);
 
     // back page: mirrored horizontally so it lines up when duplex-printed (flip on long edge)
     doc.addPage('a4', 'p');
@@ -812,7 +786,7 @@
     doc.setLineWidth(0.01);
     doc.rect(A4_W - MARGIN_LEFT - GUTTER*2 - CARD_W, MARGIN_TOP, CARD_W + GUTTER*2, CARD_H + GUTTER*2, 'D');
     doc.setLineDashPattern([], 0);
-    drawCardBack(doc, backCX, CY, backQrData, imgB64);
+    drawCardBack(doc, backCX, CY, imgB64);
 
     return doc;
   }
@@ -915,7 +889,6 @@
       gravium: await loadImageB64('gravium'),
       obsidian: await loadImageB64('obsidian'),
     };
-    const backQrData = await generateQrDataUrl('https://finlay3110.github.io/UCNTOOLS/', 300);
 
     const doc = new jsPDF({unit:'in', format:'a4', orientation:'p'});
     await registerFonts(doc);
@@ -934,13 +907,9 @@
       doc.setLineDashPattern([], 0);
     }
 
-    // pre-render each card's own barcode/QR image, and crop its photo, once
+    // crop each card's photo once
     const cards = [];
-    const codeImages = [];
-    for(const card of rawCards){
-      cards.push(await withCroppedPhoto(card));
-      codeImages.push(await renderCodeImageFor(card.id, card.codeMode));
-    }
+    for(const card of rawCards) cards.push(await withCroppedPhoto(card));
 
     const pageCount = Math.max(1, Math.ceil(cards.length / perPage));
     for(let p = 0; p < pageCount; p++){
@@ -951,7 +920,7 @@
         const x = marginX + col*(CARD_W+gapX);
         const y = marginY + row*(CARD_H+gapY);
         cutMark(x, y);
-        drawCardFront(doc, x, y, codeImages[p*perPage+i], imgB64, card);
+        drawCardFront(doc, x, y, imgB64, card);
       });
 
       // back page: same grid, mirrored horizontally per-card so each one lines
@@ -963,7 +932,7 @@
         const x = marginX + mirroredCol*(CARD_W+gapX);
         const y = marginY + row*(CARD_H+gapY);
         cutMark(x, y);
-        drawCardBack(doc, x, y, backQrData, imgB64);
+        drawCardBack(doc, x, y, imgB64);
       });
     }
 
@@ -1011,13 +980,8 @@
     btn.textContent = 'Generating…';
     btn.disabled = true;
     try{
-      const [codeImgData, backQrData] = await Promise.all([
-        elementToPngDataUrl(codeRender),
-        generateQrDataUrl('https://finlay3110.github.io/UCNTOOLS/', 300),
-      ]);
-      const doc = await buildPdf(mode, codeImgData, backQrData);
-      const suffix = mode === 'card' ? '-card' : '-a4';
-      const filename = (fields.name.value.trim() || 'ucn-id-card').toLowerCase().replace(/[^a-z0-9]+/g,'-') + suffix + '.pdf';
+      const doc = await buildPdf(mode);
+      const filename = (fields.name.value.trim() || 'ucn-id-card').toLowerCase().replace(/[^a-z0-9]+/g,'-') + '-' + mode + '.pdf';
       doc.save(filename);
     }catch(e){
       console.error(e);
@@ -1030,6 +994,8 @@
 
   $('printA4Btn').addEventListener('click', ()=> downloadCardPdf('a4', $('printA4Btn')));
   $('printCardBtn').addEventListener('click', ()=> downloadCardPdf('card', $('printCardBtn')));
+  $('printFrontBtn').addEventListener('click', ()=> downloadCardPdf('front', $('printFrontBtn')));
+  $('printBackBtn').addEventListener('click', ()=> downloadCardPdf('back', $('printBackBtn')));
 
   // The card preview is drawn at a fixed 520px. On a narrower screen, zoom it out
   // to fit instead of letting it push the whole page wider than the phone.
