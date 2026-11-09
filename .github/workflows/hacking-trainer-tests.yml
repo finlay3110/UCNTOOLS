@@ -1,0 +1,19 @@
+name: Hacking Trainer tests
+
+on:
+  push:
+    paths: ['hacking-trainer/**', '.github/workflows/hacking-trainer-tests.yml']
+  pull_request:
+    paths: ['hacking-trainer/**', '.github/workflows/hacking-trainer-tests.yml']
+
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: hacking-trainer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the game rules
+        run: node test.js
