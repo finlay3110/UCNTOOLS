@@ -1,6 +1,6 @@
 // Checks the rules in game.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { LEVELS, newGame, neighbours, probe, cleared, canApply, apply, time, record, newSession, elapse, endAttempt, effectiveness } from './game.js';
+import { LEVELS, newGame, neighbours, probe, cleared, canApply, apply, time, record, newSession, elapse, endAttempt, effectiveness, SYSTEMS } from './game.js';
 
 // A repeatable random, so a failing case can be replayed.
 const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
@@ -119,14 +119,36 @@ assert.equal(time(3725000), '62:05.0');
   const failed = { won: false, applied: 0 };
   const partial = { won: false, applied: 64 };
   const full = { won: true, applied: 100 };
-  assert.deepEqual(record(records, 'basic', failed, 4000), { time: false, score: false });
+  assert.deepEqual(record(records, 'basic', failed, 4000), { time: false, score: false, academy: false });
   assert.deepEqual(records.basic, { runs: 1, wins: 0, bestMs: null, bestPct: 0 });
-  assert.deepEqual(record(records, 'basic', partial, 3000), { time: false, score: true });
-  assert.deepEqual(record(records, 'basic', full, 9000.4), { time: true, score: true });
-  assert.deepEqual(record(records, 'basic', full, 12000), { time: false, score: false });
-  assert.deepEqual(record(records, 'basic', full, 8000), { time: true, score: false });
+  assert.deepEqual(record(records, 'basic', partial, 3000), { time: false, score: true, academy: false });
+  assert.deepEqual(record(records, 'basic', full, 9000.4), { time: true, score: true, academy: false });
+  assert.deepEqual(record(records, 'basic', full, 12000), { time: false, score: false, academy: false });
+  assert.deepEqual(record(records, 'basic', full, 8000), { time: true, score: false, academy: false });
   assert.deepEqual(records.basic, { runs: 5, wins: 4, bestMs: 8000, bestPct: 100 });
   assert.equal(records.secure, undefined, 'other levels untouched');
 }
+
+// The Academy standard: Secure, a full breach under 40 s, no routine triggered. News only the first time.
+{
+  const records = {};
+  const clean = { won: true, applied: 100, strikes: 0 };
+  assert.equal(record(records, 'secure', { ...clean, strikes: 1 }, 30000).academy, false, 'a routine was triggered');
+  assert.equal(record(records, 'secure', clean, 40000).academy, false, '40 s is not under 40');
+  assert.equal(record(records, 'secure', { won: false, applied: 72, strikes: 0 }, 20000).academy, false, 'an applied breach is not a full one');
+  assert.equal(record(records, 'basic', clean, 9000).academy, false, 'only Secure counts');
+  assert.equal(record(records, 'secure', clean, 39900).academy, true);
+  assert.equal(records.secure.academy, true);
+  assert.equal(record(records, 'secure', clean, 30000).academy, false, 'already met');
+}
+
+// What a hack does to each system, for a target at 100% power.
+assert.equal(SYSTEMS.beams.effect(effectiveness(100)), 'their beams fire every 24 s instead of 6');
+assert.equal(SYSTEMS.beams.effect(effectiveness(36)), 'their beams fire every 8.2 s instead of 6');
+assert.equal(SYSTEMS.missiles.effect(25), 'their missiles take 4 times as long to reload');
+assert.equal(SYSTEMS.impulse.effect(25), 'their top speed drops to 25% of normal');
+assert.equal(SYSTEMS.shields.effect(25), 'their shields take 12.5% more damage and recharge at 25% of normal speed');
+assert.equal(SYSTEMS.shields.effect(50), 'their shields take 10% more damage and recharge at 50% of normal speed');
+assert.equal(SYSTEMS.shields.effect(75), 'their shields take 5% more damage and recharge at 75% of normal speed');
 
 console.log('hacking-trainer: all checks passed');

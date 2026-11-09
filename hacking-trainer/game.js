@@ -107,6 +107,23 @@ export function endAttempt(s, applied, random = Math.random) {
 // How well a target system at 100% power still works: a full hack takes 75 points off.
 export const effectiveness = hacked => 100 - 0.75 * hacked;
 
+// What that does to each system (manual 3.9.5; shields from Table 3-18). e is
+// the effectiveness above, 25–100 (%).
+const one = x => Math.round(x * 10) / 10;
+const shieldDamage = e => (e >= 50 ? (100 - e) / 5 : 10 + (50 - e) / 10);
+export const SYSTEMS = {
+  beams:       { label: 'Beams',       effect: e => `their beams fire every ${one(600 / e)} s instead of 6` },
+  missiles:    { label: 'Missiles',    effect: e => `their missiles take ${one(100 / e)} times as long to reload` },
+  impulse:     { label: 'Impulse',     effect: e => `their top speed drops to ${Math.round(e)}% of normal` },
+  manoeuvring: { label: 'Manoeuvring', effect: e => `they turn at ${Math.round(e)}% of their normal rate` },
+  warp:        { label: 'Warp',        effect: e => `their warp speed drops to ${Math.round(e)}% of normal` },
+  shields:     { label: 'Shields',     effect: e => `their shields take ${one(shieldDamage(e))}% more damage and recharge at ${Math.round(e)}% of normal speed` },
+};
+
+// The manual's training benchmark: a full breach on Secure in under 40 seconds
+// without triggering a single defence routine.
+export const academyStandard = (level, g, ms) => level === 'secure' && g.won && g.strikes === 0 && ms < 40000;
+
 // m:ss.s, the way run times and best times are shown.
 export function time(ms) {
   const t = Math.round(ms / 100);
@@ -114,13 +131,15 @@ export function time(ms) {
 }
 
 // Adds a finished attempt to the records for its level, and says which bests it
-// beat. wins counts breaches that took effect, full or partial.
+// beat (and whether it met the Academy standard for the first time). wins
+// counts breaches that took effect, full or partial.
 export function record(records, level, g, ms) {
   const r = records[level] = { runs: 0, wins: 0, bestMs: null, bestPct: 0, ...records[level] };
-  const beat = { time: g.won && (r.bestMs === null || ms < r.bestMs), score: g.applied > r.bestPct };
+  const beat = { time: g.won && (r.bestMs === null || ms < r.bestMs), score: g.applied > r.bestPct, academy: academyStandard(level, g, ms) && !r.academy };
   r.runs++;
   if (g.applied) r.wins++;
   if (beat.time) r.bestMs = Math.round(ms);
   if (beat.score) r.bestPct = g.applied;
+  if (beat.academy) r.academy = true;
   return beat;
 }

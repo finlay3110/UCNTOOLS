@@ -13,9 +13,12 @@ Secure 70%, Hardened 80%; Fortified needs a full breach) Apply banks the breach,
 and a failed attempt past the mark still applies what it had.
 
 Two meters above the grid show what the hacking achieves against what it
-costs. **Target hacked**: each finished attempt adds half its applied breach,
-a full hack wears off in about 3 minutes, and the line below says how well a
-target system at 100% power still works (a full hack leaves 25%). **Scanner
+costs. **Hacked [system]**: pick the target system (Beams, Missiles, Impulse,
+Manoeuvring, Warp or Shields) under the meter. Each finished attempt adds half
+its applied breach, a full hack wears off in about 3 minutes, and the line
+below says what that does to a target system at 100% power, e.g. beams firing
+every 24 s instead of 6 at a full hack (manual 3.9.5; shields from its Table
+3-18). Switching system starts it from 0%. **Scanner
 heat**: every finished attempt, failed ones included, adds 20–40°; the
 coolant setting under the meter cools 0.5° a second per 10%, and with none the
 Scanners don't cool. Both run on real time across attempts, and start again
@@ -23,7 +26,10 @@ from zero when the page is reloaded.
 
 Each attempt is timed from the first probe. The best time (full breach), best
 breach and breaches for each level are kept in this browser, go in the portal's
-backup, and can be shared as a picture.
+backup, and can be shared as a picture. The records also show the manual's training
+benchmark, the **Academy standard**: a full breach on Secure in under 40 seconds
+without triggering a routine. The tips draw the manual's 1-2-1, 1-2-2-1 and 1-1
+patterns the way its figures do.
 
 Fan-made. Not affiliated with Bridge Command / The London Space Elevator Ltd.
 
