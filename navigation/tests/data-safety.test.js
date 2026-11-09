@@ -121,7 +121,7 @@ const { launch, appUrl, serve, artifact, watch, seedWaypoints, readStore, report
   await p.waitForTimeout(200);
   ok.push(['persist() requested when available', await p.evaluate(() => window.__persistCalled)]);
   ok.push(['a rejected persist() does not break startup',
-    (await p.locator('.tab-btn').count()) === 9]);
+    (await p.locator('.tab-btn').count()) === 10]);
   await p.close();
 
   // ---- manifest ----------------------------------------------------------

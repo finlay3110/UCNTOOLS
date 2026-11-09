@@ -9,7 +9,7 @@ const { launch, appUrl, artifact } = require('./lib/harness');
   const ok = [];
   const ensureOpen = async item => { if(!(await item.evaluate(e=>e.classList.contains('open')))) await item.locator('button.row').click(); };
 
-  ok.push(['9 tabs generated (setup + 7 + history)', (await page.locator('.tab-btn').count())===9]);
+  ok.push(['10 tabs generated (setup + all + 7 categories + history)', (await page.locator('.tab-btn').count())===10]);
   const cl = await page.locator('#compassWrap text').allTextContents();
   ok.push(['compass has 90', cl.includes('90')]);
   ok.push(['compass has 270', cl.includes('270')]);
@@ -56,11 +56,17 @@ const { launch, appUrl, artifact } = require('./lib/harness');
 
   await page.evaluate(()=>localStorage.setItem('ucn_nav_radar_waypoints', JSON.stringify([
     {id:'old1',category:'hostile',number:'7',title:'Legacy',sector:'',description:'from v0'},
+    {id:'old2',category:'objective',number:'2',title:'Old objective',sector:'',description:'before the manual colours'},
     {id:'bad',category:'nope',number:'1',title:'invalid'}])));
   await page.reload();
   await page.locator('#tab-hostile').click();
   ok.push(['legacy array migrated', (await page.locator('#list-hostile .wp-item').count())===1]);
-  ok.push(['invalid entry dropped', (await page.locator('#list-all .wp-item[data-id]').count())===1]);
+  ok.push(['invalid entry dropped', (await page.locator('#list-all .wp-item[data-id]').count())===2]);
+  // The old general Objectives category folds into Mission Objectives rather than being lost.
+  ok.push(['old Objectives waypoint kept under Mission Objectives', (await page.locator('#list-mission .wp-item[data-id]').count())===1]);
+  await page.evaluate(()=>localStorage.setItem('ucn_nav_radar_waypoints', JSON.stringify([
+    {id:'old1',category:'hostile',number:'7',title:'Legacy',sector:'',description:'from v0'}])));
+  await page.reload();
 
   await page.locator('#quickRefBtn').click();
   ok.push(['modal open', await page.locator('#refOverlay').evaluate(e=>e.classList.contains('open'))]);
