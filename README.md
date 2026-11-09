@@ -73,6 +73,8 @@ The deploy also stamps the service-worker cache versions of Songbook, Tactical A
 
 The homepage's **Back up & restore** card saves every tool's data in one file.
 
+On iPhone, every Home Screen app keeps its own storage, separate from Safari and from each other, so the tools' install prompts there point to the homepage: added once, it holds every tool, and they share their data.
+
 All tools share one web origin, so each must keep its own `localStorage` keys and cache-name prefix, and a service worker must only delete caches carrying its own prefix.
 
 ## Features
