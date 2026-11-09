@@ -34,10 +34,8 @@
     border:1px solid var(--border); border-radius:8px; padding:10px 12px;
   }
   .row{ display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
-  .mode{ display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-  .mode button{ min-height:40px; padding:0 14px; border:0; background:none; color:var(--muted); font:inherit; font-weight:700; cursor:pointer; }
-  .mode button[aria-pressed="true"]{ background:var(--orange); color:#1a0e02; }
-  .count{ flex:1; text-align:center; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .stat{ flex:1; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .stat b{ color:var(--text); }
   .btn{
     min-height:40px; padding:0 14px; border-radius:8px; border:1.5px solid var(--orange); background:none;
     color:var(--orange); font:inherit; font-weight:700; cursor:pointer;
@@ -48,14 +46,14 @@
   .status strong{ color:var(--text); }
 
   .board{
-    display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:2px; padding:6px;
+    display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:3px; padding:6px;
     background:#070b16; border:1px solid var(--border); border-radius:12px;
     touch-action:manipulation; user-select:none; -webkit-user-select:none;
   }
   .board.won{ border-color:var(--green); box-shadow:0 0 0 2px rgba(47,181,116,0.35); }
   .board.lost{ border-color:var(--red); box-shadow:0 0 0 2px rgba(214,69,69,0.35); }
   .cell{
-    aspect-ratio:1; min-width:0; padding:0; border:1px solid #2f4384; border-radius:5px; cursor:pointer;
+    aspect-ratio:1; min-width:0; padding:0; border:1px solid #2f4384; border-radius:50%; cursor:pointer;
     background:linear-gradient(160deg, #25397a, #1b2a5e); color:var(--text);
     font:700 clamp(12px, 3.6vw, 18px)/1 'Orbitron', sans-serif;
     display:flex; align-items:center; justify-content:center;
@@ -65,12 +63,18 @@
   .cell:disabled{ cursor:default; }
   .cell.open{ background:var(--open); border-color:#1e2a52; cursor:default; }
   .cell svg{ width:62%; height:62%; }
-  .cell.flag{ color:var(--orange); }
-  .cell.wrong{ color:var(--muted); background:linear-gradient(135deg, transparent 46%, var(--red) 47% 53%, transparent 54%), var(--open); }
   .cell.trap{ background:#2a1220; border-color:#5a2238; color:var(--red); }
   .cell.hit{ background:var(--red); border-color:var(--red); color:#fff; }
   .n1{ color:#4FA8C9; } .n2{ color:#2FB574; } .n3{ color:#E39A3E; } .n4{ color:#B48CF0; }
   .n5{ color:#FF6B6B; } .n6{ color:#4FD1C5; } .n7{ color:#e8ecf7; } .n8{ color:#8c98bf; }
+
+  .records{ margin-top:18px; }
+  .records h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
+  .records table{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+  .records th, .records td{ padding:7px 4px; text-align:right; border-bottom:1px solid var(--border); }
+  .records th:first-child{ text-align:left; }
+  .records thead th{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .records p{ margin:10px 0 12px; color:var(--muted); font-size:13px; line-height:1.5; }
 
   .help{ margin-top:18px; }
   .help h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 8px; }
@@ -99,11 +103,8 @@
       <option value="fortified">4. Fortified &mdash; 12&times;12, 36 traps</option>
     </select>
     <div class="row">
-      <div class="mode" role="group" aria-label="What a tap does">
-        <button type="button" id="modeProbe" aria-pressed="true">Probe</button>
-        <button type="button" id="modeFlag" aria-pressed="false">Flag</button>
-      </div>
-      <span class="count" id="count"></span>
+      <span class="stat">Time <b id="clock" role="timer">0:00</b></span>
+      <span class="stat">Cleared <b id="cleared">0%</b></span>
       <button type="button" class="btn" id="newGrid">New grid</button>
     </div>
   </section>
@@ -111,28 +112,38 @@
   <p class="status" id="status" role="status" aria-live="polite"></p>
   <div class="board" id="board" aria-label="Network grid"></div>
 
+  <section class="panel records" aria-labelledby="recordsTitle">
+    <h2 id="recordsTitle">Your records</h2>
+    <table>
+      <thead><tr><th scope="col">Level</th><th scope="col">Best time</th><th scope="col">Best score</th><th scope="col">Wins</th></tr></thead>
+      <tbody id="records"></tbody>
+    </table>
+    <p>Saved on this device after every finished run. Your score is how much of the network you cleared before a trap caught you.</p>
+    <button type="button" class="btn" id="shareRecords">Share as an image</button>
+  </section>
+
   <section class="panel help">
     <h2>How to play</h2>
     <ol>
       <li><b>Pick a security level.</b> Each one hides a set number of traps in its grid of nodes.</li>
       <li><b>Probe a node</b> by tapping it. Your first probe is always safe, and opens up part of the grid.</li>
       <li><b>Read the numbers.</b> A number tells you how many of the 8 nodes touching it (diagonals too) hide a trap. A blank node has none, so its neighbours open by themselves.</li>
-      <li><b>Flag the traps you find.</b> Switch to <b>Flag</b> and tap a node, or right-click it on a computer (or press F on a focused node). A flagged node can't be probed by accident. Tap it again to remove the flag.</li>
-      <li><b>Open every safe node</b> to gain access. Probe a trap and the trace catches you.</li>
+      <li><b>Probe every safe node</b> to gain access. Probe a trap and the trace catches you. As in Bridge Command there are no flags, so keep track of the traps in your head.</li>
+      <li><b>Beat your records.</b> The clock starts on your first probe. Your best time and best score for each level are kept below the grid.</li>
     </ol>
 
     <h2>Tips &amp; tricks</h2>
     <ul>
       <li><b>Work along the edge of the open area.</b> Numbers there touch the fewest hidden nodes, so they give the surest answers.</li>
-      <li><b>Full house:</b> if a number has exactly that many hidden nodes around it, every one of them is a trap. Flag them all.</li>
-      <li><b>Already satisfied:</b> if a number already has that many flags around it, every other node around it is safe. Probe them.</li>
+      <li><b>Full house:</b> if a number has exactly that many hidden nodes around it, every one of them is a trap. Leave them all alone.</li>
+      <li><b>Already satisfied:</b> once you know where all of a number's traps are, every other hidden node around it is safe. Probe them.</li>
       <li><b>Compare neighbours:</b> when one number's hidden nodes are all shared with the number next to it, any extra nodes the second one touches hold the difference. Equal numbers mean the extras are safe.</li>
       <li><b>1-2-1 on a straight edge:</b> the traps sit opposite the two 1s, and the node opposite the 2 is safe.</li>
       <li><b>1-2-2-1 on a straight edge:</b> the traps sit opposite the two 2s, and the nodes opposite the 1s are safe.</li>
-      <li><b>Flag only what you're sure of.</b> A wrong flag hides a safe node and makes the numbers around it mislead you.</li>
-      <li><b>Use the traps-left counter</b> near the end: if the traps you know about account for all of them, every other hidden node is safe.</li>
+      <li><b>Finish one area before the next.</b> With no flags to mark them, the traps you've worked out are easy to lose track of. Settle a corner completely, then move on.</li>
+      <li><b>Count the traps near the end.</b> Each level has a fixed number (shown in the level list). If the traps you know about account for all of them, every other hidden node is safe.</li>
       <li><b>When you must guess</b> (it happens on Hardened and Fortified, where a quarter of the nodes are traps), guess early rather than after lots of work, and pick a node that would tell you the most if it's safe.</li>
-      <li><b>Train up through the levels.</b> On Basic and Secure, practise spotting the patterns until you see them at a glance.</li>
+      <li><b>Train up through the levels.</b> On Basic and Secure, practise spotting the patterns until you see them at a glance. That's where fast times come from.</li>
     </ul>
   </section>
 </main>
@@ -140,17 +151,22 @@
 <footer>Fan-made training game for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
 
 <script type="module">
-  import { LEVELS, newGame, probe, toggleFlag, trapsLeft } from './game.js';
+  import { LEVELS, newGame, probe, cleared, time, record } from './game.js';
 
   const $ = id => document.getElementById(id);
   const board = $('board');
-  const FLAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M7 4h11l-3 4 3 4H7z" fill="currentColor"/></svg>';
   const TRAP = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-  let game, flagMode = false;
+  const KEY = 'ucnHackingTrainer_v1';
+  let game, level, startedAt = 0, ms = 0, ticker = 0, records = {};
+  try { records = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: records last this visit only */ }
+  if (typeof records !== 'object' || Array.isArray(records)) records = {};
 
   function start() {
-    const { size, traps } = LEVELS[$('level').value];
+    level = $('level').value;
+    const { size, traps } = LEVELS[level];
     game = newGame(size, traps);
+    clearInterval(ticker);
+    ms = 0;
     board.style.setProperty('--n', size);
     board.innerHTML = '';
     for (let i = 0; i < size * size; i++) {
@@ -161,6 +177,14 @@
       board.appendChild(b);
     }
     draw();
+    say('Probe any node to start. The first one is always safe.');
+  }
+
+  // Only when it changes: rewriting a live region makes screen readers say it again on every tap.
+  function say(html) { if ($('status').innerHTML !== html) $('status').innerHTML = html; }
+
+  function showClock() {
+    $('clock').textContent = game.over ? time(ms) : time(game.started ? performance.now() - startedAt : 0).slice(0, -2);
   }
 
   // Buttons are updated in place rather than rebuilt, so keyboard focus stays put.
@@ -169,50 +193,106 @@
       const c = game.cells[i];
       let cls = 'cell', html = '', what = 'hidden';
       if (c.trap && c.open) { cls += ' trap hit'; html = TRAP; what = 'tripped trap'; }
-      else if (game.over && c.trap && !c.flag) { cls += ' trap'; html = TRAP; what = 'trap'; }
-      else if (c.flag && game.over && !c.trap) { cls += ' flag wrong'; html = FLAG; what = 'flagged, but safe'; }
-      else if (c.flag) { cls += ' flag'; html = FLAG; what = 'flagged'; }
+      else if (game.over && c.trap) { cls += ' trap'; html = TRAP; what = 'trap'; }
       else if (c.open) { cls += ' open n' + c.near; html = c.near || ''; what = c.near ? c.near + (c.near > 1 ? ' traps' : ' trap') + ' nearby' : 'clear'; }
       b.className = cls;
       b.innerHTML = html;
       b.disabled = game.over;
       b.setAttribute('aria-label', `Row ${Math.floor(i / game.size) + 1}, column ${i % game.size + 1}: ${what}`);
     });
-    $('count').textContent = 'Traps left: ' + trapsLeft(game);
+    $('cleared').textContent = cleared(game) + '%';
     board.classList.toggle('won', game.won);
     board.classList.toggle('lost', game.over && !game.won);
-    const status = game.won ? '<strong>ACCESS GRANTED.</strong> Network cleared. Try a harder level?'
-      : game.over ? '<strong>TRACE DETECTED.</strong> You probed a trap. Press New grid to try again.'
-      : game.started ? 'Probe the safe nodes. Flag the traps you find.'
-      : 'Probe any node to start. The first one is always safe.';
-    // Only when it changes: rewriting a live region makes screen readers say it again on every tap.
-    if ($('status').innerHTML !== status) $('status').innerHTML = status;
+    showClock();
+    if (game.started && !game.over) say('Probe every safe node. Avoid the traps.');
   }
 
-  function act(b, flag) {
-    if (!b || game.over) return;
-    if (flag) toggleFlag(game, +b.dataset.i); else probe(game, +b.dataset.i);
-    draw();
+  function finish() {
+    clearInterval(ticker);
+    ms = performance.now() - startedAt;
+    const beat = record(records, level, game, ms);
+    try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (e) { /* storage blocked */ }
+    showRecords();
+    say(game.won
+      ? `<strong>ACCESS GRANTED</strong> in ${time(ms)}.${beat.time ? ' New best time!' : ''}`
+      : `<strong>TRACE DETECTED.</strong> You cleared ${cleared(game)}% of the network.${beat.score ? ' New best score!' : ''} Press New grid to try again.`);
   }
 
-  function setMode(flag) {
-    flagMode = flag;
-    $('modeProbe').setAttribute('aria-pressed', String(!flag));
-    $('modeFlag').setAttribute('aria-pressed', String(flag));
+  // What a level's records read as, in the table and the picture.
+  function best(key) {
+    const r = records[key];
+    return r ? [r.bestMs == null ? '—' : time(+r.bestMs), +r.bestPct + '%', +r.wins + ' of ' + +r.runs] : ['—', '—', '—'];
   }
 
-  board.addEventListener('click', e => act(e.target.closest('.cell'), flagMode));
-  board.addEventListener('contextmenu', e => {
+  function showRecords() {
+    $('records').innerHTML = Object.entries(LEVELS).map(([key, L]) =>
+      `<tr><th scope="row">${L.label}</th>${best(key).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
+  }
+
+  // The records as a picture to send to friends. Drawn without waiting on
+  // anything, so the phone still counts the share sheet as opened by the tap.
+  function recordsPng() {
+    const W = 1080, c = document.createElement('canvas');
+    c.width = c.height = W;
+    const x = c.getContext('2d');
+    const bg = x.createRadialGradient(W / 2, 0, 0, W / 2, 0, W);
+    bg.addColorStop(0, '#1b2a5e');
+    bg.addColorStop(0.7, '#0b0f1c');
+    x.fillStyle = bg;
+    x.fillRect(0, 0, W, W);
+    const text = (s, px, y, font, colour) => { x.font = font; x.fillStyle = colour; x.fillText(s, px, y); };
+    text('HACKING TRAINER', 70, 140, '800 64px Orbitron', '#e8ecf7');
+    text('MY RECORDS · UCN FLEET DIGITAL SUITE', 72, 190, '600 26px "Exo 2"', '#DD7A2B');
+    Object.entries(LEVELS).forEach(([key, L], i) => {
+      const y = 240 + i * 180;
+      x.beginPath();
+      (x.roundRect || x.rect).call(x, 70, y, W - 140, 150, 18);
+      x.fillStyle = '#141c38';
+      x.fill();
+      x.lineWidth = 2;
+      x.strokeStyle = '#2a3a66';
+      x.stroke();
+      text(L.label.toUpperCase(), 104, y + 68, '700 34px Orbitron', '#e8ecf7');
+      text(`${L.size}×${L.size}, ${L.traps} traps`, 104, y + 108, '400 25px "Exo 2"', '#8c98bf');
+      best(key).forEach((v, j) => {
+        text(['BEST TIME', 'BEST SCORE', 'WINS'][j], 460 + j * 185, y + 60, '600 19px "Exo 2"', '#8c98bf');
+        text(v, 460 + j * 185, y + 106, '700 32px Orbitron', j ? '#e8ecf7' : '#DD7A2B');
+      });
+    });
+    text('Train at finlay3110.github.io/UCNTOOLS', 72, 1022, '400 24px "Exo 2"', '#8c98bf');
+    const bytes = atob(c.toDataURL('image/png').split(',')[1]);
+    return new Blob([Uint8Array.from(bytes, ch => ch.charCodeAt(0))], { type: 'image/png' });
+  }
+
+  board.addEventListener('click', e => {
     const b = e.target.closest('.cell');
-    if (b) { e.preventDefault(); act(b, true); }
+    if (!b || game.over) return;
+    const fresh = !game.started;
+    probe(game, +b.dataset.i);
+    if (fresh) { startedAt = performance.now(); ticker = setInterval(showClock, 250); }
+    if (game.over) finish();
+    draw();
   });
-  board.addEventListener('keydown', e => {
-    if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) act(e.target.closest('.cell'), true);
-  });
-  $('modeProbe').addEventListener('click', () => setMode(false));
-  $('modeFlag').addEventListener('click', () => setMode(true));
   $('level').addEventListener('change', start);
   $('newGrid').addEventListener('click', start);
+  $('shareRecords').addEventListener('click', () => {
+    const png = recordsPng(), name = 'hacking-trainer-records.png';
+    const download = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(png);
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    };
+    // Tested with the picture itself: some phones share pictures but not other files.
+    const file = new File([png], name, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'My Hacking Trainer records' }).catch(e => { if (e.name !== 'AbortError') download(); });
+    } else download();
+  });
+  // The picture uses the page's fonts: have them ready before anyone taps Share.
+  ['800 1em Orbitron', '700 1em Orbitron', '400 1em "Exo 2"', '600 1em "Exo 2"'].forEach(f => document.fonts.load(f).catch(() => {}));
+  showRecords();
   start();
 </script>
 <script>

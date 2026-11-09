@@ -1,6 +1,6 @@
 // Writes shared/ucn-lists.json (the operations and the rank ladder),
 // shared/profile.js (the shared name and rank), shared/share.js (the Share
-// log button) and shared/offline-sw.js (four tools' offline copy) into every
+// log button) and shared/offline-sw.js (five tools' offline copy) into every
 // tool that keeps a
 // copy, between "ucn-lists:<part>" and "ucn-lists:end" marker lines, in that
 // tool's own syntax. Each tool stays one self-contained, offline page. The

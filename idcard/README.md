@@ -24,6 +24,13 @@ Live at **[finlay3110.github.io/UCNTOOLS/idcard](https://finlay3110.github.io/UC
 - Both PDFs are double-sided: front is the card you built, back is a QR code
   linking to this tool plus the fan-project disclaimer. Print double-sided
   ("flip on long edge") and the back lines up correctly with the front.
+- **Print on real plastic** — front and back print files for
+  [The Plastic Card Factory](https://www.theplasticcardfactory.co.uk), made to
+  their artwork guide: the CR80 card plus 3mm bleed all round (92×60mm, their
+  designer's page size), CMYK colours, no border or cut marks, one side per
+  file to upload as each page's Background Image.
+- Barcodes and QR codes are drawn into every PDF as shapes, not pictures, so
+  they print sharp at any size.
 - **Batch printing** — export a card as a small file, send it to someone,
   import theirs back, queue up a whole crew, and print everyone at once:
   10 cards per A4 sheet, double-sided, with cut marks. Good for print runs
