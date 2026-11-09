@@ -388,10 +388,30 @@
     border:0;
   }
 
+  /* ---- agreement asked before some documents ---- */
+  .agree{
+    max-width:640px; width:calc(100% - 32px); max-height:90vh; padding:0; overflow:auto;
+    background:var(--navy-panel); color:var(--ink);
+    border:1px solid var(--navy-line); border-radius:8px;
+  }
+  .agree::backdrop{ background:rgba(4,7,10,0.85); }
+  .agree form{ padding:20px; }
+  .agree h2{ margin:0 0 6px; font-family:'Orbitron', sans-serif; font-size:15px; letter-spacing:1px; }
+  .agree > form > p{ margin:0 0 12px; color:var(--ink-dim); font-size:14px; line-height:1.5; }
+  .agree ol{ margin:0; padding-left:22px; }
+  .agree li{ margin:0 0 14px; font-size:14px; line-height:1.5; }
+  .agree li p{ margin:0 0 6px; }
+  .agree a{ color:var(--orange); overflow-wrap:anywhere; }
+  .agree label{ display:inline-flex; align-items:center; gap:8px; min-height:32px; cursor:pointer; }
+  .agree input{ width:22px; height:22px; accent-color:var(--orange); }
+  .agree-actions{ display:flex; gap:10px; margin-top:8px; }
+  .agree-actions .btn{ font-size:13px; padding:10px 0; }
+
   /* Keyboard focus needs to be visible against the dark panels. */
   .tab:focus-visible,
   .btn:focus-visible,
   .viewer-bar button:focus-visible,
+  .agree input:focus-visible,
   .search-wrap input:focus-visible{
     outline:2px solid var(--orange);
     outline-offset:2px;
@@ -445,8 +465,57 @@
   </div>
 </div>
 
+<dialog class="agree" id="agree" aria-labelledby="agreeTitle">
+  <form method="dialog" id="agreeForm">
+    <h2 id="agreeTitle">Before you open this manual</h2>
+    <p>Its author asks every reader to agree to the following. Tick Yes to each to continue.</p>
+    <ol id="agreeList"></ol>
+    <div class="agree-actions">
+      <button class="btn" value="cancel" formnovalidate>Cancel</button>
+      <button class="btn primary" value="ok">Agree and open</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
 let manifest = { categories: [] };
+
+// The UCN Academy Manual's author asks every reader to agree to these first,
+// in their own words (from the manual's sign-up form).
+const AGREEMENTS = {
+  'pdfs/general-info/UCN-Academy-Manual.pdf': [
+    'I acknowledge that Bridge Command are the owners of any proprietary and copyrighted material.',
+    'I can confirm I have been to Bridge Command and I have participated in at least one mission, and I will not share this with anyone unless they have also been on at least one mission.',
+    'I can confirm that I have watched the existing training videos at <a href="https://bridgecommand.space/training-videos/" target="_blank" rel="noopener">https://bridgecommand.space/training-videos/</a>',
+    'I acknowledge that this is <b>100% unofficial</b>, and whilst Bridge Command have approved publication, no member of the Bridge Command team has formally reviewed, verified, corrected, or approved the contents of this manual.',
+    'I can confirm I will <b>not pass</b> any information contained in this manual to <b>anyone</b> who does not want to know it.',
+    'I won\'t share this Manual <b>directly</b> with anyone, I will instead direct them to this link so they can make same agreements.',
+    'I can confirm that I will <b>not criticise</b> people who do not know this information, and will not assume that any nomenclature, SOPs or any other standardisation are in any way official, or indeed standard!',
+    'I acknowledge this is based off of the LARP Empty Epsilon code/icons, and will not take anything in this manual as gospel/canon.',
+  ],
+};
+let pending = null;
+
+function agreementKey(path) {
+  return Object.keys(AGREEMENTS).find(k => encodePath(k) === path);
+}
+
+// Once agreed, this device isn't asked again.
+function agreedTo(path) {
+  const key = agreementKey(path);
+  if (!key) return true;
+  try { return localStorage.getItem('ucnAgreed:' + key) === '1'; } catch (e) { return false; }
+}
+
+// Runs then() straight away, or once the reader has agreed to the document's terms.
+function withAgreement(path, then) {
+  if (agreedTo(path)) return then();
+  const key = agreementKey(path);
+  pending = { key, then };
+  document.getElementById('agreeList').innerHTML = AGREEMENTS[key]
+    .map(text => `<li><p>${text}</p><label><input type="checkbox" required> Yes</label></li>`).join('');
+  document.getElementById('agree').showModal();
+}
 let activeTab = 'all';
 
 async function loadManifest() {
@@ -560,7 +629,7 @@ function renderGrid() {
       <div class="ribbon">FIELD USE</div>
       <div class="cat-label">${escapeHtml(f.categoryLabel)}</div>
       <h3>${escapeHtml(f.name)}</h3>
-      <div class="meta">${formatSize(f.size)}</div>
+      <div class="meta">${formatSize(f.size)}${AGREEMENTS[f.path] ? ' · agreement required' : ''}</div>
       <div class="card-actions">
         <button class="btn primary" data-path="${href}" data-name="${escapeHtml(f.name)}">View</button>
         <a class="btn" href="${href}" download>Download</a>
@@ -569,7 +638,14 @@ function renderGrid() {
   }).join('');
 
   grid.querySelectorAll('.btn.primary').forEach(btn => {
-    btn.addEventListener('click', () => openViewer(btn.dataset.path, btn.dataset.name));
+    btn.addEventListener('click', () => withAgreement(btn.dataset.path, () => openViewer(btn.dataset.path, btn.dataset.name)));
+  });
+  grid.querySelectorAll('a[download]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      if (agreedTo(a.getAttribute('href'))) return;
+      e.preventDefault();
+      withAgreement(a.getAttribute('href'), () => a.click());
+    });
   });
 }
 
@@ -681,7 +757,7 @@ function applyUrl() {
   if (doc) {
     const match = allFiles().find(f => encodePath(f.path) === doc);
     if (match) {
-      openViewer(doc, match.name, true);
+      withAgreement(doc, () => openViewer(doc, match.name, true));
       return;
     }
   }
@@ -694,6 +770,16 @@ function requestCloseViewer() {
   if (history.state && history.state.doc) history.back();
   else closeViewer(true);
 }
+
+document.getElementById('agreeForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  document.getElementById('agree').close();
+  if (e.submitter && e.submitter.value === 'ok' && pending) {
+    try { localStorage.setItem('ucnAgreed:' + pending.key, '1'); } catch (err) { /* asked again next time */ }
+    pending.then();
+  }
+  pending = null;
+});
 
 document.getElementById('viewerClose').addEventListener('click', requestCloseViewer);
 document.getElementById('viewerOverlay').addEventListener('click', (e) => {
