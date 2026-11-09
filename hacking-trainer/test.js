@@ -1,6 +1,6 @@
 // Checks the rules in game.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { LEVELS, newGame, neighbours, probe, cleared, canApply, apply, time, record } from './game.js';
+import { LEVELS, newGame, neighbours, probe, cleared, canApply, apply, time, record, newSession, elapse, endAttempt, effectiveness } from './game.js';
 
 // A repeatable random, so a failing case can be replayed.
 const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
@@ -83,6 +83,27 @@ for (const [key, { size, traps, apply: at }] of Object.entries(LEVELS)) {
   probe(g, 70, seeded(9));
   for (const i of safeLeft(g)) { assert.ok(!canApply(g), 'Fortified needs full completion'); probe(g, i); }
   assert.ok(g.won && g.applied === 100);
+}
+
+// Hack effect vs Scanner heat: every finished attempt costs 20–40°, whatever it achieved.
+{
+  const s = newSession();
+  assert.equal(endAttempt(s, 100, () => 0.5), 30);
+  assert.deepEqual(s, { hacked: 50, heat: 30 }, 'a full breach: +50% hacked');
+  elapse(s, 36, 0);
+  assert.deepEqual(s, { hacked: 30, heat: 30 }, 'the hack wears off over 3 minutes; no coolant, no cooling');
+  elapse(s, 20, 10);
+  assert.deepEqual(s, { hacked: 30 - 100 / 9, heat: 20 }, '10% coolant cools 0.5° a second');
+  assert.equal(endAttempt(s, 0, () => 0), 20, 'a failed attempt still heats the Scanners');
+  assert.equal(s.heat, 40);
+  assert.equal(endAttempt(s, 72, () => 0.9999), 40);
+  assert.equal(s.hacked, 30 - 100 / 9 + 36, 'an applied breach adds half its progress');
+  for (let i = 0; i < 4; i++) endAttempt(s, 100);
+  assert.deepEqual(s, { hacked: 100, heat: 100 }, 'both stop at 100');
+  elapse(s, 600, 100);
+  assert.deepEqual(s, { hacked: 0, heat: 0 }, 'and neither goes below 0');
+  assert.equal(effectiveness(100), 25, 'a full hack leaves a system at 100% power working at 25%');
+  assert.equal(effectiveness(0), 100);
 }
 
 // Times.
