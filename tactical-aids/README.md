@@ -56,6 +56,16 @@ The active category, search term and open document are kept in the URL, so a
 link like `…/#cat=navigation` or `…/#doc=pdfs/engineering/warp-guide.pdf` opens
 straight to that view.
 
+## Agreements before opening
+
+Some aids ask the reader to agree to their author's terms first. `AGREEMENTS` in
+`index.html` maps a PDF's path to those statements; View, Download and a
+`#doc=` link all show them, each needing a Yes, and the agreement is then
+remembered on that device. The UCN Academy Manual (General Info) uses this,
+with the eight statements from its author's sign-up form, hosted with the
+author's agreement. It is a courtesy, not a lock: the PDF's own address and the
+public repo still serve the file.
+
 ## Offline use
 
 `sw.js` is a service worker that caches the site shell and every PDF you open,
