@@ -57,6 +57,15 @@
   .bar.full .fill{ background:var(--green); }
   .mark{ position:absolute; top:0; bottom:0; width:2px; margin-left:-1px; background:var(--text); }
   .status strong{ color:var(--text); }
+  /* Two columns filled top to bottom, so the bars line up even when one label wraps. */
+  .meters{ display:grid; grid-template:auto auto auto / 1fr 1fr; grid-auto-flow:column; column-gap:14px; margin:0 2px 12px; }
+  .meters .progress-label{ align-self:end; }
+  .meters small{ display:flex; align-items:center; gap:6px; margin-top:6px; color:var(--muted); font-size:12px; }
+  .meters label{ display:inline; margin:0; }
+  .meters select{ width:auto; padding:1px 4px; }
+  .bar.hacked .fill{ background:#9b6bff; }
+  .bar.hot .fill{ background:var(--orange); }
+  .bar.critical .fill{ background:var(--red); }
 
   .board{
     display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:3px; padding:6px;
@@ -121,6 +130,14 @@
   </section>
 
   <p class="status" id="status" role="status" aria-live="polite"></p>
+  <div class="meters">
+    <div class="progress-label"><span>Target hacked: <b id="hacked">0%</b></span></div>
+    <div class="bar hacked" aria-hidden="true"><div class="fill" id="hackedFill"></div></div>
+    <small id="effect"></small>
+    <div class="progress-label"><span>Scanner heat: <b id="heat">0°</b></span></div>
+    <div class="bar" id="heatBar" aria-hidden="true"><div class="fill" id="heatFill"></div></div>
+    <small><label for="coolant">Coolant</label><select id="coolant"></select></small>
+  </div>
   <div class="progress">
     <div class="progress-label"><span>Hacking in progress: <b id="cleared">0%</b></span><span id="applyAt"></span></div>
     <div class="bar" id="bar" aria-hidden="true"><div class="fill" id="fill"></div><div class="mark" id="mark"></div></div>
@@ -144,9 +161,18 @@
       <li><b>Probe a node</b> by tapping it. Your first probe is always safe, and opens up part of the grid.</li>
       <li><b>Read the traces.</b> The number on a revealed node is its trace: how many of the 8 nodes touching it (diagonals too) hide a defence routine. A blank node has none, so its neighbours open by themselves.</li>
       <li><b>Build progress.</b> Hacking in progress is how much of the grid's safe nodes you've cleared. Clear them all for a full breach.</li>
-      <li><b>Apply when it's good enough.</b> Once progress passes the level's mark (Basic 60%, Secure 70%, Hardened 80%), Apply banks the breach at that progress. Fortified only accepts a full breach. In Bridge Command each breach adds half its progress to the target system's hacked level, so a 100% breach gives +50%.</li>
+      <li><b>Apply when it's good enough.</b> Once progress passes the level's mark (Basic 60%, Secure 70%, Hardened 80%), Apply banks the breach at that progress. Fortified only accepts a full breach.</li>
       <li><b>Two strikes.</b> The first defence routine you trigger is marked X and you carry on. A second ends the attempt; if you'd passed the Apply mark, the breach still applies what it had. There are no flags, as in Bridge Command: keep track of the routines in your head.</li>
     </ol>
+
+    <h2>Hack effect vs Scanner heat</h2>
+    <ul>
+      <li><b>Every finished attempt costs 20–40° of Scanner heat</b>, however it ended. What you get for that heat depends on how far you got: a full breach adds 50% to the target's hacked level, applying at 70% adds 35%, and a failed attempt adds nothing.</li>
+      <li><b>The hack wears off</b> steadily: 100% clears in about 3 minutes. Two full breaches reach 100% in theory, but it usually takes three or more, as the first wears off while you work on the next.</li>
+      <li><b>100% hacked takes 75 points off the target system:</b> at 100% power it works at 25%, and at 200% it still works at 125%.</li>
+      <li><b>What a full hack does:</b> beams fire every 24 seconds instead of 6, missiles reload four times slower, and impulse, manoeuvring and warp drop to a quarter. Shields only take about 12.5% more damage, and Scanners are rarely worth it.</li>
+      <li><b>Scanners don't cool without coolant.</b> Each 10% Engineering gives them cools them 0.5° a second. Report heat past 75°; at 100° they start taking damage. Pick one primary hacker, so two officers don't overheat the same Scanners.</li>
+    </ul>
 
     <h2>Tips &amp; tricks</h2>
     <ul>
@@ -168,7 +194,7 @@
 <footer>Fan-made training game for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
 
 <script type="module">
-  import { LEVELS, newGame, probe, apply, canApply, cleared, time, record } from './game.js';
+  import { LEVELS, newGame, probe, apply, canApply, cleared, time, record, newSession, elapse, endAttempt, effectiveness } from './game.js';
 
   const $ = id => document.getElementById(id);
   const board = $('board');
@@ -177,6 +203,24 @@
   let game, level, startedAt = 0, ms = 0, ticker = 0, records = {};
   try { records = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: records last this visit only */ }
   if (typeof records !== 'object' || Array.isArray(records)) records = {};
+
+  // The target's hack and the Scanners' heat run on real time, across attempts.
+  const session = newSession();
+  let lastTick = performance.now();
+  for (let c = 0; c <= 100; c += 10) $('coolant').add(new Option(c + '%', c));
+
+  function age() {
+    const now = performance.now();
+    elapse(session, (now - lastTick) / 1000, +$('coolant').value);
+    lastTick = now;
+    $('hacked').textContent = Math.round(session.hacked) + '%';
+    $('hackedFill').style.width = session.hacked + '%';
+    $('effect').textContent = 'Target ' + Math.round(effectiveness(session.hacked)) + '% effective';
+    $('heat').textContent = Math.round(session.heat) + '°' + (session.heat >= 100 ? ' overheating' : '');
+    $('heatFill').style.width = session.heat + '%';
+    $('heatBar').classList.toggle('hot', session.heat >= 75);
+    $('heatBar').classList.toggle('critical', session.heat >= 90);
+  }
 
   function start() {
     level = $('level').value;
@@ -240,11 +284,15 @@
     const beat = record(records, level, game, ms);
     try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (e) { /* storage blocked */ }
     showRecords();
-    // In Bridge Command a breach adds half its progress to the target system's hacked level.
-    const effect = ` Target system +${game.applied / 2}% hacked.`;
-    say(game.won ? `<strong>BREACH COMPLETE</strong> in ${time(ms)}.${beat.time ? ' New best time!' : ''}${effect}`
+    age();   // wear the hack and heat down to now before this attempt adds to them
+    const heat = endAttempt(session, game.applied);
+    age();
+    const effect = ` Target +${game.applied / 2}% hacked for ${heat}° of Scanner heat.`;
+    const warn = session.heat >= 100 ? ' <strong>Scanners overheating:</strong> in a fight they would now be taking damage. Give them coolant.'
+      : session.heat >= 75 ? ' Scanners nearing overheat.' : '';
+    say((game.won ? `<strong>BREACH COMPLETE</strong> in ${time(ms)}.${beat.time ? ' New best time!' : ''}${effect}`
       : game.applied ? `<strong>BREACH APPLIED</strong> at ${game.applied}%${game.strikes === 2 ? ' as the second defence routine ended the attempt' : ''}.${effect}${beat.score ? ' New best breach!' : ''}`
-      : `<strong>ATTEMPT FAILED.</strong> Two defence routines triggered before the breach ${game.apply < 100 ? 'reached ' + game.apply + '%' : 'was complete'}, so nothing applied. Press Reset to try again.`);
+      : `<strong>ATTEMPT FAILED.</strong> Two defence routines triggered before the breach ${game.apply < 100 ? 'reached ' + game.apply + '%' : 'was complete'}, so nothing applied, but the Scanners still took ${heat}° of heat. Press Reset to try again.`) + warn);
   }
 
   // What a level's records read as, in the table and the picture.
@@ -329,6 +377,8 @@
   ['800 1em Orbitron', '700 1em Orbitron', '400 1em "Exo 2"', '600 1em "Exo 2"'].forEach(f => document.fonts.load(f).catch(() => {}));
   showRecords();
   start();
+  age();
+  setInterval(age, 500);
 </script>
 <script>
   // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.

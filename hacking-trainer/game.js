@@ -83,6 +83,30 @@ export function probe(g, i, random = Math.random) {
 // Bank the breach at its current progress.
 export function apply(g) { if (canApply(g)) end(g, cleared(g)); }
 
+// Around the grid (manual 3.9 and Table 3-7): how hacked the target system is,
+// and how hot your Scanners are. Both carry over from one attempt to the next.
+export const newSession = () => ({ hacked: 0, heat: 0 });
+
+// Time passing: a 100% hack wears off in about 3 minutes, and each 10% of
+// coolant cools the Scanners 0.5° a second. With none, they don't cool.
+export function elapse(s, seconds, coolant) {
+  s.hacked = Math.max(0, s.hacked - seconds * 100 / 180);
+  s.heat = Math.max(0, s.heat - seconds * coolant / 20);
+}
+
+// A finished attempt adds half its applied breach to the target and, however
+// it ended, dumps 20–40° into the Scanners (which take damage at 100°).
+// Returns the heat it dumped.
+export function endAttempt(s, applied, random = Math.random) {
+  const heat = 20 + Math.floor(random() * 21);
+  s.hacked = Math.min(100, s.hacked + applied / 2);
+  s.heat = Math.min(100, s.heat + heat);
+  return heat;
+}
+
+// How well a target system at 100% power still works: a full hack takes 75 points off.
+export const effectiveness = hacked => 100 - 0.75 * hacked;
+
 // m:ss.s, the way run times and best times are shown.
 export function time(ms) {
   const t = Math.round(ms / 100);
