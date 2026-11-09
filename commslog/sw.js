@@ -27,7 +27,7 @@ var FILES = [
 var REMOTE = [];
 // ucn-lists:offline-sw (from shared/offline-sw.js, written on deploy: edit that file, not this code)
 /* The offline copy for the tools that had none of their own: Comms Log,
-   ID Card, Ship Search and Mission Stats. Each sw.js sets CACHE, PREFIX,
+   ID Card, Ship Search, Mission Stats and Hacking Trainer. Each sw.js sets CACHE, PREFIX,
    FILES and REMOTE above this. Network first, so a new deploy shows up on the
    next visit; the cache is only the fallback. Plain ES5. */
 var REMOTE_HOSTS = ['cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];

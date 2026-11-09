@@ -24,13 +24,14 @@ Two sit behind the **Mess Tools** dropdown — for the mess deck, off watch:
 | **Shanty Songbook** | The full digital songbook — searchable lyrics, favourites, chorus highlighting, and offline-ready access. |
 | **Mess Drink Tracker** | Keep a running tally of drinks on the mess deck. |
 
-The remaining three sit on their own cards:
+The remaining four sit on their own cards:
 
 | Tool | Description |
 |---|---|
 | **ID Card Generator** | Build and print a fleet-standard crew ID card — rank, division, clearance level, photo, and barcode/QR, formatted to true CR-80 card size. |
 | **Ship Search** | Looks up which ship (UCS Havock or UCS Takanami) is running at a given date/time, or shows the full day's schedule. |
 | **Mission Stats** | Import a CSV of your deployments from the Bridge Command portal and track your mission history. |
+| **Hacking Trainer** | A grid puzzle: clear the network without tripping its traps, at four security levels (Basic, Secure, Hardened, Fortified). |
 
 The portal also links out to Bridge Command's official website and Discord server for anyone looking for the source community.
 
@@ -51,6 +52,7 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `idcard/` | ID Card Generator | propidcard repo |
 | `shipsearch/` | Ship Search | SHIPSEARCH repo |
 | `missionstats/` | Mission Stats | MISSIONTRACKER repo |
+| `hacking-trainer/` | Hacking Trainer | new here |
 
 ## Deploying
 

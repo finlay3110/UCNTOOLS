@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hacking Trainer — UCN</title>
+<meta name="description" content="Practise clearing a network without tripping its traps. Four security levels, from Basic to Fortified.">
+<meta name="theme-color" content="#0b0f1c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M9 16l4 4 10-10' stroke='%23DD7A2B' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#8c98bf;
+    --orange:#DD7A2B; --green:#2FB574; --red:#d64545; --open:#0f1730;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; min-height:100vh; color:var(--text);
+    font-family:'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background:radial-gradient(ellipse at top, #1b2a5e 0%, var(--bg) 60%) fixed, var(--bg);
+  }
+  .top, main, footer{ max-width:560px; margin:0 auto; padding-left:16px; padding-right:16px; }
+  .top{ padding-top:14px; }
+  .back{ display:inline-flex; align-items:center; min-height:32px; color:var(--muted); text-decoration:none; font-size:13px; }
+  .back:hover{ color:var(--orange); }
+  h1{ font-family:'Orbitron', sans-serif; font-weight:800; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
+  .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  label{ display:block; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  select{
+    width:100%; font:inherit; font-size:16px; color:var(--text); background:var(--open);
+    border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+  }
+  .row{ display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .mode{ display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .mode button{ min-height:40px; padding:0 14px; border:0; background:none; color:var(--muted); font:inherit; font-weight:700; cursor:pointer; }
+  .mode button[aria-pressed="true"]{ background:var(--orange); color:#1a0e02; }
+  .count{ flex:1; text-align:center; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .btn{
+    min-height:40px; padding:0 14px; border-radius:8px; border:1.5px solid var(--orange); background:none;
+    color:var(--orange); font:inherit; font-weight:700; cursor:pointer;
+  }
+  .btn:hover{ background:var(--orange); color:#1a0e02; }
+
+  .status{ min-height:1.5em; margin:14px 2px 10px; color:var(--muted); line-height:1.5; }
+  .status strong{ color:var(--text); }
+
+  .board{
+    display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:2px; padding:6px;
+    background:#070b16; border:1px solid var(--border); border-radius:12px;
+    touch-action:manipulation; user-select:none; -webkit-user-select:none;
+  }
+  .board.won{ border-color:var(--green); box-shadow:0 0 0 2px rgba(47,181,116,0.35); }
+  .board.lost{ border-color:var(--red); box-shadow:0 0 0 2px rgba(214,69,69,0.35); }
+  .cell{
+    aspect-ratio:1; min-width:0; padding:0; border:1px solid #2f4384; border-radius:5px; cursor:pointer;
+    background:linear-gradient(160deg, #25397a, #1b2a5e); color:var(--text);
+    font:700 clamp(12px, 3.6vw, 18px)/1 'Orbitron', sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .cell:focus-visible{ outline:2px solid var(--orange); outline-offset:1px; }
+  .cell:disabled{ cursor:default; }
+  .cell.open{ background:var(--open); border-color:#1e2a52; cursor:default; }
+  .cell svg{ width:62%; height:62%; }
+  .cell.flag{ color:var(--orange); }
+  .cell.wrong{ color:var(--muted); background:linear-gradient(135deg, transparent 46%, var(--red) 47% 53%, transparent 54%), var(--open); }
+  .cell.trap{ background:#2a1220; border-color:#5a2238; color:var(--red); }
+  .cell.hit{ background:var(--red); border-color:var(--red); color:#fff; }
+  .n1{ color:#4FA8C9; } .n2{ color:#2FB574; } .n3{ color:#E39A3E; } .n4{ color:#B48CF0; }
+  .n5{ color:#FF6B6B; } .n6{ color:#4FD1C5; } .n7{ color:#e8ecf7; } .n8{ color:#8c98bf; }
+
+  .help{ margin-top:18px; }
+  .help h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 8px; }
+  .help h2 + ol, .help h2 + ul{ margin-top:0; }
+  .help ol, .help ul{ padding-left:20px; margin-bottom:16px; }
+  .help li{ margin:7px 0; line-height:1.5; color:#c9d2ee; }
+  .help b{ color:var(--text); }
+  footer{ padding-top:18px; padding-bottom:28px; color:var(--muted); font-size:11.5px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../">&larr; Back to Tool Portal</a>
+  <h1>HACKING TRAINER</h1>
+  <p class="sub">Clear the network without tripping a trap</p>
+</header>
+
+<main>
+  <section class="panel" aria-label="Game controls">
+    <label for="level">Security level</label>
+    <select id="level">
+      <option value="basic">1. Basic &mdash; 6&times;6, 4 traps</option>
+      <option value="secure">2. Secure &mdash; 8&times;8, 10 traps</option>
+      <option value="hardened">3. Hardened &mdash; 10&times;10, 25 traps</option>
+      <option value="fortified">4. Fortified &mdash; 12&times;12, 36 traps</option>
+    </select>
+    <div class="row">
+      <div class="mode" role="group" aria-label="What a tap does">
+        <button type="button" id="modeProbe" aria-pressed="true">Probe</button>
+        <button type="button" id="modeFlag" aria-pressed="false">Flag</button>
+      </div>
+      <span class="count" id="count"></span>
+      <button type="button" class="btn" id="newGrid">New grid</button>
+    </div>
+  </section>
+
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+  <div class="board" id="board" aria-label="Network grid"></div>
+
+  <section class="panel help">
+    <h2>How to play</h2>
+    <ol>
+      <li><b>Pick a security level.</b> Each one hides a set number of traps in its grid of nodes.</li>
+      <li><b>Probe a node</b> by tapping it. Your first probe is always safe, and opens up part of the grid.</li>
+      <li><b>Read the numbers.</b> A number tells you how many of the 8 nodes touching it (diagonals too) hide a trap. A blank node has none, so its neighbours open by themselves.</li>
+      <li><b>Flag the traps you find.</b> Switch to <b>Flag</b> and tap a node, or right-click it on a computer (or press F on a focused node). A flagged node can't be probed by accident. Tap it again to remove the flag.</li>
+      <li><b>Open every safe node</b> to gain access. Probe a trap and the trace catches you.</li>
+    </ol>
+
+    <h2>Tips &amp; tricks</h2>
+    <ul>
+      <li><b>Work along the edge of the open area.</b> Numbers there touch the fewest hidden nodes, so they give the surest answers.</li>
+      <li><b>Full house:</b> if a number has exactly that many hidden nodes around it, every one of them is a trap. Flag them all.</li>
+      <li><b>Already satisfied:</b> if a number already has that many flags around it, every other node around it is safe. Probe them.</li>
+      <li><b>Compare neighbours:</b> when one number's hidden nodes are all shared with the number next to it, any extra nodes the second one touches hold the difference. Equal numbers mean the extras are safe.</li>
+      <li><b>1-2-1 on a straight edge:</b> the traps sit opposite the two 1s, and the node opposite the 2 is safe.</li>
+      <li><b>1-2-2-1 on a straight edge:</b> the traps sit opposite the two 2s, and the nodes opposite the 1s are safe.</li>
+      <li><b>Flag only what you're sure of.</b> A wrong flag hides a safe node and makes the numbers around it mislead you.</li>
+      <li><b>Use the traps-left counter</b> near the end: if the traps you know about account for all of them, every other hidden node is safe.</li>
+      <li><b>When you must guess</b> (it happens on Hardened and Fortified, where a quarter of the nodes are traps), guess early rather than after lots of work, and pick a node that would tell you the most if it's safe.</li>
+      <li><b>Train up through the levels.</b> On Basic and Secure, practise spotting the patterns until you see them at a glance.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>Fan-made training game for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
+
+<script type="module">
+  import { LEVELS, newGame, probe, toggleFlag, trapsLeft } from './game.js';
+
+  const $ = id => document.getElementById(id);
+  const board = $('board');
+  const FLAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M7 4h11l-3 4 3 4H7z" fill="currentColor"/></svg>';
+  const TRAP = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  let game, flagMode = false;
+
+  function start() {
+    const { size, traps } = LEVELS[$('level').value];
+    game = newGame(size, traps);
+    board.style.setProperty('--n', size);
+    board.innerHTML = '';
+    for (let i = 0; i < size * size; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cell';
+      b.dataset.i = i;
+      board.appendChild(b);
+    }
+    draw();
+  }
+
+  // Buttons are updated in place rather than rebuilt, so keyboard focus stays put.
+  function draw() {
+    [...board.children].forEach((b, i) => {
+      const c = game.cells[i];
+      let cls = 'cell', html = '', what = 'hidden';
+      if (c.trap && c.open) { cls += ' trap hit'; html = TRAP; what = 'tripped trap'; }
+      else if (game.over && c.trap && !c.flag) { cls += ' trap'; html = TRAP; what = 'trap'; }
+      else if (c.flag && game.over && !c.trap) { cls += ' flag wrong'; html = FLAG; what = 'flagged, but safe'; }
+      else if (c.flag) { cls += ' flag'; html = FLAG; what = 'flagged'; }
+      else if (c.open) { cls += ' open n' + c.near; html = c.near || ''; what = c.near ? c.near + (c.near > 1 ? ' traps' : ' trap') + ' nearby' : 'clear'; }
+      b.className = cls;
+      b.innerHTML = html;
+      b.disabled = game.over;
+      b.setAttribute('aria-label', `Row ${Math.floor(i / game.size) + 1}, column ${i % game.size + 1}: ${what}`);
+    });
+    $('count').textContent = 'Traps left: ' + trapsLeft(game);
+    board.classList.toggle('won', game.won);
+    board.classList.toggle('lost', game.over && !game.won);
+    const status = game.won ? '<strong>ACCESS GRANTED.</strong> Network cleared. Try a harder level?'
+      : game.over ? '<strong>TRACE DETECTED.</strong> You probed a trap. Press New grid to try again.'
+      : game.started ? 'Probe the safe nodes. Flag the traps you find.'
+      : 'Probe any node to start. The first one is always safe.';
+    // Only when it changes: rewriting a live region makes screen readers say it again on every tap.
+    if ($('status').innerHTML !== status) $('status').innerHTML = status;
+  }
+
+  function act(b, flag) {
+    if (!b || game.over) return;
+    if (flag) toggleFlag(game, +b.dataset.i); else probe(game, +b.dataset.i);
+    draw();
+  }
+
+  function setMode(flag) {
+    flagMode = flag;
+    $('modeProbe').setAttribute('aria-pressed', String(!flag));
+    $('modeFlag').setAttribute('aria-pressed', String(flag));
+  }
+
+  board.addEventListener('click', e => act(e.target.closest('.cell'), flagMode));
+  board.addEventListener('contextmenu', e => {
+    const b = e.target.closest('.cell');
+    if (b) { e.preventDefault(); act(b, true); }
+  });
+  board.addEventListener('keydown', e => {
+    if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) act(e.target.closest('.cell'), true);
+  });
+  $('modeProbe').addEventListener('click', () => setMode(false));
+  $('modeFlag').addEventListener('click', () => setMode(true));
+  $('level').addEventListener('change', start);
+  $('newGrid').addEventListener('click', start);
+  start();
+</script>
+<script>
+  // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>
