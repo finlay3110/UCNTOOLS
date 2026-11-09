@@ -22,7 +22,7 @@ test('the log starts empty', async ({ page }) => {
   for (const id of ['#statOcp', '#statCrystal', '#statConduit', '#statSwap']) {
     await expect(page.locator(id)).toHaveText('0');
   }
-  await expect(page.locator('#statSpares')).toHaveText('5');
+  await expect(page.locator('#statSpares')).toHaveText('4');
 });
 
 test.describe('the repair picker', () => {
@@ -70,7 +70,7 @@ test.describe('starting and ending repairs', () => {
     await expect(page.locator('#repairDialog')).toBeHidden();
     await expect(page.locator('.active-item')).toHaveCount(1);
     await expect(page.locator('#statOcp')).toHaveText('1');
-    await expect(page.locator('#statSpares')).toHaveText('4');
+    await expect(page.locator('#statSpares')).toHaveText('3');
     await expect(page.locator('#activeCount')).toHaveText('1');
   });
 
@@ -104,7 +104,7 @@ test.describe('starting and ending repairs', () => {
     await expect(page.locator('.active-item')).toContainText('Reactor');
     await expect(page.locator('#logTableBody')).toContainText('Reactor repair');
     // The reactor is not an OCP and must not draw down the spares.
-    await expect(page.locator('#statSpares')).toHaveText('5');
+    await expect(page.locator('#statSpares')).toHaveText('4');
   });
 
   test('a reactor repair is timed start to end', async ({ page }) => {
@@ -120,7 +120,7 @@ test.describe('starting and ending repairs', () => {
   test('crystal repairs do not consume OCP spares', async ({ page }) => {
     await startRepair(page, 'crystal');
     await expect(page.locator('#statCrystal')).toHaveText('1');
-    await expect(page.locator('#statSpares')).toHaveText('5');
+    await expect(page.locator('#statSpares')).toHaveText('4');
   });
 });
 
@@ -174,14 +174,14 @@ test.describe('conduits', () => {
 });
 
 test.describe('OCP spares', () => {
-  test('count down from five as repairs start', async ({ page }) => {
+  test('count down from four as repairs start', async ({ page }) => {
     for (let i = 0; i < 3; i++) await startRepair(page, 'ocp', i % 3);
-    await expect(page.locator('#statSpares')).toHaveText('2');
+    await expect(page.locator('#statSpares')).toHaveText('1');
     await expect(page.locator('#statOcp')).toHaveText('3');
   });
 
   test('warn when low and when out', async ({ page }) => {
-    for (let i = 0; i < 4; i++) await startRepair(page, 'ocp', i % 3);
+    for (let i = 0; i < 3; i++) await startRepair(page, 'ocp', i % 3);
     await expect(page.locator('#spareStat')).toHaveClass(/is-low/);
     await startRepair(page, 'ocp');
     await expect(page.locator('#statSpares')).toHaveText('0');
@@ -195,18 +195,18 @@ test.describe('OCP spares', () => {
 
   test('can be adjusted by hand', async ({ page }) => {
     await page.click('#spareMinus');
-    await expect(page.locator('#statSpares')).toHaveText('4');
+    await expect(page.locator('#statSpares')).toHaveText('3');
     await page.click('#sparePlus');
     await page.click('#sparePlus');
-    await expect(page.locator('#statSpares')).toHaveText('6');
+    await expect(page.locator('#statSpares')).toHaveText('5');
   });
 
   test('deleting an OCP entry returns its spare', async ({ page }) => {
     await startRepair(page, 'ocp');
-    await expect(page.locator('#statSpares')).toHaveText('4');
+    await expect(page.locator('#statSpares')).toHaveText('3');
     await page.click('.active-item [data-delete]');
     await expect(page.locator('#statOcp')).toHaveText('0');
-    await expect(page.locator('#statSpares')).toHaveText('5');
+    await expect(page.locator('#statSpares')).toHaveText('4');
   });
 });
 
@@ -237,7 +237,7 @@ test('the log survives a reload', async ({ page }) => {
 
   await expect(page.locator('#statOcp')).toHaveText('1');
   await expect(page.locator('#statCrystal')).toHaveText('1');
-  await expect(page.locator('#statSpares')).toHaveText('4');
+  await expect(page.locator('#statSpares')).toHaveText('3');
   // The unfinished crystal repair is still running, not silently ended.
   await expect(page.locator('.active-item')).toHaveCount(1);
   await expect(page.locator('#logTableBody tr')).toHaveCount(2);

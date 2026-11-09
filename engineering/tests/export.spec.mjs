@@ -47,7 +47,7 @@ test('JSON export carries the whole mission', async ({ page }) => {
   expect(data.ship).toMatchObject({ id: 'havock', name: 'UCS Havock' });
   expect(data.entries).toHaveLength(3);
   expect(data.totals).toMatchObject({ ocp: 1, conduit: 1, note: 1, crystal: 0, reactor: 0 });
-  expect(data.spares).toMatchObject({ start: 5, remaining: 4, used: 1 });
+  expect(data.spares).toMatchObject({ start: 4, remaining: 3, used: 1 });
 });
 
 test('exported timestamps are ISO 8601 UTC', async ({ page }) => {

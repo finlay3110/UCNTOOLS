@@ -28,7 +28,8 @@ This is a fan-made project and is not approved by or affiliated with Bridge Comm
   individually or all at once; any entry can be edited afterwards, including
   backdating its times, and a delete can be undone. Running totals for OCP,
   crystal and conduit repairs and power cell
-  swaps, plus spare OCPs counting down from five. Reactor repairs and hull
+  swaps, plus spare OCPs counting down from four (a standard ship carries
+  four spares, with three fitted). Reactor repairs and hull
   readings are recorded in the log and the exports without a counter of their
   own. Hull readings are charted over time — the chart is embedded in the PDF,
   and **Export hull chart** saves it alone as a PNG. Exports to JSON, or to a PDF report in the shared UCN house style: cover,

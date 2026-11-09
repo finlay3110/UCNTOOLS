@@ -198,7 +198,7 @@
         </div>
         <div class="stat stat-spares" id="spareStat">
           <span class="stat-label">Spare OCPs</span>
-          <span class="stat-value" id="statSpares">5</span>
+          <span class="stat-value" id="statSpares">4</span>
           <div class="spare-controls">
             <button type="button" id="spareMinus" class="mini-btn" aria-label="Use a spare OCP">&minus;</button>
             <button type="button" id="sparePlus" class="mini-btn" aria-label="Return a spare OCP">+</button>
@@ -267,12 +267,66 @@
           </tbody>
         </table>
       </div>
+
+      <h2 class="mt">Power Draw</h2>
+      <p class="panel-sub">MJ per minute at each power setting, from the UCN Academy Manual (Table 3-13). Every system scales linearly except the reactor.</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>System</th><th>100%</th><th>200%</th><th>300%</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="sys" data-label="System">Reactor (supplies)</td><td data-label="100%">+120</td><td data-label="200%">+180</td><td data-label="300%">+240</td></tr>
+            <tr><td class="sys" data-label="System">Beams</td><td data-label="100%">24</td><td data-label="200%">48</td><td data-label="300%">72</td></tr>
+            <tr><td class="sys" data-label="System">Missiles</td><td data-label="100%">8</td><td data-label="200%">16</td><td data-label="300%">24</td></tr>
+            <tr><td class="sys" data-label="System">Manoeuvring</td><td data-label="100%">16</td><td data-label="200%">32</td><td data-label="300%">48</td></tr>
+            <tr><td class="sys" data-label="System">Impulse</td><td data-label="100%">32</td><td data-label="200%">64</td><td data-label="300%">96</td></tr>
+            <tr><td class="sys" data-label="System">Warp, not at warp</td><td data-label="100%">40</td><td data-label="200%">80</td><td data-label="300%">120</td></tr>
+            <tr><td class="sys" data-label="System">At Warp 1, add</td><td data-label="100%">+60</td><td data-label="200%">+120</td><td data-label="300%">+180</td></tr>
+            <tr><td class="sys" data-label="System">At Warp 2, add</td><td data-label="100%">+138</td><td data-label="200%">+276</td><td data-label="300%">+414</td></tr>
+            <tr><td class="sys" data-label="System">At Warp 3, add</td><td data-label="100%">+224</td><td data-label="200%">+448</td><td data-label="300%">+673</td></tr>
+            <tr><td class="sys" data-label="System">At Warp 4, add</td><td data-label="100%">+317</td><td data-label="200%">+633</td><td data-label="300%">+950</td></tr>
+            <tr><td class="sys" data-label="System">Front Shield Gen</td><td data-label="100%">24</td><td data-label="200%">48</td><td data-label="300%">72</td></tr>
+            <tr><td class="sys" data-label="System">Rear Shield Gen</td><td data-label="100%">24</td><td data-label="200%">48</td><td data-label="300%">72</td></tr>
+            <tr><td class="sys" data-label="System">Shields raised</td><td data-label="100%">90</td><td data-label="200%">90</td><td data-label="300%">90</td></tr>
+            <tr><td class="sys" data-label="System">Scanner</td><td data-label="100%">24</td><td data-label="200%">48</td><td data-label="300%">72</td></tr>
+            <tr><td class="sys" data-label="System">Cargo Docks</td><td data-label="100%">8</td><td data-label="200%">16</td><td data-label="300%">24</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">Beams also use 3 MJ and add 2&deg; of heat per beam shot. Raised shields cost a flat 90 MJ/min whatever their power, and the tractor beam uses extra energy for each object it holds.</p>
+
+      <h2 class="mt">How Long a Cell Lasts</h2>
+      <p class="panel-sub">Time until the current fuel cell runs dry at a steady net loss, after the reactor&rsquo;s output: the MJ/min loss the console reports. From the UCN Academy Manual (Table 3-11).</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Net Loss (MJ/min)</th><th>1500 MJ Left</th><th>1000 MJ Left</th><th>500 MJ Left</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">25</td><td data-label="1500 MJ Left">60m</td><td data-label="1000 MJ Left">40m</td><td data-label="500 MJ Left">20m</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">50</td><td data-label="1500 MJ Left">30m</td><td data-label="1000 MJ Left">20m</td><td data-label="500 MJ Left">10m</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">75</td><td data-label="1500 MJ Left">20m</td><td data-label="1000 MJ Left">13m 20s</td><td data-label="500 MJ Left">6m 40s</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">100</td><td data-label="1500 MJ Left">15m</td><td data-label="1000 MJ Left">10m</td><td data-label="500 MJ Left">5m</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">150</td><td data-label="1500 MJ Left">10m</td><td data-label="1000 MJ Left">6m 40s</td><td data-label="500 MJ Left">3m 20s</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">200</td><td data-label="1500 MJ Left">7m 30s</td><td data-label="1000 MJ Left">5m</td><td data-label="500 MJ Left">2m 30s</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">250</td><td data-label="1500 MJ Left">6m</td><td data-label="1000 MJ Left">4m</td><td data-label="500 MJ Left">2m</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">300</td><td data-label="1500 MJ Left">5m</td><td data-label="1000 MJ Left">3m 20s</td><td data-label="500 MJ Left">1m 40s</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">400</td><td data-label="1500 MJ Left">3m 45s</td><td data-label="1000 MJ Left">2m 30s</td><td data-label="500 MJ Left">1m 15s</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">500</td><td data-label="1500 MJ Left">3m</td><td data-label="1000 MJ Left">2m</td><td data-label="500 MJ Left">1m</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">750</td><td data-label="1500 MJ Left">2m</td><td data-label="1000 MJ Left">1m 20s</td><td data-label="500 MJ Left">40s</td></tr>
+            <tr><td class="sys" data-label="Net Loss (MJ/min)">1000</td><td data-label="1500 MJ Left">1m 30s</td><td data-label="1000 MJ Left">1m</td><td data-label="500 MJ Left">30s</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- ======== TAB 2: THERMAL & POWER GUIDE ======== -->
     <section class="panel" id="panel-thermal" role="tabpanel" aria-labelledby="tab-thermal" tabindex="0">
       <h2>Coolant Guide</h2>
-      <p class="panel-sub">Coolant required at a given power level. Power levels can exceed 100% &mdash; anything past 230% is unsustainable.</p>
+      <p class="panel-sub">Coolant required to hold a system steady at a given power level, approximately (UCN Academy Manual, Tables 3-4 and 3-6). Power levels can exceed 100% &mdash; anything past 230% is unsustainable.</p>
 
       <div class="table-wrap">
         <table class="ref-table">
@@ -281,8 +335,15 @@
           </thead>
           <tbody>
             <tr><td data-label="Power Level">100%</td><td data-label="Coolant Required">0%</td></tr>
+            <tr><td data-label="Power Level">120%</td><td data-label="Coolant Required">10%</td></tr>
+            <tr><td data-label="Power Level">135%</td><td data-label="Coolant Required">20%</td></tr>
             <tr><td data-label="Power Level">150%</td><td data-label="Coolant Required">30%</td></tr>
+            <tr><td data-label="Power Level">165%</td><td data-label="Coolant Required">40%</td></tr>
+            <tr><td data-label="Power Level">175%</td><td data-label="Coolant Required">50%</td></tr>
+            <tr><td data-label="Power Level">190%</td><td data-label="Coolant Required">60%</td></tr>
             <tr><td data-label="Power Level">200%</td><td data-label="Coolant Required">70%</td></tr>
+            <tr><td data-label="Power Level">210%</td><td data-label="Coolant Required">80%</td></tr>
+            <tr><td data-label="Power Level">220%</td><td data-label="Coolant Required">90%</td></tr>
             <tr><td data-label="Power Level">230%</td><td data-label="Coolant Required">100%</td></tr>
             <tr class="danger-row"><td data-label="Power Level">&gt;230%</td><td data-label="Coolant Required">DANGER ZONE &mdash; UNSUSTAINABLE</td></tr>
           </tbody>
@@ -304,6 +365,44 @@
           </tbody>
         </table>
       </div>
+
+      <h2 class="mt">Overheating With No Coolant</h2>
+      <p class="panel-sub">How fast a system heats at each power level with no coolant, and how long it takes to go from 0&deg; to 100&deg;, where damage starts. From the UCN Academy Manual (Table 3-3).</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Power Level</th><th>Heat per Minute</th><th>Overheats In</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Power Level">100%</td><td data-label="Heat per Minute">Slight cooling</td><td data-label="Overheats In">Never</td></tr>
+            <tr><td data-label="Power Level">150%</td><td data-label="Heat per Minute">~88&deg;</td><td data-label="Overheats In">~1m 08s</td></tr>
+            <tr><td data-label="Power Level">200%</td><td data-label="Heat per Minute">~207&deg;</td><td data-label="Overheats In">~29s</td></tr>
+            <tr><td data-label="Power Level">230%</td><td data-label="Heat per Minute">~295&deg;</td><td data-label="Overheats In">~20s</td></tr>
+            <tr><td data-label="Power Level">250%</td><td data-label="Heat per Minute">~362&deg;</td><td data-label="Overheats In">~17s</td></tr>
+            <tr><td data-label="Power Level">300%</td><td data-label="Heat per Minute">~564&deg;</td><td data-label="Overheats In">~11s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">These assume the system is already at that power. Power changes ramp over several seconds, so real spikes last slightly longer.</p>
+
+      <h2 class="mt">Spike Hold Times</h2>
+      <p class="panel-sub">How long a spike can be held before resetting, starting cold with power and coolant raised together and the coolant left on through the reset. From the UCN Academy Manual (Table E-1).</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Spike Power</th><th>0% Coolant</th><th>25% Coolant</th><th>50% Coolant</th><th>75% Coolant</th><th>100% Coolant</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Spike Power">150%</td><td data-label="0% Coolant">~67s</td><td data-label="25% Coolant">~7m 40s</td><td data-label="50% Coolant">Indefinite</td><td data-label="75% Coolant">Indefinite</td><td data-label="100% Coolant">Indefinite</td></tr>
+            <tr><td data-label="Spike Power">200%</td><td data-label="0% Coolant">~26s</td><td data-label="25% Coolant">~44s</td><td data-label="50% Coolant">~1m 47s</td><td data-label="75% Coolant">Indefinite</td><td data-label="100% Coolant">Indefinite</td></tr>
+            <tr><td data-label="Spike Power">250%</td><td data-label="0% Coolant">~12s</td><td data-label="25% Coolant">~18s</td><td data-label="50% Coolant">~27s</td><td data-label="75% Coolant">~44s</td><td data-label="100% Coolant">~1m 41s</td></tr>
+            <tr><td data-label="Spike Power">300%</td><td data-label="0% Coolant">~5s</td><td data-label="25% Coolant">~8s</td><td data-label="50% Coolant">~11s</td><td data-label="75% Coolant">~15s</td><td data-label="100% Coolant">~22s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">Power takes about 7 seconds to climb from 100% to 300% and another 7 to come back down, adding about 26&deg; on the way. These times allow for that: reset on time and the system tops out at about 70&ndash;95&deg;. Coolant moves about a second slower than power, so apply it just before the spike.</p>
     </section>
 
     <!-- ======== TAB 3: WARP GUIDE ======== -->
@@ -361,6 +460,28 @@
       </div>
 
       <div class="dc-groups" id="dcGroups"></div>
+
+      <h2 class="mt">SPANR Repair Times</h2>
+      <p class="panel-sub">How long SPANRs take to bring a system back to 100%, by its starting condition and how many are on it. From the UCN Academy Manual (Table 3-28).</p>
+
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Starting Condition</th><th>1 SPANR</th><th>2 SPANRs</th><th>3 SPANRs</th><th>4 SPANRs</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Starting Condition">75%</td><td data-label="1 SPANR">36s</td><td data-label="2 SPANRs">18s</td><td data-label="3 SPANRs">12s</td><td data-label="4 SPANRs">9s</td></tr>
+            <tr><td data-label="Starting Condition">50%</td><td data-label="1 SPANR">1m 11s</td><td data-label="2 SPANRs">36s</td><td data-label="3 SPANRs">24s</td><td data-label="4 SPANRs">18s</td></tr>
+            <tr><td data-label="Starting Condition">25%</td><td data-label="1 SPANR">1m 47s</td><td data-label="2 SPANRs">54s</td><td data-label="3 SPANRs">36s</td><td data-label="4 SPANRs">27s</td></tr>
+            <tr><td data-label="Starting Condition">0%</td><td data-label="1 SPANR">2m 23s</td><td data-label="2 SPANRs">1m 11s</td><td data-label="3 SPANRs">48s</td><td data-label="4 SPANRs">36s</td></tr>
+            <tr><td data-label="Starting Condition">&minus;25%</td><td data-label="1 SPANR">2m 59s</td><td data-label="2 SPANRs">1m 29s</td><td data-label="3 SPANRs">60s</td><td data-label="4 SPANRs">45s</td></tr>
+            <tr><td data-label="Starting Condition">&minus;50%</td><td data-label="1 SPANR">3m 34s</td><td data-label="2 SPANRs">1m 47s</td><td data-label="3 SPANRs">1m 11s</td><td data-label="4 SPANRs">54s</td></tr>
+            <tr><td data-label="Starting Condition">&minus;75%</td><td data-label="1 SPANR">4m 10s</td><td data-label="2 SPANRs">2m 05s</td><td data-label="3 SPANRs">1m 23s</td><td data-label="4 SPANRs">1m 02s</td></tr>
+            <tr><td data-label="Starting Condition">&minus;100%</td><td data-label="1 SPANR">4m 46s</td><td data-label="2 SPANRs">2m 23s</td><td data-label="3 SPANRs">1m 35s</td><td data-label="4 SPANRs">1m 11s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">SPANRs clear hacking too. A hacked system shows a purple ring on the Power Management screen; a full hack wears off on its own in about 3 minutes, or in about 80 seconds with one SPANR on the system.</p>
     </section>
 
   </main>

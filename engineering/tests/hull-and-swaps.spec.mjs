@@ -42,7 +42,7 @@ test.describe('power cell swap', () => {
 
   test('does not consume an OCP spare or count as a crystal repair', async ({ page }) => {
     await page.click('#cellSwapBtn');
-    await expect(page.locator('#statSpares')).toHaveText('5');
+    await expect(page.locator('#statSpares')).toHaveText('4');
     await expect(page.locator('#statCrystal')).toHaveText('0');
   });
 

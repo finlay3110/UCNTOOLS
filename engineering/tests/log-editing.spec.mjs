@@ -107,13 +107,13 @@ test.describe('undo on delete', () => {
   // the locker.
   test('undo re-takes the OCP spare the delete returned', async ({ page }) => {
     await startRepair(page, 'ocp');
-    await expect(page.locator('#statSpares')).toHaveText('4');
+    await expect(page.locator('#statSpares')).toHaveText('3');
 
     await page.click('.active-item [data-delete]');
-    await expect(page.locator('#statSpares')).toHaveText('5');
+    await expect(page.locator('#statSpares')).toHaveText('4');
 
     await page.click('#toastUndo');
-    await expect(page.locator('#statSpares')).toHaveText('4');
+    await expect(page.locator('#statSpares')).toHaveText('3');
     await expect(page.locator('#statOcp')).toHaveText('1');
   });
 
