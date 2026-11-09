@@ -172,7 +172,7 @@ test('clearing mission data resets everything', async ({ page }) => {
   await expect(page.locator('#opName')).toHaveValue('');
   await openTab(page, 'log');
   await expect(page.locator('#logTableBody')).toContainText('Nothing logged yet');
-  await expect(page.locator('#statSpares')).toHaveText('5');
+  await expect(page.locator('#statSpares')).toHaveText('4');
 });
 
 test('cancelling the clear confirmation keeps the data', async ({ page }) => {
@@ -228,7 +228,7 @@ test.describe('new mission', () => {
     await expect(page.locator('#statOcp')).toHaveText('0');
     await expect(page.locator('#statSwap')).toHaveText('0');
     // A fresh locker for the new mission.
-    await expect(page.locator('#statSpares')).toHaveText('5');
+    await expect(page.locator('#statSpares')).toHaveText('4');
   });
 
   test('stamps a fresh start time', async ({ page }) => {

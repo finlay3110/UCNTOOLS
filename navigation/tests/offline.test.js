@@ -65,7 +65,7 @@ function controlled(page) {
   await local.goto(appUrl());
   ok.push(['file:// load registers nothing and does not error',
     await local.evaluate(() => !navigator.serviceWorker || !navigator.serviceWorker.controller)]);
-  ok.push(['file:// tool still builds', (await local.locator('.tab-btn').count()) === 9]);
+  ok.push(['file:// tool still builds', (await local.locator('.tab-btn').count()) === 10]);
   await local.close();
 
   const site = await serve();
@@ -154,13 +154,13 @@ function controlled(page) {
   const reloaded = !reloadError;
 
   ok.push(['reload with no network still opens the tool',
-    reloaded && (await p.locator('.tab-btn').count()) === 9,
+    reloaded && (await p.locator('.tab-btn').count()) === 10,
     'navigation failed offline: ' + (reloadError || 'page loaded but did not build')]);
 
   if (reloaded) {
     ok.push(['log survives an offline reload', (await p.locator('#list-all .wp-item[data-id]').count()) === 2]);
 
-    await seedWaypoints(p, [{ cat: 'objective', number: '03', title: 'Offline entry' }]);
+    await seedWaypoints(p, [{ cat: 'friendly', number: '03', title: 'Offline entry' }]);
     ok.push(['waypoints can be added offline', (await p.locator('#list-all .wp-item[data-id]').count()) === 3]);
 
     // jsPDF and its fonts are inlined, so the report is generated entirely on

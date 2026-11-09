@@ -2997,6 +2997,7 @@ var QUICK_LOG_CONFIGS = {
     options: [
       {label:'Code Yellow', text:'Code Yellow'},
       {label:'Code Red', text:'Code Red'},
+      {label:'Stand Down (Normal)', text:'Stand Down (Normal)'},
       {label:'Combat Started', text:'Combat Started'},
       {label:'Combat Finished', freetext:true, freetextLabel:'Combat outcome / summary (optional)', prefix:'Combat Finished'}
     ]
@@ -3827,17 +3828,22 @@ function initEngineeringLog(){
 /* Imports an export from the UCN Navigation & Radar tool. One log at a time, a summary card
    here, full detail grouped by category in the PDF. */
 
-/* The six category keys the tool writes. Anything else is dropped on import — an unrecognised
-   category has no meaning to render. NOTE: the 'mission' CATEGORY is unrelated to the top-level
-   'mission' OBJECT in the same file; they share a word and nothing else. */
-var NAV_CATEGORIES = ['nav','hazard','objective','hostile','unknown','mission'];
+/* The category keys the tool writes, in its order: the Academy Manual's waypoint standard
+   (Table 6-1). Anything else is dropped on import — an unrecognised category has no meaning to
+   render. 'objective' (general objectives) is from before the tool followed the manual; it now
+   files those under 'mission' itself, but older exports and logs saved here still carry it, so
+   it stays readable rather than being dropped. NOTE: the 'mission' CATEGORY is unrelated to the
+   top-level 'mission' OBJECT in the same file; they share a word and nothing else. */
+var NAV_CATEGORIES = ['nav','hazard','friendly','hostile','unknown','mission','objective','drone'];
 var NAV_CATEGORY_LABELS = {
-  nav:'Navigation / Course Plotting',
-  hazard:'Hazards',
-  objective:'Objectives',
-  hostile:'Hostiles / Hostile Area',
+  nav:'Route / Course Plotting / Point of Interest',
+  hazard:'Hazards / Avoid Areas',
+  friendly:'Known Friendly Assets',
+  hostile:'Known Hostiles / Hostile Areas',
   unknown:'Unknown / Suspect / Investigate',
-  mission:'Mission Objectives'
+  mission:'Mission Objectives',
+  objective:'Objectives',
+  drone:'Drone Co-ordination'
 };
 var NAV_MISSION_KEYS = ['date','time','name','type','navigator','rank','ship'];
 

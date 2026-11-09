@@ -4,17 +4,20 @@ A fan-made reference and logging tool for the United Confederation Navy (UCN) co
 
 ## What it does
 
-Lets you log waypoints (waypoint number, title, optional sector, and a description of what the waypoint means) and organises them by category across nine tabs:
+Lets you log waypoints (waypoint number, title, optional sector, and a description of what the waypoint means) and organises them by category across ten tabs. The categories and their colours follow the UCN Academy Manual's waypoint standard (Table 6-1):
 
 1. **Mission Setup** — details of the sortie: date, time, mission name, mission type, navigator, rank and ship.
 2. **All** — every logged waypoint in one place, colour-coded by category. Select any entry to expand its details.
-3. **Navigation / Course Plotting** (white) — course plotting and immediate navigation/route waypoints.
-4. **Hazards** (purple) — hazards and areas to avoid.
-5. **Objectives** (green) — general objectives.
-6. **Hostiles / Hostile Area** (red) — hostile contacts and hostile areas.
+3. **Route / Course Plotting / Point of Interest** (white) — course plotting, immediate navigation/route waypoints and points of interest.
+4. **Hazards / Avoid Areas** (magenta) — hazards and areas to avoid.
+5. **Known Friendly Assets** (green) — friendly ships, stations and resupply points.
+6. **Known Hostiles / Hostile Areas** (red) — hostile contacts and hostile areas.
 7. **Unknown / Suspect / Investigate** (yellow) — unidentified or suspicious contacts worth investigating.
-8. **Mission Objectives** (royal blue) — dedicated mission objective waypoints.
-9. **History** — every completed waypoint, most recently finished first.
+8. **Mission Objectives** (blue) — mission objective waypoints.
+9. **Drone Co-ordination** (cyan) — where the drones go and what they do there.
+10. **History** — every completed waypoint, most recently finished first.
+
+Waypoints saved before the colours followed the manual, under the old general **Objectives** tab, load into **Mission Objectives**, as the manual has no separate category for them.
 
 Each waypoint can be expanded for its full description, then **completed**, **edited** or **deleted** from its expanded view. Deleting asks for confirmation first. If you reuse a waypoint number already used in the same category, the tool logs the entry anyway and flags the clash so you can spot it.
 
@@ -76,7 +79,7 @@ Accessible via the "Quick Reference" button in the header. Closes with Escape or
 
 Each section is collapsed behind its own button, so the panel opens as a short index rather than a long scroll — tap the one you need. Sections open independently, and whichever you left open is still open next time you bring the panel up. It contains:
 
-- **Ship types** — Drone, Fighter, Gunship, Shuttle, Frigate, Destroyer, Cruiser, Battle Cruiser, Battleship, Carrier, Freighter, Small Station and Arrow, each with its silhouette. Gunship still shows the dashed placeholder slot, as no gunship artwork has been supplied yet; drop one in and it picks up the same treatment as the rest.
+- **Ship types** — Drone, Fighter, Gunship, Shuttle, Frigate, Destroyer, Cruiser, Battle Cruiser, Battleship, Carrier, Freighter, Small Station and Arrow, each with its silhouette. Gunship uses the Fighter icon, as the manual draws every starfighter with one. Each type the manual's Appendix B covers also shows its typical hull, shields and speed, with a line of advice.
 - **Radar colour meanings** — Red (Gravity), Green (Biological/Thermal), Blue (Electrical), with what each shows up on radar.
 - **Scanned ship colour meaning** — Blue (UCN), Green (Allied), Red (Hostile), Yellow (Unknown/UVP), Grey/White (Unscanned).
 - **Ordnance type colours** — Gold chevron (Torpedo/tracker), Grey/white chevron (HVLI/Slug), Orange chevron (Nuke), Purple chevron (EMP), White circle (Mine).

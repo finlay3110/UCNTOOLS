@@ -11,9 +11,9 @@ const FIELDS=['date','time','name','type','navigator','rank','ship'];
   await p.goto(appUrl());
 
   // --- tab present and first -------------------------------------------
-  ok.push(['9 tabs, setup first', await p.evaluate(()=>{
+  ok.push(['10 tabs, setup first', await p.evaluate(()=>{
     const t=[...document.querySelectorAll('.tab-btn')];
-    return t.length===9 && t[0].id==='tab-mission-setup';
+    return t.length===10 && t[0].id==='tab-mission-setup';
   })]);
   await p.locator('#tab-mission-setup').click();
   ok.push(['setup panel visible', await p.locator('#panel-mission-setup').isVisible()]);

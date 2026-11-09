@@ -11,17 +11,22 @@ const { launch, appUrl, artifact } = require('./lib/harness');
   await p.locator('#refOverlay .ref-toggle').first().click();
   await p.waitForTimeout(150);
   ok.push(['13 ship entries', (await p.locator('.ship-card').count())===13]);
-  const names=(await p.locator('.ship-card').allTextContents()).map(s=>s.trim());
+  const names=(await p.locator('.ship-card .ship-name').allTextContents()).map(s=>s.trim());
   ok.push(['Fighter present', names.includes('Fighter')]);
   ok.push(['Gunship kept', names.includes('Gunship')]);
   ok.push(['Small Station + Arrow added', names.includes('Small Station')&&names.includes('Arrow')]);
   const withIcon=await p.locator('.ship-icon-slot.has-icon').count();
   const ph=await p.locator('.ship-icon-slot.placeholder').count();
-  ok.push(['12 real icons, 1 placeholder', withIcon===12&&ph===1, withIcon+'/'+ph]);
-  ok.push(['placeholder is Gunship', (await p.locator('.ship-card:has(.placeholder)').textContent()).trim()==='Gunship']);
+  ok.push(['13 real icons, no placeholder', withIcon===13&&ph===0, withIcon+'/'+ph]);
+  // The Academy Manual draws every starfighter, gunships included, with one icon.
+  const iconOf=name=>p.locator('.ship-card',{has:p.locator('.ship-name',{hasText:new RegExp('^'+name+'$')})}).locator('.ship-icon-slot').innerHTML();
+  ok.push(['Gunship uses the Fighter icon', (await iconOf('Gunship'))===(await iconOf('Fighter'))]);
+  const destroyer=await p.locator('.ship-card',{has:p.locator('.ship-name',{hasText:/^Destroyer$/})}).textContent();
+  ok.push(['typical stats from the manual on the cards', /Hull 210/.test(destroyer)&&/4 shields, strength 225/.test(destroyer)&&/nukes and EMPs/.test(destroyer), destroyer]);
+  ok.push(['types the manual skips show no stats', (await p.locator('.ship-card',{has:p.locator('.ship-name',{hasText:/^Carrier$/})}).locator('.ship-stats').count())===0]);
   const painted=await p.evaluate(()=>{const out=[];document.querySelectorAll('.ship-icon-slot.has-icon').forEach(slot=>{
     const svg=slot.querySelector('svg'),bb=svg.getBBox(),sh=svg.querySelector('path,rect,circle,ellipse,polygon,polyline,line');
-    out.push({name:slot.parentElement.textContent.trim(),w:+bb.width.toFixed(2),h:+bb.height.toFixed(2),
+    out.push({name:slot.parentElement.querySelector('.ship-name').textContent.trim(),w:+bb.width.toFixed(2),h:+bb.height.toFixed(2),
       fill:sh?getComputedStyle(sh).fill:null,box:svg.getBoundingClientRect().width});});return out;});
   ok.push(['all icons have geometry', painted.every(i=>i.w>0&&i.h>0)]);
   const themed='rgb(234, 240, 251)';

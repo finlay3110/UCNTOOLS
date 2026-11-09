@@ -39,13 +39,17 @@
 
     /* Category colours. These are UI indicators, so they need 3:1 against the
        card background (#1C2A46) to stay readable at a glance in a dark room.
-       Keep them in step with CATEGORIES[].hex in the script below. */
+       Keep them in step with CATEGORIES[].hex in the script below. The hues
+       follow the Academy Manual's waypoint standard (Table 6-1): white, magenta,
+       green, red, yellow, blue and cyan, lightened enough to read here. */
     --c-nav: #EAF0FB;
-    --c-hazard: #9C74D6;
-    --c-objective: #2FB574;
+    --c-hazard: #E35FD6;
+    --c-friendly: #2FB574;
     --c-hostile: #E05265;
     --c-unknown: #E3C23E;
     --c-mission: #6C8AFF;
+    --c-drone: #3FD3E3;
+    --done: #2FB574;
   }
 
   *{box-sizing:border-box;}
@@ -264,10 +268,11 @@
   .tab-btn[data-cat="all"][aria-selected="true"]{ border-bottom-color: var(--cyan); }
   .tab-btn[data-cat="nav"][aria-selected="true"]{ border-bottom-color: var(--c-nav); }
   .tab-btn[data-cat="hazard"][aria-selected="true"]{ border-bottom-color: var(--c-hazard); }
-  .tab-btn[data-cat="objective"][aria-selected="true"]{ border-bottom-color: var(--c-objective); }
+  .tab-btn[data-cat="friendly"][aria-selected="true"]{ border-bottom-color: var(--c-friendly); }
   .tab-btn[data-cat="hostile"][aria-selected="true"]{ border-bottom-color: var(--c-hostile); }
   .tab-btn[data-cat="unknown"][aria-selected="true"]{ border-bottom-color: var(--c-unknown); }
   .tab-btn[data-cat="mission"][aria-selected="true"]{ border-bottom-color: var(--c-mission); }
+  .tab-btn[data-cat="drone"][aria-selected="true"]{ border-bottom-color: var(--c-drone); }
 
   .panel{
     display:block;
@@ -417,7 +422,7 @@
   .wp-item.done .details .desc{ opacity:0.7; }
   .done-tag{
     font-size:0.7rem;
-    color:var(--c-objective);
+    color:var(--done);
     white-space:nowrap;
   }
 
@@ -432,7 +437,7 @@
     padding:8px 10px;
     border-radius:6px;
     background:rgba(47,181,116,0.10);
-    border-left:2px solid var(--c-objective);
+    border-left:2px solid var(--done);
     font-size:0.8rem;
   }
   .outcome-label{
@@ -440,7 +445,7 @@
     font-size:0.62rem;
     letter-spacing:0.06em;
     text-transform:uppercase;
-    color:var(--c-objective);
+    color:var(--done);
     margin-bottom:2px;
   }
 
@@ -453,7 +458,7 @@
   }
   .outcome-grid{ display:flex; flex-wrap:wrap; gap:8px; }
   .outcome-btn{ font-size:0.7rem; text-align:left; }
-  .outcome-btn:hover{ border-color:var(--c-objective); color:var(--text); }
+  .outcome-btn:hover{ border-color:var(--done); color:var(--text); }
   .complete-label{
     display:block;
     font-size:0.72rem;
@@ -650,7 +655,7 @@
 
   .ship-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(110px,1fr));
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
     gap:10px;
   }
   .ship-card{
@@ -678,6 +683,9 @@
   }
   .ship-icon-slot.has-icon svg{ width:100%; height:100%; }
   .ship-icon-slot.placeholder svg{ width:22px; height:22px; stroke:var(--muted); fill:none; }
+  .ship-name{ display:block; font-weight:600; }
+  .ship-stats, .ship-note{ display:block; margin-top:5px; line-height:1.4; color:var(--muted); }
+  .ship-note{ color:var(--text); }
 
   /* Single column by default; the reference lists pair up once there is room,
      which roughly halves the scroll through the panel on a desktop. */
@@ -1426,22 +1434,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 (function(){
   var CATEGORIES = {
     nav: {
-      label:'Navigation / Course Plotting', short:'NAV / COURSE', hex:'#EAF0FB',
+      label:'Route / Course Plotting / Point of Interest', short:'ROUTE / POI', hex:'#EAF0FB',
       titleHint:'e.g. Turn point Alpha', descHint:'What this waypoint means',
       outcomes:['Arrived at destination','Passed / bypassed']
     },
     hazard: {
-      label:'Hazards', short:'HAZARDS', hex:'#9C74D6',
+      label:'Hazards / Avoid Areas', short:'HAZARDS', hex:'#E35FD6',
       titleHint:'e.g. Debris field', descHint:'Hazard / area to avoid',
       outcomes:['Cleared / avoided','No longer a threat']
     },
-    objective: {
-      label:'Objectives', short:'OBJECTIVES', hex:'#2FB574',
-      titleHint:'e.g. Rally point', descHint:'What this objective means',
-      outcomes:['Objective complete']
+    friendly: {
+      label:'Known Friendly Assets', short:'FRIENDLY', hex:'#2FB574',
+      titleHint:'e.g. Resupply station', descHint:'Who or what is here',
+      outcomes:['Resupplied / met','Asset moved on']
     },
     hostile: {
-      label:'Hostiles / Hostile Area', short:'HOSTILES', hex:'#E05265',
+      label:'Known Hostiles / Hostile Areas', short:'HOSTILES', hex:'#E05265',
       titleHint:'e.g. Hostile patrol', descHint:'Threat details',
       outcomes:['Threat neutralised','Hostile disengaged']
     },
@@ -1454,6 +1462,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       label:'Mission Objectives', short:'MISSION OBJ.', hex:'#6C8AFF',
       titleHint:'e.g. Primary mission objective', descHint:'What this mission objective is',
       outcomes:['Objective complete','Objective failed']
+    },
+    drone: {
+      label:'Drone Co-ordination', short:'DRONES', hex:'#3FD3E3',
+      titleHint:'e.g. Drone picket point', descHint:'What the drones do here',
+      outcomes:['Drone task complete','Drones recalled']
     }
   };
   var CAT_KEYS = Object.keys(CATEGORIES);
@@ -1723,13 +1736,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
   function normaliseWaypoint(raw){
     if(!raw || typeof raw !== 'object') return null;
-    if(!CATEGORIES[raw.category]) return null;
+    // 'objective' (general objectives) predates the Academy Manual's colour
+    // standard, which has only mission objectives; keep those waypoints there.
+    var category = raw.category === 'objective' ? 'mission' : raw.category;
+    if(!CATEGORIES[category]) return null;
     var number = String(raw.number == null ? '' : raw.number).trim();
     var title  = String(raw.title  == null ? '' : raw.title).trim();
     if(!number || !title) return null;
     return {
       id: typeof raw.id === 'string' && raw.id ? raw.id : newId(),
-      category: raw.category,
+      category: category,
       number: number,
       title: title,
       sector: String(raw.sector == null ? '' : raw.sector).trim(),
@@ -3299,18 +3315,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16l9-11 9 11"/><path d="M5 16h14l-2 4H7z"/></svg>';
 
   // Entries without an `icon` keep the dashed placeholder slot until artwork exists.
+  // Typical figures from the UCN Academy Manual (Appendix B): averages, with a lot
+  // of overlap between classes. Types it doesn't cover just show their icon.
   var SHIP_TYPES = [
-    { name:'Drone',          icon:'drone' },
-    { name:'Fighter',        icon:'fighter' },
-    { name:'Gunship' },
-    { name:'Shuttle',        icon:'shuttle' },
-    { name:'Frigate',        icon:'frigate' },
-    { name:'Destroyer',      icon:'destroyer' },
-    { name:'Cruiser',        icon:'cruiser' },
-    { name:'Battle Cruiser', icon:'battlecruiser' },
-    { name:'Battleship',     icon:'battleship' },
+    { name:'Drone',          icon:'drone',     hull:'40',  shields:'1 shield, strength 20',  speed:'Very high',
+      note:'Mines, distraction, scouting. Heavy drones: hull 125, no shields.' },
+    { name:'Fighter',        icon:'fighter',   hull:'40',  shields:'1 shield, strength 40',  speed:'Very high',
+      note:'Starfighter: swarms, harasses, intercepts. Interceptors are fastest; bombers slower, with heavier ordnance.' },
+    // The manual draws every starfighter, gunships included, with one icon.
+    { name:'Gunship',        icon:'fighter',   hull:'40',  shields:'1 shield, strength 40',  speed:'Very high',
+      note:'Starfighter with heavier beams and HVLIs.' },
+    { name:'Shuttle',        icon:'shuttle',   hull:'100', shields:'2 shields, strength 100', speed:'Moderate',
+      note:'Task-specific. Ignore unless relevant.' },
+    { name:'Frigate',        icon:'frigate',   hull:'75',  shields:'2 shields, strength 50',  speed:'Moderate to high',
+      note:'Fast and flanking: track it for Helm. Assault frigates: hull 250, strength 200, a high threat.' },
+    { name:'Destroyer',      icon:'destroyer', hull:'210', shields:'4 shields, strength 225', speed:'Moderate',
+      note:'High threat: heavy shields, nukes and EMPs likely.' },
+    { name:'Cruiser',        icon:'cruiser',   hull:'500', shields:'4 shields, strength 400', speed:'Moderate',
+      note:'Missile-heavy, beam-heavy or specialist: work out which, fast.' },
+    { name:'Battle Cruiser', icon:'battlecruiser', hull:'500', shields:'4 shields, strength 450', speed:'Low to moderate',
+      note:'Massive shields. Avoid, or commit fully with several ordnance strikes.' },
+    { name:'Battleship',     icon:'battleship', hull:'800', shields:'4\u20136 shields, strength 550', speed:'Low',
+      note:'Only attack if there is no other option.' },
     { name:'Carrier',        icon:'carrier' },
-    { name:'Freighter',      icon:'freighter' },
+    { name:'Freighter',      icon:'freighter', hull:'100', shields:'2 shields, strength 50',  speed:'Low to moderate',
+      note:'Little direct threat. Ignore unless mission-relevant.' },
     { name:'Small Station',  icon:'small_station' },
     // Arrow is a solid mark among thin line-art silhouettes, so it reads far
     // heavier than the ships at the same size. Scale it back to match.
@@ -3327,7 +3356,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
                (art ? '' : ' title="Icon not supplied yet"') + style + '>' +
             (art || PLACEHOLDER_ICON) +
           '</div>' +
-          escapeHtml(ship.name) +
+          '<span class="ship-name">' + escapeHtml(ship.name) + '</span>' +
+          (ship.hull ? '<span class="ship-stats">Hull ' + ship.hull + ' \u00b7 ' + ship.shields + ' \u00b7 ' + ship.speed + ' speed</span>' : '') +
+          (ship.note ? '<span class="ship-note">' + escapeHtml(ship.note) + '</span>' : '') +
         '</div>'
       );
     }).join('');

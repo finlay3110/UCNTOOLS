@@ -19,7 +19,7 @@ const STORE_KEY = 'ucn-mission-v1';
 // torn write is very unlikely to hit both keys at once.
 const BACKUP_KEY = STORE_KEY + '-backup';
 const SCHEMA = 'ucn.engineering.log/1';
-const DEFAULT_SPARES = 5;
+const DEFAULT_SPARES = 4;   // a standard ship carries 4 spare OCPs, with 3 fitted (Academy Manual 3.11.2)
 
 // group:     which SHIP_DATA group supplies this kind's targets, if any.
 // tile:      the stat tile showing a running count, for the few kinds worth
