@@ -2147,13 +2147,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       dismiss.classList.add('icon-only');
     }
 
+    // On iPhone each Home Screen app keeps its own storage, so the homepage is
+    // the one to add: every tool then opens inside it and they share their data.
     if(isIosDevice()){
       text.innerHTML = narrow
-        ? '<strong>Share \u2192 Add to Home Screen</strong> keeps this log safe.'
+        ? 'On the <a href="../">homepage</a>, <strong>Share \u2192 Add to Home Screen</strong> keeps this log safe.'
         : 'iOS clears saved website data after about a week without opening the site, which would empty this log. ' +
-          'Add it to your Home Screen to keep it: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.';
+          'To keep it, open the <a href="../">UCN homepage</a>, tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>: ' +
+          'every UCN tool then opens inside that one app.';
       banner.title = 'iOS clears saved website data after about a week without opening the site. ' +
-                     'Installing to the Home Screen exempts it.';
+                     'Adding the UCN homepage to the Home Screen exempts it, and keeps every tool in one app.';
     }else{
       text.innerHTML = narrow
         ? 'Install this tool to keep your log safe.'
