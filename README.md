@@ -40,6 +40,8 @@ The remaining three sit on their own cards:
 | **Ship Search** | Looks up which ship (UCS Havock or UCS Takanami) is running at a given date/time, or shows the full day's schedule. |
 | **Mission Stats** | Import a CSV of your deployments from the Bridge Command portal and track your mission history. |
 
+Below them, **Your name & rank** sets the name and rank the tools share (`shared/profile.js`): each tool fills them in wherever its own are still blank, and a name typed in any tool shows here. **Back up & Restore** saves every tool's data in one file.
+
 The portal also links out to Bridge Command's official website and Discord server for anyone looking for the source community.
 
 ## Repo layout
