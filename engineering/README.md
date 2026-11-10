@@ -19,6 +19,12 @@ This is a fan-made project and is not approved by or affiliated with Bridge Comm
   always available. **New mission** clears the mission and its log but keeps
   the operator and their settings, ready for the next watch; **Clear mission
   data** wipes everything.
+- **Spike Timer** (Thermal & Power Guide) — pick the spike power and the coolant on
+  that system, then start it as you raise the power: it counts the climb to spike
+  power, then the safe hold, and turns red with "Reset now" (a buzz on phones that
+  can) when the hold runs out. Hold times are the UCN Academy Manual's (Table E-1,
+  from a cold start); next to it, when to call a shield spike for each kind of
+  incoming ordnance (Table E-2).
 - **Action Log** — records manual repairs with a start and end time. Manual
   repair leads to OCP, crystals, conduits or reactor; OCP and crystals then
   list that ship's locations, and conduits are multi-select because they
