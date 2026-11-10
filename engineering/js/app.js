@@ -228,6 +228,85 @@ sectorClear.addEventListener('click', ()=>{ sectorInput.value=''; renderWarpTabl
 warpIntro.innerHTML = MODE_INTROS[warpMode];
 renderWarpTable();
 
+// ============ SPIKE TIMER ============
+// Seconds a spike holds at spike power before it must be reset, from a cold
+// start, by coolant 0/25/50/75/100% (Academy Manual Table E-1). null: holds
+// indefinitely. RESET_AT is the heat reading it should be reset at.
+const SPIKE_COOLANT = [0, 25, 50, 75, 100];
+const SPIKE_HOLD = {
+  150: [67, 460, null, null, null],
+  200: [26, 44, 107, null, null],
+  250: [12, 18, 27, 44, 101],
+  300: [5, 8, 11, 15, 22],
+};
+const SPIKE_RESET_AT = {
+  150: [95, 95], 200: [90, 95, 95], 250: [85, 90, 95, 95, 95], 300: [70, 80, 90, 95, 95],
+};
+// Power climbs about 1.67 s per 50% (Table 3-5): 300% takes about 7 s.
+const spikeClimb = power => (power - 100) / 50 * 5 / 3;
+
+const spikeBox = document.getElementById('spikeBox');
+const spikeClock = document.getElementById('spikeClock');
+const spikeStatus = document.getElementById('spikeStatus');
+const spikeStart = document.getElementById('spikeStart');
+let spikePower = 300, spikeCoolant = 0, spikeFrom = 0, spikeTicker = 0;
+
+const mmss = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const inWords = s => s < 60 ? s + ' s' : Math.floor(s / 60) + 'm ' + String(s % 60).padStart(2, '0') + 's';
+// Only on a change: rewriting a live region makes screen readers repeat it every tick.
+const sayStatus = text => { if (spikeStatus.textContent !== text) spikeStatus.textContent = text; };
+
+function renderSpike(){
+  const i = SPIKE_COOLANT.indexOf(spikeCoolant);
+  const hold = SPIKE_HOLD[spikePower][i], climb = spikeClimb(spikePower);
+  const resetAt = SPIKE_RESET_AT[spikePower][i];
+  if (!spikeTicker) {
+    spikeBox.classList.remove('reset');
+    spikeStart.textContent = 'Start spike';
+    spikeStart.disabled = hold === null;
+    spikeClock.textContent = hold === null ? '∞' : mmss(hold);
+    sayStatus(hold === null
+      ? `${spikePower}% holds indefinitely on ${spikeCoolant}% coolant: no reset needed for heat.`
+      : `About ${Math.round(climb)} s to climb to ${spikePower}%, then hold for ${inWords(hold)} and reset at about ${resetAt}°.`);
+    return;
+  }
+  const t = (performance.now() - spikeFrom) / 1000;
+  if (t < climb) {
+    spikeClock.textContent = mmss(climb - t);
+    sayStatus(`Climbing to ${spikePower}%.`);
+  } else if (t < climb + hold) {
+    spikeClock.textContent = mmss(climb + hold - t);
+    sayStatus(`Holding at ${spikePower}%. Reset when this runs out, or at about ${resetAt}°.`);
+  } else if (!spikeBox.classList.contains('reset')) {
+    spikeClock.textContent = '0:00';
+    spikeBox.classList.add('reset');
+    spikeStart.textContent = 'Done';
+    sayStatus(`Reset now: ${spikePower}% has reached its safe limit.`);
+    if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+  }
+}
+
+function stopSpike(){ clearInterval(spikeTicker); spikeTicker = 0; renderSpike(); }
+
+[['#spikePowerBtns', 'power', v => { spikePower = v; }], ['#spikeCoolantBtns', 'coolant', v => { spikeCoolant = v; }]]
+  .forEach(([group, key, set]) => {
+    const btns = document.querySelectorAll(group + ' button');
+    btns.forEach(btn => btn.addEventListener('click', () => {
+      btns.forEach(b => { b.classList.toggle('active', b === btn); b.setAttribute('aria-pressed', String(b === btn)); });
+      set(Number(btn.dataset[key]));
+      stopSpike();   // a new plan starts from the top
+    }));
+  });
+
+spikeStart.addEventListener('click', () => {
+  if (spikeTicker) { stopSpike(); return; }
+  spikeFrom = performance.now();
+  spikeTicker = setInterval(renderSpike, 200);
+  spikeStart.textContent = 'Stop';
+  renderSpike();
+});
+renderSpike();
+
 // ============ DAMAGE CONTROL DATA ============
 const SHIP_DATA = {
   havock:{

@@ -301,6 +301,21 @@ html,body{
 
 .hint{font-size:12px; color:var(--muted); margin-top:12px; line-height:1.5;}
 
+/* ---------- spike timer ---------- */
+.spike-controls{margin-bottom:12px;}
+.spike-controls .seg-btns button{padding:9px 12px;}
+.spike-box{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:14px 16px; margin-top:6px;
+  border:1.4px solid var(--line); border-radius:10px; background:var(--input-fill);
+}
+.spike-clock{font-family:'Orbitron',sans-serif; font-size:34px; font-weight:800; min-width:3.2em; font-variant-numeric:tabular-nums;}
+.spike-status{flex:1 1 180px; margin:0; color:var(--muted); line-height:1.45;}
+/* Time's up: hard to miss across a dark bridge, without flashing. */
+.spike-box.reset{background:#8E2424; border-color:var(--danger);}
+.spike-box.reset .spike-status{color:var(--text); font-weight:700;}
+.spike-box.reset .pill-btn{color:var(--text); border-color:var(--text);}
+
 /* ---------- damage control ---------- */
 .dc-controls{
   display:flex;

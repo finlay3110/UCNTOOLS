@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bridge Drills — UCN</title>
+<meta name="description" content="Quick drills from the UCN Academy Manual: radar recognition, ordnance choice and standard bridge callouts.">
+<meta name="theme-color" content="#0b0f1c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%234FA8C9' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23DD7A2B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#8c98bf;
+    --orange:#DD7A2B; --green:#2FB574; --red:#d64545; --open:#0f1730;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; min-height:100vh; color:var(--text);
+    font-family:'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background:radial-gradient(ellipse at top, #1b2a5e 0%, var(--bg) 60%) fixed, var(--bg);
+  }
+  .top, main, footer{ max-width:560px; margin:0 auto; padding-left:16px; padding-right:16px; }
+  .top{ padding-top:14px; }
+  .back{ display:inline-flex; align-items:center; min-height:32px; color:var(--muted); text-decoration:none; font-size:13px; }
+  .back:hover{ color:var(--orange); }
+  h1{ font-family:'Orbitron', sans-serif; font-weight:800; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
+  .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:16px; }
+  label{ display:block; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  select, input[type=text]{
+    width:100%; font:inherit; font-size:16px; color:var(--text); background:var(--open);
+    border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+  }
+  .row{ display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .stat{ flex:1; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .stat b{ color:var(--text); }
+  .btn{
+    min-height:40px; padding:0 14px; border-radius:8px; border:1.5px solid var(--orange); background:none;
+    color:var(--orange); font:inherit; font-weight:700; cursor:pointer;
+  }
+  .btn:hover, .btn.primary{ background:var(--orange); color:#1a0e02; }
+  .result{ min-height:1.5em; margin:0 2px 14px; color:var(--muted); line-height:1.5; }
+  .result strong{ color:var(--text); }
+
+  .quiz-head{ display:flex; justify-content:space-between; gap:10px; font:700 11px/1.4 'Orbitron', sans-serif; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); }
+  .quiz-head b{ color:var(--text); }
+  .pic{ display:block; width:92px; height:92px; margin:14px auto 2px; }
+  .pic svg{ display:block; width:100%; height:100%; }
+  .pic.ship{ color:var(--text); padding:14px; border:1px solid var(--border); border-radius:12px; background:#0b1024; }
+  .pic.blip{ width:40px; height:40px; border-radius:50%; margin:22px auto 10px; box-shadow:0 0 0 6px rgba(255,255,255,.06); }
+  .prompt{ font-size:17px; font-weight:600; line-height:1.4; margin:12px 0 10px; outline:none; }
+  .opt{
+    display:block; width:100%; min-height:46px; margin:8px 0; padding:10px 14px; text-align:left;
+    font:inherit; font-size:15px; line-height:1.35; color:var(--text); background:var(--open);
+    border:1.5px solid var(--border); border-radius:10px; cursor:pointer;
+  }
+  .opt:hover:not(:disabled){ border-color:var(--orange); }
+  .opt:disabled{ cursor:default; }
+  .opt.right{ border-color:var(--green); background:rgba(47,181,116,.16); }
+  .opt.wrong{ border-color:var(--red); background:rgba(214,69,69,.16); }
+  .why{ min-height:1.5em; margin:10px 0 4px; color:#c9d2ee; line-height:1.5; }
+  .why strong{ color:var(--text); }
+  .next{ margin-top:6px; }
+
+  h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
+  table{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+  th, td{ padding:7px 4px; text-align:right; border-bottom:1px solid var(--border); }
+  th:first-child{ text-align:left; }
+  thead th{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .records p{ margin:10px 0 12px; color:var(--muted); font-size:13px; line-height:1.5; }
+  .records input{ margin-bottom:12px; }
+  .help ul{ padding-left:20px; margin:0 0 6px; }
+  .help li, .help p{ margin:7px 0; line-height:1.5; color:#c9d2ee; }
+  .help b{ color:var(--text); }
+  footer{ padding-top:2px; padding-bottom:28px; color:var(--muted); font-size:11.5px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../">&larr; Back to Tool Portal</a>
+  <h1>BRIDGE DRILLS</h1>
+  <p class="sub">Contacts, ordnance and callouts, by the Academy Manual</p>
+</header>
+
+<main>
+  <section class="panel" aria-label="Drill controls">
+    <label for="drill">Drill</label>
+    <select id="drill"></select>
+    <div class="row">
+      <span class="stat">Time <b id="clock" role="timer">0:00</b></span>
+      <button type="button" class="btn primary" id="start">Start round</button>
+    </div>
+  </section>
+
+  <p class="result" id="result" role="status" aria-live="polite"></p>
+
+  <section class="panel" id="quiz" aria-label="Question" hidden>
+    <div class="quiz-head"><span id="qnum"></span><span>Right: <b id="score">0</b></span></div>
+    <div id="pic"></div>
+    <p class="prompt" id="prompt" tabindex="-1"></p>
+    <div id="options"></div>
+    <p class="why" id="why" aria-live="polite"></p>
+    <button type="button" class="btn next" id="next" hidden>Next question</button>
+  </section>
+
+  <section class="panel records" aria-labelledby="recordsTitle">
+    <h2 id="recordsTitle">Your records</h2>
+    <table>
+      <thead><tr><th scope="col">Drill</th><th scope="col">Best</th><th scope="col">Best time</th><th scope="col">Rounds</th></tr></thead>
+      <tbody id="records"></tbody>
+    </table>
+    <p>Saved on this device after every round. Best is the most answers you've got right in a round of ten, and best time the fastest round with that many.</p>
+    <label for="playerName">Your name on the picture</label>
+    <input type="text" id="playerName" maxlength="40" autocomplete="name" placeholder="Optional">
+    <button type="button" class="btn" id="shareRecords">Share as an image</button>
+  </section>
+
+  <section class="panel help">
+    <h2>The drills</h2>
+    <ul>
+      <li><b>Radar recognition:</b> ship icons and the manual's advice for each, contact colours, ordnance marks and the radar's signal channels.</li>
+      <li><b>Ordnance choice:</b> which weapon suits the moment, and the ranges, timings and blasts behind the choice.</li>
+      <li><b>Callouts:</b> the standard call for the moment, station by station. Short, addressed and specific beats vague every time.</li>
+    </ul>
+    <p>Each round is ten questions in a random order. Tap the answer you'd give: the right one turns green, with the manual's reason. The clock runs from the first question to the last answer, so a quick, accurate round beats a slow perfect one only on time.</p>
+  </section>
+</main>
+
+<footer>Questions from the unofficial UCN Academy Manual; ship icons from the Navigation &amp; Radar tool. Fan-made training game for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
+
+<script type="module">
+  import { DRILLS, ROUND, newRound, time, record } from './drills.js';
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const KEY = 'ucnBridgeDrills_v1';
+  let records = {}, drill, round = [], idx = 0, score = 0, startedAt = 0, ticker = 0;
+  try { records = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: records last this visit only */ }
+  if (typeof records !== 'object' || Array.isArray(records)) records = {};
+
+  for (const [key, d] of Object.entries(DRILLS)) $('drill').add(new Option(d.label, key));
+
+  function start() {
+    drill = $('drill').value;
+    round = newRound(drill);
+    idx = 0;
+    score = 0;
+    clearInterval(ticker);
+    startedAt = performance.now();
+    ticker = setInterval(() => { $('clock').textContent = time(performance.now() - startedAt).slice(0, -2); }, 250);
+    $('result').textContent = '';
+    $('quiz').hidden = false;
+    $('start').textContent = 'Restart';
+    show();
+    $('prompt').focus();
+  }
+
+  function show() {
+    const x = round[idx];
+    $('qnum').textContent = `${DRILLS[drill].label} · ${idx + 1} of ${round.length}`;
+    $('score').textContent = score;
+    $('pic').innerHTML = x.pic;   // trusted: drawn by drills.js, never from storage or input
+    $('prompt').textContent = x.prompt;
+    $('options').innerHTML = x.options.map((o, i) => `<button type="button" class="opt" data-i="${i}">${esc(o)}</button>`).join('');
+    $('why').textContent = '';
+    $('next').hidden = true;
+  }
+
+  $('options').addEventListener('click', e => {
+    const b = e.target.closest('.opt');
+    if (!b || b.disabled) return;
+    const x = round[idx], right = x.options[+b.dataset.i] === x.answer;
+    if (right) score++;
+    [...$('options').children].forEach((btn, i) => {
+      btn.disabled = true;
+      if (x.options[i] === x.answer) btn.classList.add('right');
+      else if (btn === b) btn.classList.add('wrong');
+    });
+    $('score').textContent = score;
+    $('why').innerHTML = (right ? '<strong>Right.</strong> ' : `<strong>Not quite.</strong> The answer is “${esc(x.answer)}”${/[.!?]$/.test(x.answer) ? '' : '.'} `) + esc(x.why);
+    if (idx < round.length - 1) { $('next').hidden = false; $('next').focus(); }
+    else finish();
+  });
+
+  $('next').addEventListener('click', () => { idx++; show(); $('prompt').focus(); });
+
+  function finish() {
+    clearInterval(ticker);
+    const ms = performance.now() - startedAt;
+    $('clock').textContent = time(ms);
+    const best = record(records, drill, score, ms);
+    try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (e) { /* storage blocked */ }
+    showRecords();
+    $('start').textContent = 'Play again';
+    $('result').innerHTML = `<strong>${score} of ${ROUND} right</strong> in ${time(ms)}.` +
+      (best ? ' New best!' : '') + (score === ROUND ? ' A clean round.' : score >= 7 ? ' Solid.' : ' Have another go.');
+  }
+
+  // What a drill's records read as, in the table and the picture.
+  function best(key) {
+    const r = records[key];
+    return r && r.runs ? [`${+r.bestScore}/${ROUND}`, r.bestMs == null ? '—' : time(+r.bestMs), String(+r.runs)] : ['—', '—', '—'];
+  }
+
+  function showRecords() {
+    $('records').innerHTML = Object.entries(DRILLS).map(([key, d]) =>
+      `<tr><th scope="row">${d.label}</th>${best(key).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
+  }
+
+  // The records as a picture to send to friends. Drawn without waiting on
+  // anything, so the phone still counts the share sheet as opened by the tap.
+  function recordsPng() {
+    const W = 1080, c = document.createElement('canvas');
+    c.width = c.height = W;
+    const x = c.getContext('2d');
+    const bg = x.createRadialGradient(W / 2, 0, 0, W / 2, 0, W);
+    bg.addColorStop(0, '#1b2a5e');
+    bg.addColorStop(0.7, '#0b0f1c');
+    x.fillStyle = bg;
+    x.fillRect(0, 0, W, W);
+    const text = (s, px, y, font, colour) => { x.font = font; x.fillStyle = colour; x.fillText(s, px, y); };
+    text('BRIDGE DRILLS', 70, 150, '800 64px Orbitron', '#e8ecf7');
+    const name = $('playerName').value.trim();
+    if (name) {
+      // A long name shrinks to fit the width rather than running off the picture.
+      x.font = '700 46px "Exo 2"';
+      text(name, 72, 212, `700 ${Math.min(46, Math.floor(46 * (W - 144) / x.measureText(name).width))}px "Exo 2"`, '#DD7A2B');
+      text('RECORDS · UCN FLEET DIGITAL SUITE', 72, 254, '600 24px "Exo 2"', '#8c98bf');
+    } else text('MY RECORDS · UCN FLEET DIGITAL SUITE', 72, 206, '600 26px "Exo 2"', '#DD7A2B');
+    Object.entries(DRILLS).forEach(([key, d], i) => {
+      const y = 300 + i * 200;
+      x.beginPath();
+      (x.roundRect || x.rect).call(x, 70, y, W - 140, 166, 18);
+      x.fillStyle = '#141c38';
+      x.fill();
+      x.lineWidth = 2;
+      x.strokeStyle = '#2a3a66';
+      x.stroke();
+      text(d.label.toUpperCase(), 104, y + 64, '700 30px Orbitron', '#e8ecf7');
+      best(key).forEach((v, j) => {
+        text(['BEST', 'BEST TIME', 'ROUNDS'][j], 104 + j * 290, y + 110, '600 20px "Exo 2"', '#8c98bf');
+        text(v, 104 + j * 290, y + 148, '700 34px Orbitron', j ? '#e8ecf7' : '#DD7A2B');
+      });
+    });
+    text('Train at finlay3110.github.io/UCNTOOLS', 72, 1022, '400 24px "Exo 2"', '#8c98bf');
+    const bytes = atob(c.toDataURL('image/png').split(',')[1]);
+    return new Blob([Uint8Array.from(bytes, ch => ch.charCodeAt(0))], { type: 'image/png' });
+  }
+
+  $('start').addEventListener('click', start);
+  $('shareRecords').addEventListener('click', () => {
+    const png = recordsPng(), name = 'bridge-drills-records.png';
+    const download = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(png);
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    };
+    // Tested with the picture itself: some phones share pictures but not other files.
+    const file = new File([png], name, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'My Bridge Drills records' }).catch(e => { if (e.name !== 'AbortError') download(); });
+    } else download();
+  });
+  // The picture uses the page's fonts: have them ready before anyone taps Share.
+  ['800 1em Orbitron', '700 1em Orbitron', '400 1em "Exo 2"', '600 1em "Exo 2"', '700 1em "Exo 2"'].forEach(f => document.fonts.load(f).catch(() => {}));
+  showRecords();
+</script>
+<script>
+  // ucn-lists:profile (from shared/profile.js, written on deploy: edit that file, not this code)
+  /* Name and rank are shared by the UCN tools on this site: type them into one
+     tool and the others fill them in for you, but only into fields that are
+     still empty, so nothing a tool already holds is ever replaced.
+     Each tool calls ucnSharedProfile({ name, rank, rankOther, write }) with its
+     own field ids; write:false only reads (the ID card is often made for
+     someone else). Plain ES5, as some of the tools are. */
+  function ucnSharedProfile(ids) {
+    var KEY = 'ucnProfile_v1';
+    var get = function (id) { return id ? document.getElementById(id) : null; };
+    var name = get(ids.name), rank = get(ids.rank), other = get(ids.rankOther);
+  
+    function read() {
+      try {
+        var p = JSON.parse(localStorage.getItem(KEY));
+        return p && typeof p === 'object' ? p : {};
+      } catch (e) { return {}; }
+    }
+    function save(field, value) {
+      value = (value || '').trim();
+      if (!value || ids.write === false) return;
+      var p = read();
+      if (p[field] === value) return;
+      p[field] = value;
+      try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* storage blocked */ }
+    }
+    function fire(el, type) {
+      var ev = document.createEvent('Event');
+      ev.initEvent(type, true, true);
+      el.dispatchEvent(ev);
+    }
+    // The rank as a person reads it, whatever form this tool keeps it in.
+    function rankText() {
+      if (!rank) return '';
+      if (rank.tagName !== 'SELECT') return rank.value;
+      if (rank.value === '__other__') return other ? other.value : '';
+      return rank.value ? rank.options[rank.selectedIndex].text : '';
+    }
+    function putRank(value) {
+      if (rank.tagName !== 'SELECT') {
+        // A searchable picker opens its list on 'input' and settles the value
+        // (and closes the list) on 'blur', so finish as if the person moved on.
+        rank.value = value; fire(rank, 'input'); fire(rank, 'change'); fire(rank, 'blur');
+        return;
+      }
+      var want = value.toLowerCase();
+      for (var i = 0; i < rank.options.length; i++) {
+        var o = rank.options[i];
+        if (o.value && o.value !== '__other__' &&
+            (o.value.toLowerCase() === want || o.text.trim().toLowerCase() === want)) {
+          rank.value = o.value; fire(rank, 'change');
+          return;
+        }
+      }
+      if (other) {
+        rank.value = '__other__'; fire(rank, 'change');
+        other.value = value; fire(other, 'input'); fire(other, 'change');
+      }
+    }
+    function fill() {
+      var p = read();
+      if (name && p.name && !name.value.trim()) { name.value = p.name; fire(name, 'input'); fire(name, 'change'); }
+      if (rank && p.rank && !rankText().trim()) putRank(p.rank);
+    }
+  
+    if (name) name.addEventListener('input', function () { save('name', name.value); });
+    // Rank text boxes are searchable pickers: only keep what is left once the
+    // person moves on, not each half-typed search, and only after the tool's own
+    // handlers have run, since some (Engineering's) clear a rank that isn't real.
+    [rank, other].forEach(function (el) {
+      if (!el) return;
+      ['change', 'blur'].forEach(function (type) {
+        el.addEventListener(type, function () { setTimeout(function () { save('rank', rankText()); }, 0); });
+      });
+    });
+    // After the tool has put its own saved values back.
+    if (document.readyState === 'complete') setTimeout(fill, 0);
+    else window.addEventListener('load', function () { setTimeout(fill, 0); });
+  }
+  // ucn-lists:end
+  ucnSharedProfile({ name: 'playerName' });
+</script>
+<script>
+  // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>

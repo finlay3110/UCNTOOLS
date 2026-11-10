@@ -325,7 +325,52 @@
 
     <!-- ======== TAB 2: THERMAL & POWER GUIDE ======== -->
     <section class="panel" id="panel-thermal" role="tabpanel" aria-labelledby="tab-thermal" tabindex="0">
-      <h2>Coolant Guide</h2>
+      <h2>Spike Timer</h2>
+      <p class="panel-sub">Pick the spike and the coolant on that system, then start the timer as you raise the power. It counts the climb to spike power, then the safe hold, and tells you when to reset. From the UCN Academy Manual (Tables 3-5 and E-1), starting cold.</p>
+
+      <div class="warp-controls spike-controls">
+        <span class="seg-label" id="spikePowerLabel">Spike power</span>
+        <div class="seg-btns" id="spikePowerBtns" role="group" aria-labelledby="spikePowerLabel">
+          <button type="button" data-power="150" aria-pressed="false">150%</button>
+          <button type="button" data-power="200" aria-pressed="false">200%</button>
+          <button type="button" data-power="250" aria-pressed="false">250%</button>
+          <button type="button" data-power="300" class="active" aria-pressed="true">300%</button>
+        </div>
+      </div>
+      <div class="warp-controls spike-controls">
+        <span class="seg-label" id="spikeCoolantLabel">Coolant</span>
+        <div class="seg-btns" id="spikeCoolantBtns" role="group" aria-labelledby="spikeCoolantLabel">
+          <button type="button" data-coolant="0" class="active" aria-pressed="true">0%</button>
+          <button type="button" data-coolant="25" aria-pressed="false">25%</button>
+          <button type="button" data-coolant="50" aria-pressed="false">50%</button>
+          <button type="button" data-coolant="75" aria-pressed="false">75%</button>
+          <button type="button" data-coolant="100" aria-pressed="false">100%</button>
+        </div>
+      </div>
+      <div class="spike-box" id="spikeBox">
+        <div class="spike-clock" id="spikeClock" role="timer"></div>
+        <p class="spike-status" id="spikeStatus" role="status" aria-live="polite"></p>
+        <button type="button" class="pill-btn" id="spikeStart">Start spike</button>
+      </div>
+
+      <h2 class="mt">When to Call a Shield Spike</h2>
+      <p class="panel-sub">A shield generator takes about 7 seconds to reach 300%, so a shield spike should start about 8 seconds before impact. From the UCN Academy Manual (Table E-2).</p>
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Incoming</th><th>Call the Spike When It&rsquo;s</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="sys" data-label="Incoming">HVLI (slug)</td><td data-label="Call the Spike When It&rsquo;s">About 4U out</td></tr>
+            <tr><td class="sys" data-label="Incoming">Torpedo (tracker)</td><td data-label="Call the Spike When It&rsquo;s">About 1.5&ndash;1.6U out</td></tr>
+            <tr><td class="sys" data-label="Incoming">Nuke</td><td data-label="Call the Spike When It&rsquo;s">About 1.5&ndash;1.6U out</td></tr>
+            <tr><td class="sys" data-label="Incoming">EMP</td><td data-label="Call the Spike When It&rsquo;s">About 1.5&ndash;1.6U out, unless you plan to drop shields for it</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">Closing on the ordnance, call earlier; moving away, the window is slightly longer. In combat, slightly early beats perfectly late.</p>
+
+      <h2 class="mt">Coolant Guide</h2>
       <p class="panel-sub">Coolant required to hold a system steady at a given power level, approximately (UCN Academy Manual, Tables 3-4 and 3-6). Power levels can exceed 100% &mdash; anything past 230% is unsustainable.</p>
 
       <div class="table-wrap">

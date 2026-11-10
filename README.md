@@ -6,7 +6,7 @@ The United Confederation Navy (UCN) fan-made digital tool suite — every tool p
 
 ## What's in the suite
 
-Six tools sit behind the **Mission Tools** dropdown — the reference tools meant for use during an active mission:
+Seven tools sit behind the **Mission Tools** dropdown — the reference tools meant for use during an active mission:
 
 | Tool | Description |
 |---|---|
@@ -16,6 +16,7 @@ Six tools sit behind the **Mission Tools** dropdown — the reference tools mean
 | **Comms Log** | Log and reference bridge communications during a mission. |
 | **General Log** | Keep your own mission log from any station you're assigned to. |
 | **Tactical Aids Archive** | Searchable library of tactical aid PDFs, grouped by category. |
+| **Tractor & Drones** | Tractor beam reach for any arc, what it can drag and which incoming ordnance it can deflect, and drone and probe range by scanner power, from the UCN Academy Manual. |
 
 Two sit behind the **Mess Tools** dropdown — for the mess deck, off watch:
 
@@ -24,7 +25,7 @@ Two sit behind the **Mess Tools** dropdown — for the mess deck, off watch:
 | **Shanty Songbook** | The full digital songbook — searchable lyrics, favourites, chorus highlighting, and offline-ready access. |
 | **Mess Drink Tracker** | Keep a running tally of drinks on the mess deck. |
 
-The remaining four sit on their own cards:
+The remaining five sit on their own cards:
 
 | Tool | Description |
 |---|---|
@@ -32,6 +33,7 @@ The remaining four sit on their own cards:
 | **Ship Search** | Looks up which ship (UCS Havock or UCS Takanami) is running at a given date/time, or shows the full day's schedule. |
 | **Mission Stats** | Import a CSV of your deployments from the Bridge Command portal and track your mission history. |
 | **Hacking Trainer** | Practice for Bridge Command hacking, to the UCN Academy Manual's rules: breach a defensive grid at four cyber defence levels (Basic, Secure, Hardened, Fortified), with best times and breaches to share. |
+| **Bridge Drills** | Quick drills from the UCN Academy Manual: radar recognition, ordnance choice and standard callouts, ten questions a round, with best scores to share. |
 
 The portal also links out to Bridge Command's official website and Discord server for anyone looking for the source community.
 
@@ -53,6 +55,8 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `shipsearch/` | Ship Search | SHIPSEARCH repo |
 | `missionstats/` | Mission Stats | MISSIONTRACKER repo |
 | `hacking-trainer/` | Hacking Trainer | new here |
+| `tractor-drones/` | Tractor & Drones | new here |
+| `bridge-drills/` | Bridge Drills | new here |
 
 ## Deploying
 
