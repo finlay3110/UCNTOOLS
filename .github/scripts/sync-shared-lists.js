@@ -123,6 +123,7 @@ const TARGETS = [
   ['missionstats/sw.js', ['offline-sw']],
   ['hacking-trainer/sw.js', ['offline-sw']],
   ['hacking-trainer/index.html', ['profile']],
+  ['tractor-drones/sw.js', ['offline-sw']],
 ];
 
 let changed = 0;

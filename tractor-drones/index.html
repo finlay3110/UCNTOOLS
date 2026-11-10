@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tractor &amp; Drones — UCN</title>
+<meta name="description" content="Tractor beam reach, what it can drag and deflect, and drone and probe range by scanner power, from the UCN Academy Manual.">
+<meta name="theme-color" content="#0b0f1c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M16 26L9 9h14z' fill='%234FA8C9' opacity='.7'/%3E%3Ccircle cx='16' cy='26' r='2.5' fill='%23DD7A2B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#8c98bf;
+    --orange:#DD7A2B; --cyan:#4FA8C9; --green:#2FB574; --red:#ee7b7b; --field:#0f1730;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; min-height:100vh; color:var(--text);
+    font-family:'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background:radial-gradient(ellipse at top, #1b2a5e 0%, var(--bg) 60%) fixed, var(--bg);
+  }
+  .top, main, footer{ max-width:560px; margin:0 auto; padding-left:16px; padding-right:16px; }
+  .top{ padding-top:14px; }
+  .back{ display:inline-flex; align-items:center; min-height:32px; color:var(--muted); text-decoration:none; font-size:13px; }
+  .back:hover{ color:var(--orange); }
+  h1{ font-family:'Orbitron', sans-serif; font-weight:800; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
+  .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:16px; }
+  h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
+  p, li{ line-height:1.5; }
+  .note{ color:var(--muted); font-size:13px; margin:10px 0 0; }
+  label{ display:flex; justify-content:space-between; gap:10px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  label output{ color:var(--text); font:700 13px 'Orbitron', sans-serif; letter-spacing:.5px; }
+  input[type=range]{ width:100%; height:32px; margin:4px 0 6px; accent-color:var(--cyan); }
+  .readout{ display:flex; gap:18px; flex-wrap:wrap; margin:6px 0 4px; }
+  .readout div{ font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .readout b{ display:block; font:800 28px/1.2 'Orbitron', sans-serif; letter-spacing:.5px; color:var(--text); text-transform:none; }
+  .fan{ display:block; width:100%; max-width:360px; margin:8px auto 4px; }
+  .defence{ list-style:none; padding:0; margin:10px 0 0; }
+  .defence li{ padding:8px 10px 8px 34px; margin:6px 0; border-radius:8px; background:var(--field); position:relative; font-size:14px; }
+  .defence li::before{ position:absolute; left:11px; top:7px; font-weight:700; }
+  .defence li.ok::before{ content:'✓'; color:var(--green); }
+  .defence li.no::before{ content:'✗'; color:var(--red); }
+  .defence b{ color:var(--text); }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th, td{ padding:7px 4px; text-align:left; border-bottom:1px solid var(--border); }
+  thead th{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  footer{ padding-top:4px; padding-bottom:28px; color:var(--muted); font-size:11.5px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../">&larr; Back to Tool Portal</a>
+  <h1>TRACTOR &amp; DRONES</h1>
+  <p class="sub">Reach, drag and range for Beams and Dock &amp; Drone</p>
+</header>
+
+<main>
+  <section class="panel" aria-labelledby="tractorTitle">
+    <h2 id="tractorTitle">Tractor beam reach</h2>
+    <label for="arc">Beam arc <output id="arcOut" for="arc"></output></label>
+    <input type="range" id="arc" min="6" max="90" step="0.5" value="22.5">
+    <div class="readout"><div>Reaches<b id="reach"></b></div></div>
+    <svg class="fan" id="fan" viewBox="0 0 300 190" aria-hidden="true"></svg>
+    <p class="note">The beam covers a fixed area: narrow for reach, wide for catching things. It must cover a target&rsquo;s centre, moves it only along the line to the ship, and loses it if it crosses behind the ship.</p>
+    <h2>Deflecting incoming ordnance at full reach</h2>
+    <ul class="defence" id="defence"></ul>
+  </section>
+
+  <section class="panel" aria-labelledby="dragTitle">
+    <h2 id="dragTitle">What the tractor can drag</h2>
+    <table>
+      <thead><tr><th scope="col">Target</th><th scope="col">Docks 100%</th><th scope="col">Docks 200&ndash;300%</th></tr></thead>
+      <tbody id="drag"></tbody>
+    </table>
+    <p class="note">Every object in the beam costs its full energy, so a wide beam through a crowd adds up fast. More Cargo Docks power drags faster but spends the same energy, just sooner. The tractor makes no heat.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="droneTitle">
+    <h2 id="droneTitle">Drones and probes</h2>
+    <label for="scanner">Scanner effectiveness <output id="scannerOut" for="scanner"></output></label>
+    <input type="range" id="scanner" min="100" max="300" step="10" value="100">
+    <div class="readout">
+      <div>Drone control range<b id="droneRange"></b></div>
+      <div>Probe scan radius<b id="probeRadius"></b></div>
+    </div>
+    <p class="note">Effectiveness is the scanners&rsquo; power less any damage or hacking. A drone pilot&rsquo;s own tactical display still shows only 5U, however far the drone can go.</p>
+  </section>
+</main>
+
+<footer>Figures from the unofficial UCN Academy Manual (Tables 3-21, 3-22, 3-26, 3-27 and section 3.8.4). Fan-made reference for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
+
+<script type="module">
+  import { tractorReach, DEFENCE, DRAG, probeRadius, droneRange } from './calc.js';
+
+  const $ = id => document.getElementById(id);
+  const units = x => +x.toFixed(2) + 'U';
+
+  // The beam drawn to scale: the ship at the bottom, rings every 0.5U out to the 2U maximum.
+  function fan(arc, reach) {
+    const cx = 150, cy = 178, px = 80;   // 80px per U
+    const at = (r, deg) => [cx + r * px * Math.sin(deg * Math.PI / 180), cy - r * px * Math.cos(deg * Math.PI / 180)].map(n => n.toFixed(1));
+    const rings = [0.5, 1, 1.5, 2].map(r => {
+      const [x1, y1] = at(r, -88), [x2, y2] = at(r, 88), [lx, ly] = at(r, -55);
+      return `<path d="M${x1} ${y1}A${r * px} ${r * px} 0 0 1 ${x2} ${y2}" fill="none" stroke="#2a3a66" stroke-dasharray="3 4"/>` +
+        `<text x="${lx}" y="${ly}" fill="#8c98bf" font-size="10" font-family="Exo 2, sans-serif">${r}U</text>`;
+    }).join('');
+    const [ax, ay] = at(reach, -arc / 2), [bx, by] = at(reach, arc / 2);
+    return rings +
+      `<path d="M${cx} ${cy}L${ax} ${ay}A${reach * px} ${reach * px} 0 0 1 ${bx} ${by}Z" fill="#4FA8C9" fill-opacity=".35" stroke="#4FA8C9"/>` +
+      `<path d="M${cx} ${cy - 9}l-6 13h12z" fill="#DD7A2B"/>`;
+  }
+
+  function showTractor() {
+    const arc = +$('arc').value, reach = tractorReach(arc);
+    $('arcOut').textContent = arc + '°';
+    $('reach').textContent = units(reach);
+    $('fan').innerHTML = fan(arc, reach);
+    $('defence').innerHTML = DEFENCE.map(d => arc <= d.maxArc
+      ? `<li class="ok"><b>${d.what}:</b> yes, this arc can ${d.goal}.</li>`
+      : `<li class="no"><b>${d.what}:</b> needs ${d.maxArc}° or less to ${d.goal}.</li>`).join('');
+  }
+
+  function showDrones() {
+    const eff = +$('scanner').value;
+    $('scannerOut').textContent = eff + '%';
+    $('droneRange').textContent = '~' + Math.round(droneRange(eff)) + 'U';
+    $('probeRadius').textContent = units(probeRadius(eff));
+  }
+
+  $('drag').innerHTML = DRAG.map(([what, low, high]) => `<tr><th scope="row">${what}</th><td>${low}</td><td>${high}</td></tr>`).join('');
+  $('arc').addEventListener('input', showTractor);
+  $('scanner').addEventListener('input', showDrones);
+  showTractor();
+  showDrones();
+</script>
+<script>
+  // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>

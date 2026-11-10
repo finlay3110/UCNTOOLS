@@ -6,7 +6,7 @@ The United Confederation Navy (UCN) fan-made digital tool suite — every tool p
 
 ## What's in the suite
 
-Six tools sit behind the **Mission Tools** dropdown — the reference tools meant for use during an active mission:
+Seven tools sit behind the **Mission Tools** dropdown — the reference tools meant for use during an active mission:
 
 | Tool | Description |
 |---|---|
@@ -16,6 +16,7 @@ Six tools sit behind the **Mission Tools** dropdown — the reference tools mean
 | **Comms Log** | Log and reference bridge communications during a mission. |
 | **General Log** | Keep your own mission log from any station you're assigned to. |
 | **Tactical Aids Archive** | Searchable library of tactical aid PDFs, grouped by category. |
+| **Tractor & Drones** | Tractor beam reach for any arc, what it can drag and which incoming ordnance it can deflect, and drone and probe range by scanner power, from the UCN Academy Manual. |
 
 Two sit behind the **Mess Tools** dropdown — for the mess deck, off watch:
 
@@ -53,6 +54,7 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `shipsearch/` | Ship Search | SHIPSEARCH repo |
 | `missionstats/` | Mission Stats | MISSIONTRACKER repo |
 | `hacking-trainer/` | Hacking Trainer | new here |
+| `tractor-drones/` | Tractor & Drones | new here |
 
 ## Deploying
 
