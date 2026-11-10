@@ -1,0 +1,19 @@
+name: Bridge Drills tests
+
+on:
+  push:
+    paths: ['bridge-drills/**', '.github/workflows/bridge-drills-tests.yml']
+  pull_request:
+    paths: ['bridge-drills/**', '.github/workflows/bridge-drills-tests.yml']
+
+jobs:
+  questions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: bridge-drills
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check every question
+        run: node test.js
