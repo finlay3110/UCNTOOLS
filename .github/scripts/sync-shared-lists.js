@@ -122,6 +122,7 @@ const TARGETS = [
   ['shipsearch/sw.js', ['offline-sw']],
   ['missionstats/sw.js', ['offline-sw']],
   ['hacking-trainer/sw.js', ['offline-sw']],
+  ['hacking-trainer/index.html', ['profile']],
 ];
 
 let changed = 0;

@@ -26,7 +26,9 @@ from zero when the page is reloaded.
 
 Each attempt is timed from the first probe. The best time (full breach), best
 breach and breaches for each level are kept in this browser, go in the portal's
-backup, and can be shared as a picture. The records also show the manual's training
+backup, and can be shared as a picture, with your name on it if you add one.
+The name is the one the other UCN tools share: type it in any of them and it
+fills in here. The records also show the manual's training
 benchmark, the **Academy standard**: a full breach on Secure in under 40 seconds
 without triggering a routine. The tips draw the manual's 1-2-1, 1-2-2-1 and 1-1
 patterns the way its figures do.
