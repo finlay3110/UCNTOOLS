@@ -126,6 +126,7 @@ const TARGETS = [
   ['tractor-drones/sw.js', ['offline-sw']],
   ['bridge-drills/sw.js', ['offline-sw']],
   ['bridge-drills/index.html', ['profile']],
+  ['index.html', ['spaced-ranks', 'profile']],
 ];
 
 let changed = 0;
