@@ -25,15 +25,20 @@ Two sit behind the **Mess Tools** dropdown — for the mess deck, off watch:
 | **Shanty Songbook** | The full digital songbook — searchable lyrics, favourites, chorus highlighting, and offline-ready access. |
 | **Mess Drink Tracker** | Keep a running tally of drinks on the mess deck. |
 
-The remaining five sit on their own cards:
+Two training games sit behind the **Training** dropdown — practice for the bridge, off watch:
+
+| Tool | Description |
+|---|---|
+| **Hacking Trainer** | Practice for Bridge Command hacking, to the UCN Academy Manual's rules: breach a defensive grid at four cyber defence levels (Basic, Secure, Hardened, Fortified), with best times and breaches to share. |
+| **Bridge Drills** | Quick drills from the UCN Academy Manual: radar recognition, ordnance choice and standard callouts, ten questions a round, with best scores to share. |
+
+The remaining three sit on their own cards:
 
 | Tool | Description |
 |---|---|
 | **ID Card Generator** | Build and print a fleet-standard crew ID card — rank, division, clearance level, photo, and barcode/QR, formatted to true CR-80 card size, with print files for ordering it on plastic. |
 | **Ship Search** | Looks up which ship (UCS Havock or UCS Takanami) is running at a given date/time, or shows the full day's schedule. |
 | **Mission Stats** | Import a CSV of your deployments from the Bridge Command portal and track your mission history. |
-| **Hacking Trainer** | Practice for Bridge Command hacking, to the UCN Academy Manual's rules: breach a defensive grid at four cyber defence levels (Basic, Secure, Hardened, Fortified), with best times and breaches to share. |
-| **Bridge Drills** | Quick drills from the UCN Academy Manual: radar recognition, ordnance choice and standard callouts, ten questions a round, with best scores to share. |
 
 The portal also links out to Bridge Command's official website and Discord server for anyone looking for the source community.
 
