@@ -1,0 +1,15 @@
+title: Test Song (please ignore)
+category: Crew Ballads
+words: Claude Code test
+tune: Original
+---
+Here is the first verse line
+And here is the second line
+
+Chorus:
+Sing a test song, crew
+Sing it loud and long
+
+The second verse is shorter
+
+Repeat chorus
