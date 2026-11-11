@@ -46,8 +46,9 @@ allTabBtns.forEach(btn=>{
 /* Warp travel, shared by Engineering and Helm: the Academy Manual's setups by
    distance (Appendix F), the field setups from the UCN "Effective Guide to
    Warp" (Tactical Aids: warp-guide.pdf), and its Elite Hidden Tactic, an
-   easter egg behind a pin pad. ucnWarpExtras(el) fills el with the field
-   setups and the hidden tactic and wires up the pad; each tool styles them.
+   easter egg behind a pin pad. ucnWarpExtras(el, eliteEl) fills el with the
+   field setups and the hidden tactic (or puts the tactic in eliteEl, when
+   given) and wires up the pad; each tool styles them.
    Plain ES5, as some of the tools are. */
 // distance: sectors, or Infinity for the setup that goes any distance.
 var UCN_WARP_TABLE = [
@@ -82,7 +83,7 @@ var UCN_WARP_FIELD = [
 // The pin is 1337, "elite" as a hacker writes it, which the clue gives away on purpose.
 var UCN_ELITE_PIN = '1337';
 
-function ucnWarpExtras(el) {
+function ucnWarpExtras(el, eliteEl) {
   var html = '<h2 class="mt">Field Setups</h2>' +
     '<p class="panel-sub">Tried-and-tested setups from the UCN <a href="../tactical-aids/#doc=pdfs/engineering/warp-guide.pdf" target="_blank" rel="noopener">Effective Guide to Warp</a>, for when the table above isn&rsquo;t the whole story.</p>' +
     '<div class="dc-groups">';
@@ -95,8 +96,8 @@ function ucnWarpExtras(el) {
   }
   var keys = '';
   for (var d = 1; d <= 9; d++) keys += '<button type="button" data-key="' + d + '">' + d + '</button>';
-  html += '</div>' +
-    '<h2 class="mt">Elite Hidden Tactic</h2>' +
+  html += '</div>';
+  var elite = '<h2 class="mt">Elite Hidden Tactic</h2>' +
     '<div class="setup-card donut">' +
       '<div class="elite-lock">' +
         '<p class="setup-note pin-lead">Classified. Enter the four-digit code to unlock.</p>' +
@@ -123,7 +124,8 @@ function ucnWarpExtras(el) {
         '<p class="setup-note setup-warn">Do not tell Dent if manoeuvre performed.</p>' +
       '</div>' +
     '</div>';
-  el.innerHTML = html;
+  if (eliteEl && eliteEl !== el) { el.innerHTML = html; eliteEl.innerHTML = elite; el = eliteEl; }
+  else el.innerHTML = html + elite;
 
   var lock = el.querySelector('.elite-lock'), status = el.querySelector('.pin-status');
   var dots = el.querySelectorAll('.pin-dots span'), entered = '';
