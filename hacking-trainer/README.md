@@ -33,6 +33,11 @@ benchmark, the **Academy standard**: a full breach on Secure in under 40 seconds
 without triggering a routine. The tips draw the manual's 1-2-1, 1-2-2-1 and 1-1
 patterns the way its figures do.
 
+After an attempt, **Challenge a friend** shows a QR code (and link) holding the
+grid's seed, your first probe and your result. A friend's phone gets the same
+grid, opening with that probe, and their result says who won. The full-screen
+QR view is `shared/qr.js`.
+
 Fan-made. Not affiliated with Bridge Command / The London Space Elevator Ltd.
 
 | File | What it is |

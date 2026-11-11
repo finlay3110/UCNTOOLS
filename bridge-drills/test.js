@@ -1,10 +1,8 @@
 // Checks the drills in drills.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { DRILLS, ROUND, newRound, shuffle, time, record } from './drills.js';
+import { DRILLS, ROUND, newRound, shuffle, time, record, seeded, newSeed, challengeLink, readChallenge, compare } from './drills.js';
 import { ICONS } from './icons.js';
 
-// A repeatable random, so a failing case can be replayed.
-const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
 
 // Every question is answerable: one right answer, distinct wrong options, and a reason.
 for (const [key, drill] of Object.entries(DRILLS)) {
@@ -64,6 +62,26 @@ assert.equal(time(65960), '1:06.0');
   assert.equal(record(records, 'radar', 10, 90000), true);
   assert.deepEqual(records.radar, { runs: 6, bestScore: 10, bestMs: 90000 });
   assert.equal(records.ordnance, undefined, 'other drills untouched');
+}
+
+// Challenges: a seed deals the same round every time, links read back, and odd links are refused.
+{
+  const deal = s => newRound('damage', seeded(s)).map(x => x.prompt + '|' + x.options.join('/')).join('\n');
+  assert.equal(deal(12345), deal(12345), 'same seed, same round');
+  assert.notEqual(deal(12345), deal(54321));
+  for (let i = 0; i < 100; i++) { const s = newSeed(); assert.ok(Number.isInteger(s) && s >= 1 && s <= 2147483646); }
+  const c = { drill: 'radar', seed: 777, name: 'Sub Lt Tetra', score: 8, ms: 45123.4 };
+  assert.deepEqual(readChallenge(challengeLink(c)), { ...c, ms: 45123 });
+  const link = o => Buffer.from(JSON.stringify(o)).toString('base64url');
+  assert.equal(readChallenge('nonsense'), null);
+  assert.equal(readChallenge(link({ d: 'cooking', s: 1, sc: 1, t: 1 })), null, 'not a drill');
+  assert.equal(readChallenge(link({ d: '__proto__', s: 1, sc: 1, t: 1 })), null);
+  assert.equal(readChallenge(link({ d: 'radar', s: 0, sc: 1, t: 1 })), null, 'seed 0 would deal nothing random');
+  assert.equal(readChallenge(link({ d: 'radar', s: 5, sc: 11, t: 1 })), null, 'more right than questions');
+  assert.equal(readChallenge(link({ d: 'radar', s: 5, sc: 3, t: 1, n: '<b>\nhi</b>' + 'x'.repeat(50) })).name.length, 40);
+  assert.ok(compare({ score: 9, ms: 90000 }, { score: 8, ms: 10000 }) > 0, 'more right wins');
+  assert.ok(compare({ score: 8, ms: 30000 }, { score: 8, ms: 40000 }) > 0, 'then faster');
+  assert.equal(compare({ score: 8, ms: 30000 }, { score: 8, ms: 30000 }), 0);
 }
 
 console.log('bridge-drills: all checks passed');

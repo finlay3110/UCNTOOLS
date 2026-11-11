@@ -1,9 +1,7 @@
 // Checks the rules in game.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { LEVELS, newGame, neighbours, probe, cleared, canApply, apply, time, record, newSession, elapse, endAttempt, effectiveness, SYSTEMS } from './game.js';
+import { LEVELS, newGame, neighbours, probe, cleared, canApply, apply, time, record, newSession, elapse, endAttempt, effectiveness, SYSTEMS, seeded, newSeed, challengeLink, readChallenge, compare } from './game.js';
 
-// A repeatable random, so a failing case can be replayed.
-const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
 const safeLeft = g => g.cells.map((c, i) => (!c.trap && !c.open ? i : -1)).filter(i => i >= 0);
 const routines = g => g.cells.map((c, i) => (c.trap ? i : -1)).filter(i => i >= 0);
 
@@ -150,5 +148,24 @@ assert.equal(SYSTEMS.impulse.effect(25), 'their top speed drops to 25% of normal
 assert.equal(SYSTEMS.shields.effect(25), 'their shields take 12.5% more damage and recharge at 25% of normal speed');
 assert.equal(SYSTEMS.shields.effect(50), 'their shields take 10% more damage and recharge at 50% of normal speed');
 assert.equal(SYSTEMS.shields.effect(75), 'their shields take 5% more damage and recharge at 75% of normal speed');
+
+// Challenges: a seed and first probe lay the same grid every time, links read back, odd links are refused.
+{
+  const lay = (seed, first) => { const g = newGame(8, 10, 70); probe(g, first, seeded(seed)); return routines(g).join(); };
+  assert.equal(lay(4242, 27), lay(4242, 27), 'same seed and first probe, same grid');
+  assert.notEqual(lay(4242, 27), lay(4243, 27));
+  for (let i = 0; i < 100; i++) { const s = newSeed(); assert.ok(Number.isInteger(s) && s >= 1 && s <= 2147483646); }
+  const c = { level: 'secure', seed: 99, first: 27, applied: 100, ms: 32150.6, name: 'Tetra' };
+  assert.deepEqual(readChallenge(challengeLink(c)), { ...c, ms: 32151 });
+  const link = o => Buffer.from(JSON.stringify(o)).toString('base64url');
+  assert.equal(readChallenge('???'), null);
+  assert.equal(readChallenge(link({ l: 'godmode', s: 1, f: 0, a: 0, t: 0 })), null, 'not a level');
+  assert.equal(readChallenge(link({ l: 'basic', s: 1, f: 36, a: 0, t: 0 })), null, 'first probe off a 6x6 grid');
+  assert.equal(readChallenge(link({ l: 'basic', s: 1, f: 0, a: 101, t: 0 })), null);
+  assert.equal(readChallenge(link({ l: 'basic', s: 1.5, f: 0, a: 0, t: 0 })), null);
+  assert.ok(compare({ applied: 100, ms: 60000 }, { applied: 70, ms: 10000 }) > 0, 'a bigger breach wins');
+  assert.ok(compare({ applied: 100, ms: 30000 }, { applied: 100, ms: 40000 }) > 0, 'then faster');
+  assert.equal(compare({ applied: 0, ms: 5000 }, { applied: 0, ms: 90000 }), 0, 'two failed attempts draw');
+}
 
 console.log('hacking-trainer: all checks passed');

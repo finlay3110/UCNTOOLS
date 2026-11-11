@@ -124,6 +124,31 @@ export const SYSTEMS = {
 // without triggering a single defence routine.
 export const academyStandard = (level, g, ms) => level === 'secure' && g.won && g.strikes === 0 && ms < 40000;
 
+// A repeatable random: the same seed and first probe always lay the same
+// defences, which is how a friend can be challenged to the same grid.
+export const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
+export const newSeed = () => 1 + Math.floor(Math.random() * 2147483645);
+
+// A challenge in a link: the level, seed and first probe that made the grid,
+// and the sender's name, breach and time. Anyone can make a link, so reading
+// one checks everything.
+const toB64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
+export const challengeLink = c => toB64(JSON.stringify({ l: c.level, s: c.seed, f: c.first, a: c.applied, t: Math.round(c.ms), n: c.name || '' }));
+export function readChallenge(text) {
+  let o;
+  try { o = JSON.parse(fromB64(String(text))); } catch (e) { return null; }
+  const whole = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+  if (!o || !Object.hasOwn(LEVELS, o.l)) return null;
+  const n = LEVELS[o.l].size ** 2;
+  if (!whole(o.s, 1, 2147483646) || !whole(o.f, 0, n - 1) || !whole(o.a, 0, 100) || !whole(o.t, 0, 36e5)) return null;
+  const name = typeof o.n === 'string' ? o.n.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40) : '';
+  return { level: o.l, seed: o.s, first: o.f, applied: o.a, ms: o.t, name };
+}
+// Who did better on the same grid: the bigger breach, then (if anything
+// applied) the faster time. Above 0 if a beat b.
+export const compare = (a, b) => a.applied - b.applied || (a.applied ? b.ms - a.ms : 0);
+
 // m:ss.s, the way run times and best times are shown.
 export function time(ms) {
   const t = Math.round(ms / 100);
