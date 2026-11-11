@@ -1,5 +1,5 @@
 // Checks the user guide covers every tool the homepage links to, with its
-// screenshot. Run: node guide/test.js (CI runs it when the homepage or guide changes).
+// screenshot, and that every tool has its Get latest version link. Run: node guide/test.js (CI runs it when the homepage or guide changes).
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -12,6 +12,8 @@ assert.ok(tools.length >= 15, 'the homepage tool links were found');
 for (const t of tools) {
   assert.ok(guide.includes(`id="tool-${t}"`), `the guide has no section for ${t}/ (add one with id="tool-${t}")`);
   assert.ok(fs.existsSync(path.join(__dirname, 'img', t + '.jpg')), `no screenshot for ${t}: run node guide/tools/screenshots.cjs`);
+  const page = fs.readFileSync(path.join(ROOT, t, 'index.html'), 'utf8');
+  assert.ok(page.includes('data-ucn-latest') && page.includes('ucn-lists:latest '), `${t}/ has no Get latest version link (see shared/latest.js)`);
 }
 for (const [, src] of guide.matchAll(/<img src="([^"]+)"/g)) assert.ok(fs.existsSync(path.join(__dirname, src)), `missing image ${src}`);
 // Both voices are written wherever one is.
