@@ -60,6 +60,8 @@ bridge:
 Every importer validates strictly and tells you what it rejected or skipped, rather than quietly
 showing you fewer rows than the file contained.
 
+**Logs as links:** Comms Log, Engineering, Navigation and General Log also have a **Share as a link** button. The link holds the log, compressed, and opens Mission Companion, which asks before adding it to the report through the same checks as an imported file. It suits chat apps that won't take a file; very long logs make long links (Discord takes only about 2,000 characters), so send those as a file. The link code is `ucnLogLink` / `ucnReadLogLink` in `shared/share.js`.
+
 ### Mission QR for the crew
 
 **More → Mission QR for the crew** shows one QR code holding the operation, mission type, ship and crew. Each player scans it with their phone's camera: the homepage opens, says which station they're on (from the name they've set in the tools), and **Load it into my tools** keeps the mission on their phone for 18 hours. Comms Log, Engineering, Navigation and General Log then fill in any blank operation, type, ship, captain and station. The mission is kept on this device too, for those tools opened here. The code is `shared/mission.js`, with its tests in `shared/test.js`.

@@ -110,7 +110,7 @@ function sharedCode(name) {
 }
 
 const TARGETS = [
-  ['mission-companion/index.html', ['mc-ranks', 'mc-operations', 'rota', 'qr', 'mission']],
+  ['mission-companion/index.html', ['mc-ranks', 'mc-operations', 'rota', 'qr', 'mission', 'share']],
   ['engineering/js/mission.js', ['eng-ranks', 'eng-operations', 'share']],
   ['engineering/index.html', ['profile', 'mission']],
   ['navigation/index.html', ['nav-operations', 'nav-ranks', 'profile', 'share', 'mission']],
