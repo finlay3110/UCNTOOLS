@@ -260,6 +260,27 @@ export const DRILLS = {
 };
 export const ROUND = 10;
 
+// A repeatable random: the same seed always deals the same round, which is
+// how a friend can be challenged to it.
+export const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
+export const newSeed = () => 1 + Math.floor(Math.random() * 2147483645);
+
+// A challenge in a link: the drill, the round's seed, and the sender's name,
+// score and time. Anyone can make a link, so reading one checks everything.
+const toB64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
+export const challengeLink = c => toB64(JSON.stringify({ d: c.drill, s: c.seed, n: c.name || '', sc: c.score, t: Math.round(c.ms) }));
+export function readChallenge(text) {
+  let o;
+  try { o = JSON.parse(fromB64(String(text))); } catch (e) { return null; }
+  const whole = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+  if (!o || !Object.hasOwn(DRILLS, o.d) || !whole(o.s, 1, 2147483646) || !whole(o.sc, 0, ROUND) || !whole(o.t, 0, 36e5)) return null;
+  const name = typeof o.n === 'string' ? o.n.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40) : '';
+  return { drill: o.d, seed: o.s, name, score: o.sc, ms: o.t };
+}
+// Who did better: more right, then the faster time. Above 0 if a beat b.
+export const compare = (a, b) => a.score - b.score || b.ms - a.ms;
+
 export function shuffle(list, random = Math.random) {
   const a = [...list];
   for (let i = a.length - 1; i > 0; i--) {

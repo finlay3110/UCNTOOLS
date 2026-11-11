@@ -1,6 +1,6 @@
 // Writes shared/ucn-lists.json (the operations and the rank ladder),
 // shared/profile.js (the shared name and rank), shared/rota.js (the Crew
-// Rota, for the tools that fill in from it), shared/share.js (the Share
+// Rota, for the tools that fill in from it), shared/qr.js (the QR code view), shared/share.js (the Share
 // log button) and shared/offline-sw.js (five tools' offline copy) into every
 // tool that keeps a
 // copy, between "ucn-lists:<part>" and "ucn-lists:end" marker lines, in that
@@ -97,6 +97,7 @@ const FORMAT = {
   },
   profile: () => sharedCode('profile.js'),
   rota: () => sharedCode('rota.js'),
+  qr: () => sharedCode('qr.js'),
   share: () => sharedCode('share.js'),
   'offline-sw': () => sharedCode('offline-sw.js'),
 };
@@ -124,12 +125,13 @@ const TARGETS = [
   ['shipsearch/sw.js', ['offline-sw']],
   ['missionstats/sw.js', ['offline-sw']],
   ['hacking-trainer/sw.js', ['offline-sw']],
-  ['hacking-trainer/index.html', ['profile']],
+  ['hacking-trainer/index.html', ['profile', 'qr']],
   ['tractor-drones/sw.js', ['offline-sw']],
   ['bridge-drills/sw.js', ['offline-sw']],
-  ['bridge-drills/index.html', ['profile']],
+  ['bridge-drills/index.html', ['profile', 'qr']],
   ['crew-rota/sw.js', ['offline-sw']],
-  ['index.html', ['spaced-ranks', 'profile']],
+  ['crew-rota/index.html', ['qr']],
+  ['index.html', ['spaced-ranks', 'profile', 'qr']],
 ];
 
 let changed = 0;

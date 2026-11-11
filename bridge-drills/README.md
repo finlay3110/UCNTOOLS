@@ -22,6 +22,10 @@ played, in this browser (and in the portal's backup); they can be shared as a
 picture, with your name on it if you add one. The name is the one the other
 UCN tools share.
 
+After a round, **Challenge a friend** shows a QR code (and link) holding the
+round's seed and your score, so a friend gets the same ten questions in the same
+order; their result says who won. The full-screen QR view is `shared/qr.js`.
+
 The ship icons are the Navigation & Radar tool's, copied into `icons.js`.
 
 Fan-made. Not affiliated with Bridge Command / The London Space Elevator Ltd.

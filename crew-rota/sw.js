@@ -8,7 +8,7 @@ var FILES = [
   "rota.js"
 ];
 // Third-party files the tool loads. Fetched with CORS so they can be stored.
-var REMOTE = ["https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"];
+var REMOTE = [];
 // ucn-lists:offline-sw (from shared/offline-sw.js, written on deploy: edit that file, not this code)
 /* The offline copy for the tools that had none of their own: Comms Log,
    ID Card, Ship Search, Mission Stats and Hacking Trainer. Each sw.js sets CACHE, PREFIX,
