@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write   # to save the numbers given to new songs
+  pull-requests: read   # What's new reads merged pull requests
   pages: write
   id-token: write
 
@@ -47,6 +48,14 @@ jobs:
       - name: Build the songbook's songs.json
         run: node songbook/tools/build-songs.mjs
 
+      # The homepage's "What's new": each "What's new:" line in a merged pull
+      # request's description, and each song added by the form. Best effort:
+      # the site still deploys without it.
+      - name: Write What's new into the homepage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .github/scripts/whats-new.js || echo "::warning::What's new was not updated"
+
       # Tactical Aids lists every PDF in tactical-aids/pdfs/, so rebuild its
       # index on each deploy (this used to be Netlify's build command).
       - name: Build Tactical Aids manifest
@@ -68,3 +77,16 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # Optional: with a DISCORD_WEBHOOK_URL secret set (Settings → Secrets and
+      # variables → Actions), each pull request with "What's new" lines is
+      # posted to that Discord channel as it goes live.
+      - name: Post What's new to Discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          [ -n "$DISCORD_WEBHOOK_URL" ] || exit 0
+          msg=$(node .github/scripts/whats-new.js --discord) || exit 0
+          [ -n "$msg" ] || exit 0
+          curl -fsS -H 'Content-Type: application/json' -d "$msg" "$DISCORD_WEBHOOK_URL" > /dev/null || echo "::warning::Could not post to Discord"

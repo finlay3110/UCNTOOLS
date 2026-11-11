@@ -4,9 +4,9 @@ name: Shared code tests
 # tools; the test also checks its station list still matches Mission Companion's.
 on:
   push:
-    paths: ['shared/**', 'mission-companion/index.html', '.github/workflows/shared-tests.yml']
+    paths: ['shared/**', 'mission-companion/index.html', '.github/scripts/whats-new*', '.github/workflows/shared-tests.yml']
   pull_request:
-    paths: ['shared/**', 'mission-companion/index.html', '.github/workflows/shared-tests.yml']
+    paths: ['shared/**', 'mission-companion/index.html', '.github/scripts/whats-new*', '.github/workflows/shared-tests.yml']
 
 jobs:
   shared:
@@ -16,3 +16,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check the shared mission code
         run: node shared/test.js
+      - name: Check the What's new script
+        run: node .github/scripts/whats-new.test.js

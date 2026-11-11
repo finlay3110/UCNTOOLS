@@ -66,6 +66,10 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `bridge-drills/` | Bridge Drills | new here |
 | `crew-rota/` | Crew Rota | new here |
 
+## What's new
+
+The homepage's **What's new** card is written at each deploy from merged pull requests: every line in a pull request's description that starts `What's new:` becomes an entry (newest six shown), and each song added through the Submit a song form appears by itself. Write the line for players, in plain words. To have each one posted to Discord as it goes live, add a channel webhook URL as the repository secret `DISCORD_WEBHOOK_URL` (Settings → Secrets and variables → Actions). The code is `.github/scripts/whats-new.js`.
+
 ## Deploying
 
 Every push to `main` deploys the whole site via `.github/workflows/deploy.yml`, which also rebuilds `tactical-aids/manifest.json` from the PDFs in `tactical-aids/pdfs/`. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.

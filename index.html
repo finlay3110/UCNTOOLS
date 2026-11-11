@@ -116,6 +116,10 @@
   .profile-incoming{ margin:14px 0 0; padding:12px 14px; border:1.5px solid var(--orange); border-radius:10px; background:rgba(221,122,43,0.1); }
   .profile-incoming p{ margin:0 0 10px; font-size:14px; line-height:1.45; color:#E6EAF6; }
   .profile-send{ margin-top:14px; }
+  .whats-new-list{ list-style:none; margin:0; padding:0; }
+  .whats-new-list li{ padding:9px 0; border-top:1px solid rgba(199,206,232,0.15); font-size:14px; line-height:1.45; color:#E6EAF6; }
+  .whats-new-list li:first-child{ border-top:0; padding-top:0; }
+  .whats-new-list time{ display:inline-block; min-width:54px; color:var(--orange); font-weight:700; }
   .mission-incoming{ border-color:var(--orange) !important; }
   .mission-incoming[hidden]{ display:none !important; }
   .mission-you{ margin:0 0 14px; font-weight:700; color:var(--orange); font-size:15px; }
@@ -806,6 +810,21 @@
 
         </div>
       </details>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-tag">Updates</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3.5l2.2 5.3 5.3 2.2-5.3 2.2L12 18.5l-2.2-5.3L4.5 11l5.3-2.2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="card-title">WHAT'S NEW</h2>
+      <ul class="whats-new-list">
+        <!-- whats-new -->
+        <li>The latest changes are listed here on the live site.</li>
+        <!-- /whats-new -->
+      </ul>
     </div>
 
     <div class="card">
