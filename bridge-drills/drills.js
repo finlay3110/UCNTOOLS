@@ -1,4 +1,4 @@
-// The three Bridge Drills, from the UCN Academy Manual. No page code here, so
+// The four Bridge Drills, from the UCN Academy Manual. No page code here, so
 // test.js can check every question in Node.
 import { ICONS } from './icons.js';
 
@@ -173,10 +173,90 @@ const callouts = [
     'Say what is under repair and when it will be back. "Status green" is only for when every repair is done.'),
 ];
 
+// ---- Damage Control: where the kit is on each ship (the Engineering tool's
+// Damage Control tables, and the deck plans in Appendix H), then the manual's 3.11.
+// Map spots are pixels on the cropped deck plans in maps/.
+const SHIPS = [
+  { name: 'UCS Takanami', map: 'takanami', w: 1050, h: 360,
+    areas: ['Bridge', 'Midship', 'Medbay', 'Cargo Bay', 'Engineering'],
+    kit: [
+      ['the Manoeuvring OCP', 'Bridge', 'by the Navigation station', 821, 241],
+      ['the Impulse OCP', 'Midship', 'in the corridor between the cargo bay and the bridge', 492, 145],
+      ['the Missiles OCP', 'Engineering', 'in the aft engineering corridor', 181, 181],
+      ['the Beams crystal', 'Medbay', '', 559, 75],
+      ['the Front Shields crystal', 'Bridge', 'by the front viewscreen', 848, 130],
+      ['the Rear Shields crystal', 'Engineering', '', 207, 195],
+      ['switch 1', 'Bridge', '', 666, 128],
+      ['switch 2', 'Engineering', '', 181, 199],
+      ['switch 3', 'Cargo Bay', '', 408, 290],
+      ['switch 4', 'Midship', 'by the aux engineering screen', 503, 217],
+      ['switch 5', 'Medbay', '', 517, 122],
+      ['the crystal restabiliser', 'Medbay', '', 608, 97],
+      ['the spare OCP cupboard', 'Midship', '', 490, 227],
+    ] },
+  { name: 'UCS Havock', map: 'havock', w: 680, h: 330,
+    areas: ['Bridge', 'Ready Room', 'Engineering'],
+    kit: [
+      ['the Manoeuvring OCP', 'Bridge', 'by Helm', 588, 141],
+      ['the Impulse OCP', 'Engineering', 'by the aux engineering screen', 311, 135],
+      ['the Missiles OCP', 'Engineering', 'in the middle of the corridor', 260, 137],
+      ['the Beams crystal', 'Ready Room', '', 373, 107],
+      ['the Front Shields crystal', 'Bridge', '', 628, 248],
+      ['the Rear Shields crystal', 'Engineering', 'in the middle of the corridor', 217, 148],
+      ['switch 1', 'Bridge', '', 459, 296],
+      ['switch 2', 'Ready Room', '', 363, 43],
+      ['switch 3', 'Engineering', 'by the OCP locker', 179, 142],
+      ['switch 4', 'Engineering', 'by the aux engineering screen', 367, 148],
+      ['switch 5', 'Ready Room', '', 353, 100],
+      ['the crystal restabiliser', 'Ready Room', '', 297, 115],
+      ['the spare OCP locker', 'Engineering', 'at the aft end of the corridor', 140, 137],
+    ] },
+];
+// The deck plan with the spot circled, shown once the question is answered.
+const spot = (s, x, y) => `<span class="pic map"><svg viewBox="0 0 ${s.w} ${s.h}" role="img" aria-label="${s.name} deck plan, with it circled">` +
+  `<image href="maps/${s.map}.jpg" width="${s.w}" height="${s.h}"/>` +
+  `<circle class="ring" cx="${x}" cy="${y}" r="${Math.round(s.w * 0.036)}" stroke-width="${Math.round(s.w * 0.008)}"/></svg></span>`;
+const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+const where = (s, [item, area, detail, x, y]) => ({
+  ...q(`On the ${s.name}, where is ${item}?`, area, s.areas.filter(a => a !== area),
+    `${cap(item)}${/^switch/.test(item) ? ` (Destabilisation Conduit ${item.slice(-1)})` : ''} is ${({ Bridge: 'on the Bridge', Midship: 'midship', Engineering: 'in Engineering' })[area] || 'in the ' + area}${detail ? ', ' + detail : ''}.`),
+  reveal: spot(s, x, y),
+});
+
+const damage = [
+  ...SHIPS.flatMap(s => s.kit.map(k => where(s, k))),
+  q('Which systems do OCPs protect?', 'Manoeuvring, Impulse and Missiles', ['Beams, Front and Rear Shields', 'Reactor, Warp and Scanners', 'Every system on the ship'],
+    'Overcurrent Protectors sacrifice themselves in a surge to protect Manoeuvring, Impulse and Missiles.'),
+  q('Which systems need a Masahirite crystal?', 'Front Shields, Rear Shields and Beams', ['Manoeuvring, Impulse and Missiles', 'Warp and Scanners', 'Only the Reactor'],
+    'Crystals keep the tunable systems calibrated: both shield generators and the beams.'),
+  q('You put an OCP in a receptacle and it shows green. The OCP is…', 'Working', ['Broken', 'Not detected', 'Overheating'],
+    'Green is a working OCP, red or flashing is broken, and blue means none is detected. Crystals use the same colours.'),
+  q('You put an OCP in a receptacle and it flashes red. The OCP is…', 'Broken', ['Working', 'Not detected', 'Charging'],
+    "Red or flashing is broken. You can't tell a broken OCP by sight, so never mix spent ones in with the spares."),
+  q('An OCP receptacle shows blue. That means…', 'No OCP is detected', ['The OCP is working', 'The OCP is broken', 'The system is cold'],
+    'Blue means nothing is detected: green is working, red or flashing is broken.'),
+  q('How many spare OCPs does a ship usually start with?', 'Four', ['Two', 'Three', 'Six'],
+    'Three fitted and four spares in the spare OCP cupboard.'),
+  q('How long does a crystal take to restabilise?', 'Five minutes', ['One minute', 'Two minutes', 'Ten minutes'],
+    'Restabilising takes five minutes, so put a destabilised crystal in as soon as you can.'),
+  q('A system shows bright red at −100% and JUDITH says "Manual Repair Required!" What does the manual repair do?', 'Takes it to −99%, then SPANRs do the rest',
+    ['Repairs it fully', 'Takes it to 0%', 'Nothing until the SPANRs arrive'],
+    'A manual repair only takes the system from −100% to −99%. The SPANRs finish the job.'),
+  q('The warp core is unstable and switch 3 shows red. What do you do with it?', 'Flip it to the other side, either way, until its light is green',
+    ['Flip it up, never down', 'Leave it for the Chief Engineer', 'Flip every switch on the ship'],
+    'Flip the switch inside to the opposite side: either way works. When every red light is green, the immediate danger is over.'),
+  q("The warp core countdown shows 10 seconds or less and there's no call from the Captain. Who may eject the core?", 'Any crew member',
+    ['Only the Captain', 'Only the Chief Engineer', 'Only Damage Control'],
+    "Ideally the Captain decides, but at 10 seconds or less anyone may eject it. SOLIS: lives matter more than the warp core."),
+  q('From 0%, how long do two SPANRs take to repair a system?', '1m 11s', ['2m 23s', '48s', '36s'],
+    'Table 3-28: one SPANR takes 2m 23s from 0%, two take 1m 11s, three 48s and four 36s. They stack.'),
+];
+
 export const DRILLS = {
   radar: { label: 'Radar recognition', questions: radar },
   ordnance: { label: 'Ordnance choice', questions: ordnance },
   callouts: { label: 'Callouts', questions: callouts },
+  damage: { label: 'Damage Control', questions: damage },
 };
 export const ROUND = 10;
 

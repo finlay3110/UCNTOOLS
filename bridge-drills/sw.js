@@ -6,7 +6,9 @@ var FILES = [
   "./",
   "index.html",
   "drills.js",
-  "icons.js"
+  "icons.js",
+  "maps/takanami.jpg",
+  "maps/havock.jpg"
 ];
 // Third-party files the tool loads. Fetched with CORS so they can be stored.
 var REMOTE = [];

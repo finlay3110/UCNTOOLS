@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bridge Drills — UCN</title>
-<meta name="description" content="Quick drills from the UCN Academy Manual: radar recognition, ordnance choice and standard bridge callouts.">
+<meta name="description" content="Quick drills from the UCN Academy Manual: radar recognition, ordnance choice, standard bridge callouts and damage control.">
 <meta name="theme-color" content="#0b0f1c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%234FA8C9' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23DD7A2B'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,6 +48,10 @@
   .pic{ display:block; width:92px; height:92px; margin:14px auto 2px; }
   .pic svg{ display:block; width:100%; height:100%; }
   .pic.ship{ color:var(--text); padding:14px; border:1px solid var(--border); border-radius:12px; background:#0b1024; }
+  .pic.map{ width:100%; height:auto; margin:12px 0 2px; border:1px solid var(--border); border-radius:10px; overflow:hidden; background:#fff; }
+  .pic.map .ring{ fill:none; stroke:#ff2bd6; animation:ring 1.2s ease-in-out infinite alternate; }
+  @keyframes ring{ from{ opacity:1; } to{ opacity:.35; } }
+  @media (prefers-reduced-motion:reduce){ .pic.map .ring{ animation:none; } }
   .pic.blip{ width:40px; height:40px; border-radius:50%; margin:22px auto 10px; box-shadow:0 0 0 6px rgba(255,255,255,.06); }
   .prompt{ font-size:17px; font-weight:600; line-height:1.4; margin:12px 0 10px; outline:none; }
   .opt{
@@ -81,7 +85,7 @@
 <header class="top">
   <a class="back" href="../">&larr; Back to Tool Portal</a>
   <h1>BRIDGE DRILLS</h1>
-  <p class="sub">Contacts, ordnance and callouts, by the Academy Manual</p>
+  <p class="sub">Contacts, ordnance, callouts and damage control, by the Academy Manual</p>
 </header>
 
 <main>
@@ -123,6 +127,7 @@
       <li><b>Radar recognition:</b> ship icons and the manual's advice for each, contact colours, ordnance marks and the radar's signal channels.</li>
       <li><b>Ordnance choice:</b> which weapon suits the moment, and the ranges, timings and blasts behind the choice.</li>
       <li><b>Callouts:</b> the standard call for the moment, station by station. Short, addressed and specific beats vague every time.</li>
+      <li><b>Damage Control:</b> where each OCP, crystal and warp switch is on the Takanami and the Havock (the deck plan shows it circled once you answer), then OCPs, crystals, manual repairs and warp core emergencies.</li>
     </ul>
     <p>Each round is ten questions in a random order. Tap the answer you'd give: the right one turns green, with the manual's reason. The clock runs from the first question to the last answer, so a quick, accurate round beats a slow perfect one only on time.</p>
   </section>
@@ -179,6 +184,7 @@
       else if (btn === b) btn.classList.add('wrong');
     });
     $('score').textContent = score;
+    if (x.reveal) $('pic').innerHTML = x.reveal;   // trusted, as in show()
     $('why').innerHTML = (right ? '<strong>Right.</strong> ' : `<strong>Not quite.</strong> The answer is “${esc(x.answer)}”${/[.!?]$/.test(x.answer) ? '' : '.'} `) + esc(x.why);
     if (idx < round.length - 1) { $('next').hidden = false; $('next').focus(); }
     else finish();
@@ -230,18 +236,18 @@
       text('RECORDS · UCN FLEET DIGITAL SUITE', 72, 254, '600 24px "Exo 2"', '#8c98bf');
     } else text('MY RECORDS · UCN FLEET DIGITAL SUITE', 72, 206, '600 26px "Exo 2"', '#DD7A2B');
     Object.entries(DRILLS).forEach(([key, d], i) => {
-      const y = 300 + i * 200;
+      const y = 290 + i * 170;
       x.beginPath();
-      (x.roundRect || x.rect).call(x, 70, y, W - 140, 166, 18);
+      (x.roundRect || x.rect).call(x, 70, y, W - 140, 146, 18);
       x.fillStyle = '#141c38';
       x.fill();
       x.lineWidth = 2;
       x.strokeStyle = '#2a3a66';
       x.stroke();
-      text(d.label.toUpperCase(), 104, y + 64, '700 30px Orbitron', '#e8ecf7');
+      text(d.label.toUpperCase(), 104, y + 56, '700 30px Orbitron', '#e8ecf7');
       best(key).forEach((v, j) => {
-        text(['BEST', 'BEST TIME', 'ROUNDS'][j], 104 + j * 290, y + 110, '600 20px "Exo 2"', '#8c98bf');
-        text(v, 104 + j * 290, y + 148, '700 34px Orbitron', j ? '#e8ecf7' : '#DD7A2B');
+        text(['BEST', 'BEST TIME', 'ROUNDS'][j], 104 + j * 290, y + 96, '600 20px "Exo 2"', '#8c98bf');
+        text(v, 104 + j * 290, y + 132, '700 34px Orbitron', j ? '#e8ecf7' : '#DD7A2B');
       });
     });
     text('Train at finlay3110.github.io/UCNTOOLS', 72, 1022, '400 24px "Exo 2"', '#8c98bf');

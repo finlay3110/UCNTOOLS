@@ -36,6 +36,15 @@ for (const key of Object.keys(DRILLS)) {
     }
   }
 }
+// Damage Control: every map spot sits on its deck plan, and each ship's kit is asked about once.
+for (const x of DRILLS.damage.questions.filter(x => x.reveal)) {
+  const [, w, h] = x.reveal.match(/viewBox="0 0 (\d+) (\d+)"/).map(Number);
+  const [, cx, cy] = x.reveal.match(/cx="(\d+)" cy="(\d+)"/).map(Number);
+  assert.ok(cx > 0 && cx < w && cy > 0 && cy < h, `${x.prompt}: spot off the map`);
+  assert.ok(x.wrong.length >= 2 && !x.wrong.includes(x.answer));
+}
+assert.equal(DRILLS.damage.questions.filter(x => x.reveal).length, 26, 'thirteen places on each of the two ships');
+
 const order = s => newRound('callouts', seeded(s)).map(x => x.prompt).join();
 assert.notEqual(order(1), order(2), 'rounds are shuffled');
 assert.deepEqual(shuffle([1, 2, 3], seeded(4)).sort(), [1, 2, 3]);
