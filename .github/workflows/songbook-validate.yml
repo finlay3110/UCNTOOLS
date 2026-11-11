@@ -1,13 +1,14 @@
 name: Validate songbook
 
-# songs.json is edited by hand and deploys straight to GitHub Pages on push,
-# so this runs the same checks a maintainer would forget to run.
+# Each song is a file in songbook/songs/, added by hand or by the Submit a song
+# form, and the deploy builds songs.json from them. This runs the checks and the
+# build on every change, so a broken song never gets as far as main.
 on:
   push:
     branches: ['**']
-    paths: ['songbook/**', '.github/workflows/songbook-validate.yml']
+    paths: ['songbook/**', '.github/workflows/songbook-validate.yml', '.github/ISSUE_TEMPLATE/submit-a-song.yml']
   pull_request:
-    paths: ['songbook/**', '.github/workflows/songbook-validate.yml']
+    paths: ['songbook/**', '.github/workflows/songbook-validate.yml', '.github/ISSUE_TEMPLATE/submit-a-song.yml']
 
 jobs:
   validate:
@@ -22,8 +23,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Validate songs.json
+      - name: Test the song files tooling
+        run: node tools/test.mjs
+
+      - name: Validate the songs
         run: node tools/validate-songs.mjs
+
+      - name: Build songs.json, as the deploy does
+        run: node tools/build-songs.mjs
 
       - name: Check the app's files are all present
         run: |

@@ -1,0 +1,32 @@
+id: 37
+title: The Quartermaster's Song
+category: Bar/Drinking Songs
+words: Lt. Cmdr. Jim - Ship's Councillor
+tune: Wellerman; trad
+source_book: UCN Songbook
+source_page: 42
+---
+There's one best ship in the whole navy
+And the name of the ship is the Takanami
+There's no better place in the void to be
+So beyond we shall go
+
+Chorus:
+Soon then the QM will come
+To bring exciting new kinds of rum
+Then when the debrief is done
+We'll teleport back home
+
+Now some officers say the Havock's good too
+And aside from at nav she's a pleasure to crew
+But a door on the bridge that goes straight to the loo?
+Nice try frigate but no!
+
+Repeat chorus
+
+We've oft met with foes wearing hats of grey
+Our orders to make sure they're kept at bay
+If they look for a fight there'll be hell to pay
+From our beams and missiles and drones
+
+Repeat chorus

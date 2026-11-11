@@ -163,7 +163,7 @@ html,body{height:100%;overflow:hidden;font-family:system-ui,-apple-system,sans-s
 .setctl button{width:34px;height:34px;border:none;border-radius:8px;background:none;color:var(--text-muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .setctl button:hover{color:var(--accent);background:var(--accent-glow);}
 .setctl button[disabled]{opacity:.3;cursor:default;}
-.a2hs-text a,#about-install a{color:var(--accent);}
+.a2hs-text a,.about-section a{color:var(--accent);}
 .next-in-set{display:block;width:100%;margin:28px 0 12px;padding:14px 16px;border-radius:12px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);font:inherit;font-weight:600;text-align:left;cursor:pointer;}
 .lmeta-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 16px 6px;flex-shrink:0;}
 .lmeta{color:var(--text-dim);font-size:.75rem;}

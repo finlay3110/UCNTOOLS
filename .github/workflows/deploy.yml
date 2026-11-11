@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # to save the numbers given to new songs
   pages: write
   id-token: write
 
@@ -22,6 +22,30 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      # New songs arrive with no id. Number them here, on main and one deploy
+      # at a time (the concurrency group above), and save the numbers, so songs
+      # merged close together still get different ones. A push made with this
+      # workflow's token starts no new run; this one deploys the numbered songs.
+      - name: Number new songs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            node songbook/tools/number-songs.mjs
+            git diff --quiet -- songbook/songs && exit 0
+            git commit -qam 'Songbook: number new songs' && git push -q origin HEAD:main && exit 0
+          done
+          echo '::error::Could not save the new song numbers to main'
+          exit 1
+
+      # The app loads one songs.json, built from the song files. A song that
+      # fails its checks stops the deploy here, so the last good site stays up.
+      - name: Build the songbook's songs.json
+        run: node songbook/tools/build-songs.mjs
 
       # Tactical Aids lists every PDF in tactical-aids/pdfs/, so rebuild its
       # index on each deploy (this used to be Netlify's build command).

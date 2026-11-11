@@ -1,0 +1,46 @@
+id: 7
+title: Auld Lang Syne
+category: Bar/Drinking Songs
+words: Lt. Cmdr. Jim - Ship's Councillor (adapted from Robert Burns)
+tune: Auld Lang Syne; trad
+source_book: UCN Songbook
+source_page: 8
+---
+Should old acquaintance be forgot
+And never brought to mind
+Should old acquaintance be forgot
+And auld lang syne?
+
+Chorus:
+For auld lang syne, my dear
+For auld lang syne
+We'll take a tot of kindness yet
+For auld lang syne
+
+And surely you'll buy your rum tot
+(Unless they're out of lime)
+And we'll take a tot o' kindness yet
+For auld lang syne
+
+Repeat chorus
+
+We crew have warped about these skies
+And seen such sites sublime
+But we've travelled many a parsec cold
+Since auld lang syne
+
+Repeat chorus
+
+We crew have faced foes bold and strange
+Across all space and time
+But we've been scattered 'cross the void
+Since auld lang syne
+
+Repeat chorus
+
+And there's a hand my trusty friend
+And give me a hand o' thyne
+And we'll take a right good-will draught
+For auld lang syne
+
+Repeat chorus

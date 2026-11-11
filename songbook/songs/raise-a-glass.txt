@@ -1,0 +1,32 @@
+id: 26
+title: Raise a Glass
+category: Bar/Drinking Songs
+words: Lt. Cmdr. "Toast" Ray
+tune: Here's a Health to the Company; trad
+source_book: UCN Songbook
+source_page: 29
+---
+Kind friends and dear shipmates, come join me in rhyme
+Come lift up your voices in chorus with mine
+Come lift up your voices all grief to refrain
+For we may or might never all meet here again.
+
+Chorus:
+Here's a health to the Warspite and one to my ship
+Let us drink all the cocktails and prepare for our trip
+Let us drink and be merry all grief to refrain
+For we may or might never all meet here again.
+
+Here's a health to the Captain that I love so well
+For their orders and steadiness, sure none can excel
+There's a smile on their countenance as they guide us through space
+There's no crew in this wide world as happy as this
+
+Repeat chorus
+
+Our crew stands at ready, they're raring to go
+Where the mission does take us, we nev'r will know
+Through Grey Hats and Pirates let diplomacy reign
+But our nukes stand at ready, ne'er surprised again.
+
+Repeat chorus
