@@ -345,13 +345,13 @@ html,body{
   grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
   gap:16px;
 }
-.dc-card{
+.dc-card, .setup-card{
   background:var(--input-fill);
   border:1px solid var(--line);
   border-radius:10px;
   padding:16px 18px;
 }
-.dc-card h3{
+.dc-card h3, .setup-card h3{
   margin:0 0 10px;
   font-family:'Exo 2',sans-serif;
   font-size:12.5px;
@@ -366,7 +366,7 @@ html,body{
   margin:-4px 0 10px;
   font-style:italic;
 }
-.dc-row{
+.dc-row, .setup-row{
   display:flex;
   justify-content:space-between;
   gap:10px;
@@ -374,9 +374,32 @@ html,body{
   padding:7px 0;
   border-top:1px solid var(--line);
 }
-.dc-row:first-of-type{border-top:none;}
-.dc-row .k{color:var(--muted); font-weight:700;}
-.dc-row .v{color:var(--text); text-align:right;}
+.dc-row:first-of-type, .setup-row:first-of-type{border-top:none;}
+.dc-row .k, .setup-row .k{color:var(--muted); font-weight:700;}
+.dc-row .v, .setup-row .v{color:var(--text); text-align:right;}
+.panel-sub a{color:var(--cyan);}
+.setup-note{font-size:12.5px; color:var(--muted); line-height:1.55; margin:12px 0 0;}
+.setup-warn{color:var(--danger); font-weight:700;}
+.donut{max-width:560px;}
+.donut ol{margin:0 0 12px; padding-left:22px; font-size:13.5px; line-height:1.75;}
+.pin-lead, .pin-clue{text-align:center;}
+.pin-lead{margin-top:0;}
+.pin-dots{display:flex; gap:14px; justify-content:center; margin:14px 0 6px;}
+.pin-dots span{width:14px; height:14px; border-radius:50%; border:2px solid var(--muted);}
+.pin-dots span.on{background:var(--orange); border-color:var(--orange);}
+.pin-status{min-height:1.4em; margin:0 0 12px; text-align:center; font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.pin-status.granted{color:var(--cyan);}
+.pin-status.denied{color:var(--danger);}
+.pin-pad{display:grid; grid-template-columns:repeat(3, 68px); gap:10px; justify-content:center;}
+.pin-pad button{height:56px; border-radius:12px; border:1px solid var(--line); background:var(--console); color:var(--text); font:700 20px 'Exo 2', sans-serif; cursor:pointer;}
+.pin-pad button.small{font-size:13px;}
+.pin-pad button:active{background:var(--navy);}
+.pin-pad button:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+.shake{animation:shake .4s;}
+@keyframes shake{20%,60%{transform:translateX(-8px);} 40%,80%{transform:translateX(8px);}}
+@media (prefers-reduced-motion:reduce){ .shake{animation:none;} }
+#eliteTactic h3:focus{outline:none;}
+.donut svg{display:block; width:100%; max-width:300px; height:auto; margin:0 auto;}
 
 /* ---------- footer ---------- */
 .credit{

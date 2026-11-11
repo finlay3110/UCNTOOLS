@@ -415,6 +415,41 @@ function setModuleVisibility(modules){
   if(!active || active.hidden) activateTab('setup');
 }
 
+// ============ ELITE HIDDEN TACTIC ============
+// An easter egg: the sick donut sits behind a pin pad. The pin is 1337,
+// "elite" as a hacker writes it, which the clue gives away on purpose.
+const ELITE_PIN = '1337';
+const pinPad = document.getElementById('pinPad');
+let pinEntered = '';
+pinPad.addEventListener('click', e => {
+  const key = e.target.closest('button') && e.target.closest('button').dataset.key;
+  if (!key || pinEntered.length === 4) return;   // a full code is being checked
+  if (key === 'clear') pinEntered = '';
+  else if (key === 'back') pinEntered = pinEntered.slice(0, -1);
+  else pinEntered += key;
+  showPin(pinEntered.length ? pinEntered.length + ' of 4' : '');
+  if (pinEntered.length < 4) return;
+  const lock = document.getElementById('eliteLock');
+  if (pinEntered === ELITE_PIN) {
+    showPin('Access granted', 'granted');
+    setTimeout(() => {
+      lock.hidden = true;
+      document.getElementById('eliteTactic').hidden = false;
+      document.querySelector('#eliteTactic h3').focus();
+    }, 600);
+  } else {
+    showPin('Access denied', 'denied');
+    lock.classList.add('shake');
+    setTimeout(() => { lock.classList.remove('shake'); pinEntered = ''; showPin(''); }, 800);
+  }
+});
+function showPin(text, state = '') {
+  document.querySelectorAll('#pinDots span').forEach((d, i) => d.classList.toggle('on', i < pinEntered.length));
+  const status = document.getElementById('pinStatus');
+  status.textContent = text;
+  status.className = 'pin-status ' + state;
+}
+
 // Shared with js/mission.js, which loads after this file.
 window.UCN = { SHIP_DATA, activateTab, setModuleVisibility, setShip(v){
   if(shipSelect.value !== v){ shipSelect.value = v; renderShip(); }
