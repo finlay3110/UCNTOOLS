@@ -64,6 +64,7 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `hacking-trainer/` | Hacking Trainer | new here |
 | `tractor-drones/` | Tractor & Drones | new here |
 | `bridge-drills/` | Bridge Drills | new here |
+| `crew-rota/` | Crew Rota | new here |
 
 ## Deploying
 

@@ -1,0 +1,21 @@
+name: Crew Rota tests
+
+# Also runs when the tools that read the rota change, as the test checks their
+# station lists still match the rota's.
+on:
+  push:
+    paths: ['crew-rota/**', 'shared/rota.js', 'mission-companion/index.html', 'generallog/index.html', 'missionstats/index.html', '.github/workflows/crew-rota-tests.yml']
+  pull_request:
+    paths: ['crew-rota/**', 'shared/rota.js', 'mission-companion/index.html', 'generallog/index.html', 'missionstats/index.html', '.github/workflows/crew-rota-tests.yml']
+
+jobs:
+  rota:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: crew-rota
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the rota
+        run: node test.js

@@ -1,5 +1,6 @@
 // Writes shared/ucn-lists.json (the operations and the rank ladder),
-// shared/profile.js (the shared name and rank), shared/share.js (the Share
+// shared/profile.js (the shared name and rank), shared/rota.js (the Crew
+// Rota, for the tools that fill in from it), shared/share.js (the Share
 // log button) and shared/offline-sw.js (five tools' offline copy) into every
 // tool that keeps a
 // copy, between "ucn-lists:<part>" and "ucn-lists:end" marker lines, in that
@@ -95,6 +96,7 @@ const FORMAT = {
     return [`var DEFAULT_MENU_CSV = ${JSON.stringify(csv)};`];
   },
   profile: () => sharedCode('profile.js'),
+  rota: () => sharedCode('rota.js'),
   share: () => sharedCode('share.js'),
   'offline-sw': () => sharedCode('offline-sw.js'),
 };
@@ -106,17 +108,17 @@ function sharedCode(name) {
 }
 
 const TARGETS = [
-  ['mission-companion/index.html', ['mc-ranks', 'mc-operations']],
+  ['mission-companion/index.html', ['mc-ranks', 'mc-operations', 'rota']],
   ['engineering/js/mission.js', ['eng-ranks', 'eng-operations', 'share']],
   ['engineering/index.html', ['profile']],
   ['navigation/index.html', ['nav-operations', 'nav-ranks', 'profile', 'share']],
   ['commslog/js/app.js', ['comms-operations', 'share']],
   ['commslog/index.html', ['profile']],
-  ['generallog/index.html', ['glog-operations', 'spaced-ranks', 'profile', 'share']],
+  ['generallog/index.html', ['glog-operations', 'spaced-ranks', 'profile', 'share', 'rota']],
   ['messtracker/index.html', ['spaced-ranks', 'profile', 'mess-menu']],
   ['idcard/index.html', ['option-ranks', 'profile']],
-  ['missionstats/src/index.template.html', ['compact-ranks', 'profile']],
-  ['missionstats/index.html', ['compact-ranks', 'profile']], // the built copy, so no rebuild is needed
+  ['missionstats/src/index.template.html', ['compact-ranks', 'profile', 'rota']],
+  ['missionstats/index.html', ['compact-ranks', 'profile', 'rota']], // the built copy, so no rebuild is needed
   ['commslog/sw.js', ['offline-sw']],
   ['idcard/sw.js', ['offline-sw']],
   ['shipsearch/sw.js', ['offline-sw']],
@@ -126,6 +128,7 @@ const TARGETS = [
   ['tractor-drones/sw.js', ['offline-sw']],
   ['bridge-drills/sw.js', ['offline-sw']],
   ['bridge-drills/index.html', ['profile']],
+  ['crew-rota/sw.js', ['offline-sw']],
   ['index.html', ['spaced-ranks', 'profile']],
 ];
 
