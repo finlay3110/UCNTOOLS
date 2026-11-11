@@ -30,6 +30,7 @@
   h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
   p, li{ line-height:1.5; }
   .note{ color:var(--muted); font-size:13px; margin:10px 0 0; }
+  .note a{ color:var(--cyan); display:inline-block; padding:4px 0; }
   label{ display:flex; justify-content:space-between; gap:10px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
   label output{ color:var(--text); font:700 13px 'Orbitron', sans-serif; letter-spacing:.5px; }
   input[type=range]{ width:100%; height:32px; margin:4px 0 6px; accent-color:var(--cyan); }
@@ -65,6 +66,7 @@
     <div class="readout"><div>Reaches<b id="reach"></b></div></div>
     <svg class="fan" id="fan" viewBox="0 0 300 190" aria-hidden="true"></svg>
     <p class="note">The beam covers a fixed area: narrow for reach, wide for catching things. It must cover a target&rsquo;s centre, moves it only along the line to the ship, and loses it if it crosses behind the ship.</p>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=41" target="_blank" rel="noopener">3.8 Tractor Beam Operations</a></p>
     <h2>Deflecting incoming ordnance at full reach</h2>
     <ul class="defence" id="defence"></ul>
   </section>
@@ -87,6 +89,7 @@
       <div>Probe scan radius<b id="probeRadius"></b></div>
     </div>
     <p class="note">Effectiveness is the scanners&rsquo; power less any damage or hacking. A drone pilot&rsquo;s own tactical display still shows only 5U, however far the drone can go.</p>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=51" target="_blank" rel="noopener">3.10 Probes &amp; Drones</a></p>
   </section>
 </main>
 

@@ -252,6 +252,21 @@ const damage = [
     'Table 3-28: one SPANR takes 2m 23s from 0%, two take 1m 11s, three 48s and four 36s. They stack.'),
 ];
 
+// Where the Academy Manual covers each question: a page of the PDF and its
+// section, for the "Read it in the manual" link once it's answered.
+const MANUAL_REFS = {
+  icons: [125, 'Appendix B: Radar icons'], scanning: [29, '3.2 Scanning'], displays: [14, '2.0 Reading the Battlespace'],
+  ordnance: [39, '3.7 Ordnance'], comms: [8, '1.1 Communication'], deck: [141, 'Appendix H: Deck plans'], repair: [56, '3.11 System Repair'],
+};
+const tag = (list, pick) => list.forEach(x => { const [page, section] = MANUAL_REFS[pick(x)]; x.manual = { page, section }; });
+tag(radar, x => x.pic.includes('class="pic ship"') ? 'icons' : /display|sensors see/.test(x.prompt) ? 'displays'
+  : x.prompt.startsWith('On Tactical') ? 'ordnance' : 'scanning');
+tag(ordnance, () => 'ordnance');
+tag(callouts, () => 'comms');
+tag(damage, x => x.reveal ? 'deck' : 'repair');
+// The manual opens in Tactical Aids, which asks its agreement questions first.
+export const manualLink = page => '../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&page=' + page;
+
 export const DRILLS = {
   radar: { label: 'Radar recognition', questions: radar },
   ordnance: { label: 'Ordnance choice', questions: ordnance },

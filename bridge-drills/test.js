@@ -1,6 +1,6 @@
 // Checks the drills in drills.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { DRILLS, ROUND, newRound, shuffle, time, record, seeded, newSeed, challengeLink, readChallenge, compare } from './drills.js';
+import { DRILLS, ROUND, newRound, shuffle, time, record, seeded, newSeed, challengeLink, readChallenge, compare, manualLink } from './drills.js';
 import { ICONS } from './icons.js';
 
 
@@ -83,5 +83,13 @@ assert.equal(time(65960), '1:06.0');
   assert.ok(compare({ score: 8, ms: 30000 }, { score: 8, ms: 40000 }) > 0, 'then faster');
   assert.equal(compare({ score: 8, ms: 30000 }, { score: 8, ms: 30000 }), 0);
 }
+
+// Every question points at its section of the manual, on a real page of it (145 pages).
+for (const [key, drill] of Object.entries(DRILLS)) for (const x of drill.questions) {
+  assert.ok(x.manual && Number.isInteger(x.manual.page) && x.manual.page >= 1 && x.manual.page <= 145 && x.manual.section, `${key}: "${x.prompt.slice(0, 40)}" has no manual section`);
+}
+assert.equal(DRILLS.radar.questions.find(x => x.pic.includes('pic ship')).manual.page, 125, 'icons point at Appendix B');
+assert.equal(DRILLS.damage.questions.find(x => x.reveal).manual.page, 141, 'locations point at the deck plans');
+assert.equal(manualLink(44), '../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&page=44');
 
 console.log('bridge-drills: all checks passed');

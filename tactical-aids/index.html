@@ -757,7 +757,10 @@ function applyUrl() {
   if (doc) {
     const match = allFiles().find(f => encodePath(f.path) === doc);
     if (match) {
-      withAgreement(doc, () => openViewer(doc, match.name, true));
+      // A link can ask for a page, e.g. a section of the Academy Manual from another tool.
+      const page = parseInt(params.get('page'), 10);
+      const src = page > 0 && page < 10000 ? doc + '#page=' + page : doc;
+      withAgreement(doc, () => openViewer(src, match.name, true));
       return;
     }
   }

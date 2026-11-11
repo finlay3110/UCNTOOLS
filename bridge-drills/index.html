@@ -68,6 +68,7 @@
   .opt.wrong{ border-color:var(--red); background:rgba(214,69,69,.16); }
   .why{ min-height:1.5em; margin:10px 0 4px; color:#c9d2ee; line-height:1.5; }
   .why strong{ color:var(--text); }
+  .why .manual{ display:inline-block; margin-top:4px; color:var(--cyan, #4FA8C9); }
   .next{ margin-top:6px; }
 
   h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
@@ -240,7 +241,7 @@
   // ucn-lists:end
 </script>
 <script type="module">
-  import { DRILLS, ROUND, newRound, time, record, seeded, newSeed, challengeLink, readChallenge, compare } from './drills.js';
+  import { DRILLS, ROUND, newRound, time, record, seeded, newSeed, challengeLink, readChallenge, compare, manualLink } from './drills.js';
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -317,7 +318,8 @@
     });
     $('score').textContent = score;
     if (x.reveal) $('pic').innerHTML = x.reveal;   // trusted, as in show()
-    $('why').innerHTML = (right ? '<strong>Right.</strong> ' : `<strong>Not quite.</strong> The answer is “${esc(x.answer)}”${/[.!?]$/.test(x.answer) ? '' : '.'} `) + esc(x.why);
+    $('why').innerHTML = (right ? '<strong>Right.</strong> ' : `<strong>Not quite.</strong> The answer is “${esc(x.answer)}”${/[.!?]$/.test(x.answer) ? '' : '.'} `) + esc(x.why) +
+      ` <a class="manual" href="${manualLink(x.manual.page)}" target="_blank" rel="noopener">Read it in the manual: ${esc(x.manual.section)}</a>`;
     if (idx < round.length - 1) { $('next').hidden = false; $('next').focus(); }
     else finish();
   });
