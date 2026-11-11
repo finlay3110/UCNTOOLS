@@ -133,6 +133,7 @@ const TARGETS = [
   ['crew-rota/sw.js', ['offline-sw']],
   ['crew-rota/index.html', ['qr']],
   ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
+  ['guide/quick-start.html', ['qr']],
 ];
 
 let changed = 0;
