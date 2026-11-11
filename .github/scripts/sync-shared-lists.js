@@ -1,6 +1,6 @@
 // Writes shared/ucn-lists.json (the operations and the rank ladder),
 // shared/profile.js (the shared name and rank), shared/rota.js (the Crew
-// Rota, for the tools that fill in from it), shared/qr.js (the QR code view), shared/mission.js (the Mission QR), shared/warp.js (warp setups), shared/share.js (the Share
+// Rota, for the tools that fill in from it), shared/qr.js (the QR code view), shared/mission.js (the Mission QR), shared/warp.js (warp setups), shared/latest.js (every tool's Get latest version link), shared/share.js (the Share
 // log button) and shared/offline-sw.js (five tools' offline copy) into every
 // tool that keeps a
 // copy, between "ucn-lists:<part>" and "ucn-lists:end" marker lines, in that
@@ -100,6 +100,7 @@ const FORMAT = {
   qr: () => sharedCode('qr.js'),
   mission: () => sharedCode('mission.js'),
   warp: () => sharedCode('warp.js'),
+  latest: () => sharedCode('latest.js'),
   share: () => sharedCode('share.js'),
   'offline-sw': () => sharedCode('offline-sw.js'),
 };
@@ -138,6 +139,23 @@ const TARGETS = [
   ['helm/sw.js', ['offline-sw']],
   ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
   ['guide/quick-start.html', ['qr']],
+  ['bridge-drills/index.html', ['latest']],
+  ['crew-rota/index.html', ['latest']],
+  ['hacking-trainer/index.html', ['latest']],
+  ['helm/index.html', ['latest']],
+  ['tractor-drones/index.html', ['latest']],
+  ['commslog/index.html', ['latest']],
+  ['engineering/index.html', ['latest']],
+  ['generallog/index.html', ['latest']],
+  ['idcard/index.html', ['latest']],
+  ['messtracker/index.html', ['latest']],
+  ['tactical-aids/index.html', ['latest']],
+  ['missionstats/index.html', ['latest']],
+  ['missionstats/src/index.template.html', ['latest']],
+  ['songbook/index.html', ['latest']],
+  ['mission-companion/index.html', ['latest']],
+  ['navigation/index.html', ['latest']],
+  ['shipsearch/index.html', ['latest']],
 ];
 
 let changed = 0;
