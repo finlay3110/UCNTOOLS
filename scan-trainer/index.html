@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan Trainer — UCN</title>
+<meta name="description" content="Practise scanning contacts: set the length and height of your waveform until it lies over the contact's, one waveform or two, against the clock.">
+<meta name="theme-color" content="#0b0f1c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M4 12q3-7 6 0t6 0 6 0 6 0' fill='none' stroke='%234FA8C9' stroke-width='2.2'/%3E%3Cpath d='M4 22q3-7 6 0t6 0 6 0 6 0' fill='none' stroke='%23DD7A2B' stroke-width='2.2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#8c98bf;
+    --orange:#DD7A2B; --cyan:#4FA8C9; --green:#2FB574; --field:#0f1730; --navy:#1B2A5E;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; min-height:100vh; color:var(--text);
+    font-family:'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background:radial-gradient(ellipse at top, #1b2a5e 0%, var(--bg) 60%) fixed, var(--bg);
+  }
+  .top, main, footer{ max-width:560px; margin:0 auto; padding-left:16px; padding-right:16px; }
+  .top{ padding-top:14px; }
+  .back{ display:inline-flex; align-items:center; min-height:32px; color:var(--muted); text-decoration:none; font-size:13px; }
+  .back:hover{ color:var(--orange); }
+  h1{ font-family:'Orbitron', sans-serif; font-weight:800; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
+  .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:16px; }
+  h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
+  p, li{ line-height:1.5; }
+  .note{ color:var(--muted); font-size:13px; margin:10px 0 0; }
+  .note a{ color:var(--cyan); display:inline-block; padding:4px 0; }
+  ul.facts{ padding-left:20px; margin:8px 0 0; font-size:14px; }
+  .seg{ display:flex; gap:8px; margin:0 0 10px; }
+  .seg button{
+    flex:1; min-height:44px; border-radius:8px; border:1px solid var(--border); background:var(--field); color:var(--muted);
+    font:600 14px 'Exo 2', sans-serif; cursor:pointer;
+  }
+  .seg button[aria-pressed=true]{ background:var(--navy); border-color:var(--cyan); color:var(--text); }
+  button:focus-visible, input:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+  .row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .stat{ flex:1; color:var(--muted); font-size:12px; letter-spacing:1px; text-transform:uppercase; }
+  .stat b{ display:block; font:800 22px/1.2 'Orbitron', sans-serif; color:var(--text); text-transform:none; letter-spacing:.5px; font-variant-numeric:tabular-nums; }
+  .btn{
+    min-height:44px; padding:0 16px; border-radius:8px; border:1.5px solid var(--orange); background:none;
+    color:var(--orange); font:700 14px 'Exo 2', sans-serif; cursor:pointer;
+  }
+  .btn:hover{ background:var(--orange); color:#1a0e02; }
+  .status{ min-height:3em; margin:10px 0 4px; color:var(--muted); font-size:14px; }
+  .status strong{ color:var(--green); }
+  .wave{ border-top:1px solid var(--border); padding-top:12px; margin-top:12px; }
+  .wave h3{ margin:0 0 6px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .scope{ display:block; width:100%; height:auto; background:var(--field); border:1px solid var(--border); border-radius:8px; }
+  .scope path{ fill:none; stroke-width:2.5; stroke-linejoin:round; }
+  .scope .yours{ stroke:var(--cyan); }
+  .scope .theirs{ stroke:var(--orange); stroke-width:5; stroke-opacity:.75; }
+  .legend{ display:flex; align-items:center; gap:6px; margin:6px 0 0; font-size:12px; color:var(--muted); }
+  .key{ display:inline-block; width:18px; height:3px; border-radius:2px; }
+  .key.yours{ background:var(--cyan); }
+  .key.theirs{ background:var(--orange); height:5px; margin-left:10px; }
+  .wave.locked .scope path{ stroke:var(--green); }
+  label{ display:block; margin-top:8px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  input[type=range]{ width:100%; height:32px; margin:2px 0 0; accent-color:var(--cyan); }
+  .match{ display:flex; align-items:center; gap:10px; margin-top:6px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .bar{ flex:1; height:10px; border-radius:5px; background:#1a2346; overflow:hidden; }
+  .fill{ height:100%; width:0; background:var(--orange); transition:width .15s; }
+  .wave.locked .fill{ background:var(--green); }
+  .match b{ min-width:3.2em; text-align:right; color:var(--text); font-variant-numeric:tabular-nums; }
+  footer{ padding-top:4px; padding-bottom:28px; color:var(--muted); font-size:11.5px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../">&larr; Back to Tool Portal</a>
+  <a class="back" href="./" data-ucn-latest style="margin-left:14px"><span aria-hidden="true">&#8635;</span>&nbsp;Get latest version</a>
+  <h1>SCAN TRAINER</h1>
+  <p class="sub">Lock the waveforms to scan the contact</p>
+</header>
+
+<main>
+  <section class="panel" aria-labelledby="scanTitle">
+    <h2 id="scanTitle">Scan a contact</h2>
+    <div class="seg" role="group" aria-label="Level" id="levels">
+      <button type="button" data-level="1" aria-pressed="true">Level 1 · one wave</button>
+      <button type="button" data-level="2" aria-pressed="false">Level 2 · two waves</button>
+    </div>
+    <div class="row">
+      <div class="stat">Time<b id="clock">0.0s</b></div>
+      <div class="stat">Best<b id="best">—</b></div>
+      <button type="button" class="btn" id="next">New contact</button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <div id="waves"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="aboutTitle">
+    <h2 id="aboutTitle">After the lock</h2>
+    <ul class="facts">
+      <li>A <b>primary scan</b> gives the contact&rsquo;s faction, class, hull, shields and systems. Shields read as numbers separated by colons, one per projector, numbered clockwise from the front: call them as &ldquo;Shield 2 down to 71&rdquo;.</li>
+      <li>A <b>secondary scan</b> goes deeper: the exact signals, internal systems, beam firing arcs, and the shield and beam frequencies.</li>
+      <li>More <b>scanner power</b> makes the lock easier and quicker. Ask Engineering for a scanner spike when the scan matters, not because the button exists.</li>
+    </ul>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=29" target="_blank" rel="noopener">3.2 Scanning, Detection &amp; Signals</a></p>
+  </section>
+</main>
+
+<footer>Practice for the Radar station, with notes from the unofficial UCN Academy Manual (3.2 and Table 3-13). Fan-made. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
+
+<script type="module">
+  import { START, locked, newContact, match, wavePath, time } from './scan.js';
+
+  const $ = id => document.getElementById(id);
+  const KEY = 'ucnScanTrainer_v1';
+  const W = 320, H = 80;   // the scope; both waves share its midline
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: nothing remembered */ }
+  const best = saved.best || {};
+  let level = saved.level === 2 ? 2 : 1;
+  let contact, yours, started = 0, done = false;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ level, best })); } catch (e) { /* not remembered */ }
+  }
+
+  // The contact's waveform with yours laid over it: matched, they become one line.
+  function scope() {
+    return `<svg class="scope" viewBox="0 0 ${W} ${H}" aria-hidden="true">
+      <line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" stroke="#2a3a66"/>
+      <path class="theirs"/><path class="yours"/></svg>
+      <p class="legend"><span class="key yours"></span>Yours <span class="key theirs"></span>Contact</p>`;
+  }
+
+  function newScan() {
+    contact = newContact(level);
+    yours = contact.map(() => ({ ...START }));
+    started = 0; done = false;
+    document.querySelectorAll('#levels button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.level === level)));
+    $('waves').innerHTML = contact.map((_, i) => `<div class="wave" id="wave${i}">
+      <h3>${level > 1 ? 'Waveform ' + (i + 1) : 'Waveform'}</h3>${scope()}
+      <label for="len${i}">${level > 1 ? 'Waveform ' + (i + 1) + ' length' : 'Length'}</label>
+      <input type="range" id="len${i}" min="0" max="100" step="1" value="${START.length}" data-i="${i}" data-k="length">
+      <label for="hgt${i}">${level > 1 ? 'Waveform ' + (i + 1) + ' height' : 'Height'}</label>
+      <input type="range" id="hgt${i}" min="0" max="100" step="1" value="${START.height}" data-i="${i}" data-k="height">
+      <div class="match"><span>Match</span><div class="bar" aria-hidden="true"><div class="fill"></div></div><b></b></div>
+    </div>`).join('');
+    $('clock').textContent = time(0);
+    $('best').textContent = best[level] ? time(best[level]) : '—';
+    $('status').textContent = level > 1
+      ? 'Set both waveforms: length and height on each, until each of your waves (blue) lies exactly over the contact’s (orange). The clock starts when you move a slider.'
+      : 'Set the length and height until your wave (blue) lies exactly over the contact’s (orange). The clock starts when you move a slider.';
+    draw(0);
+  }
+
+  function draw(phase) {
+    contact.forEach((c, i) => {
+      const box = $('wave' + i);
+      box.querySelector('.yours').setAttribute('d', wavePath(yours[i], W, H / 2, phase));
+      box.querySelector('.theirs').setAttribute('d', wavePath(c, W, H / 2, phase));
+      const m = match(yours[i], c);
+      box.querySelector('.fill').style.width = m + '%';
+      box.querySelector('.match b').textContent = m + '%';
+    });
+  }
+
+  function finish() {
+    done = true;
+    const s = started ? (performance.now() - started) / 1000 : 0;
+    const record = !best[level] || s < best[level];
+    if (record) { best[level] = s; save(); }
+    $('clock').textContent = time(s);
+    $('best').textContent = time(best[level]);
+    document.querySelectorAll('.wave').forEach(w => w.classList.add('locked'));
+    document.querySelectorAll('#waves input').forEach(r => { r.disabled = true; });
+    $('status').innerHTML = `<strong>Lock achieved: contact scanned in ${time(s)}.</strong>${record ? ' A new best for this level.' : ''}`;
+    $('next').focus();
+  }
+
+  $('waves').addEventListener('input', e => {
+    if (done || !e.target.dataset.k) return;
+    if (!started) started = performance.now();
+    yours[+e.target.dataset.i][e.target.dataset.k] = +e.target.value;
+    if (still) draw(0);
+  });
+  // Locks on letting go of a slider (or a key press), not while sweeping past.
+  $('waves').addEventListener('change', e => {
+    if (!done && e.target.dataset.k && locked(yours, contact)) { draw(0); finish(); }
+  });
+  $('levels').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    level = +b.dataset.level; save(); newScan();
+  });
+  $('next').addEventListener('click', newScan);
+
+  // The traces scroll, and the clock runs while a scan is on.
+  function frame(t) {
+    if (!still) draw(t / 400);
+    if (started && !done) $('clock').textContent = time((performance.now() - started) / 1000);
+    requestAnimationFrame(frame);
+  }
+  newScan();
+  requestAnimationFrame(frame);
+</script>
+<script>
+  // ucn-lists:latest (from shared/latest.js, written on deploy: edit that file, not this code)
+  /* "Get latest version", on every tool: a link marked data-ucn-latest drops
+     this tool's offline copy (its service worker, and the caches holding its
+     files) and reloads it from the site. Saved data in localStorage is kept, and
+     the other tools' offline copies are left alone. With no signal it stops
+     first, so the tool is never left with no copy at all. Plain ES5. */
+  function ucnGetLatest(e) {
+    e.preventDefault();
+    if (!confirm('Get the latest version of this tool?\n\nIt reloads from the site. Your saved logs and settings are kept.')) return;
+    var base = new URL('./', location.href).href;
+    var noop = function () {};
+    // Is the site reachable? No tool keeps its sw.js offline, and a fresh query
+    // gets past the browser's cache, so only the site can answer with it.
+    var online = new Promise(function (ok, fail) {
+      setTimeout(fail, 8000);   // Wi-Fi that is joined but passes nothing just hangs
+      fetch(base + 'sw.js?latest=' + Date.now(), { cache: 'no-store' }).then(function (res) {
+        if (res.ok && /javascript/.test(res.headers.get('content-type') || '')) ok(); else fail();
+      }, fail);
+    });
+    online.then(function () {
+      var regs = 'serviceWorker' in navigator ? navigator.serviceWorker.getRegistrations().catch(function () { return []; }) : Promise.resolve([]);
+      var drop = window.caches ? caches.keys().then(function (keys) {
+        return Promise.all(keys.map(function (k) {
+          return caches.open(k).then(function (c) { return c.keys(); }).then(function (reqs) {
+            var ours = reqs.some(function (r) { return r.url.indexOf(base) === 0; });
+            return ours ? caches.delete(k) : null;
+          });
+        }));
+      }).catch(noop) : null;
+      return Promise.all([drop, regs.then(function (all) {
+        return Promise.all(all.filter(function (r) { return r.scope === base; }).map(function (r) { return r.unregister().catch(noop); }));
+      })]);
+    }).then(function () {
+      location.reload();
+    }, function () {
+      alert('Can’t reach the site right now, so this tool’s offline copy is kept. Try again when you have signal.');
+    });
+  }
+  (function () {
+    var links = document.querySelectorAll('[data-ucn-latest]');
+    for (var i = 0; i < links.length; i++) links[i].addEventListener('click', ucnGetLatest);
+  })();
+  // ucn-lists:end
+</script>
+<script>
+  // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>

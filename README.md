@@ -66,6 +66,7 @@ The portal (`index.html`, `sw.js`) sits at the root; each tool lives in its own 
 | `bridge-drills/` | Bridge Drills | new here |
 | `crew-rota/` | Crew Rota | new here |
 | `helm/` | Helm | new here |
+| `scan-trainer/` | Scan Trainer | new here |
 
 ## What's new
 
