@@ -855,6 +855,23 @@
       <p class="backup-status" id="backupStatus" role="status" aria-live="polite"></p>
     </div>
 
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-tag">Updates</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M19.5 4.5v3.5H16" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="card-title">GET THE LATEST VERSION</h2>
+      <div class="card-desc">
+        A tool looking out of date? Clear the saved offline copies and reload, and every tool loads its newest version. Your logs, records, rota and name &amp; rank are kept.
+      </div>
+      <div class="backup-actions">
+        <button type="button" class="card-btn" id="clearOffline">Clear offline copies &amp; reload</button>
+      </div>
+    </div>
+
   </main>
 
   <h2 class="section-label">Official Links</h2>
@@ -1018,6 +1035,14 @@
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
+
+  // ---- Get the latest version: drop every tool's offline copy, keep everyone's data ----
+  document.getElementById('clearOffline').addEventListener('click', async () => {
+    if (!confirm('Clear the offline copies of every tool and reload?\n\nYour logs, records, rota and name & rank are kept. Each tool saves a fresh offline copy the next time you open it with signal.')) return;
+    try { await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) { /* none, or not allowed */ }
+    try { await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) { /* none, or not allowed */ }
+    location.reload();
+  });
 
   // ---- Back up & restore every tool's saved data ----
   // All the tools share this site's browser storage, so one file carries the lot.
