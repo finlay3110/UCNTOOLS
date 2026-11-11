@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Helm — UCN</title>
+<meta name="description" content="Ship handling, time to target, turns and bearings, combat manoeuvre, the advanced manoeuvres and warp setups for the Helm, from the UCN Academy Manual.">
+<meta name="theme-color" content="#0b0f1c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%234FA8C9' stroke-width='2.5'/%3E%3Cpath d='M16 4v24M4 16h24' stroke='%234FA8C9' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23DD7A2B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#8c98bf;
+    --orange:#DD7A2B; --cyan:#4FA8C9; --green:#2FB574; --red:#ee7b7b; --field:#0f1730; --navy:#1B2A5E;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; min-height:100vh; color:var(--text);
+    font-family:'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background:radial-gradient(ellipse at top, #1b2a5e 0%, var(--bg) 60%) fixed, var(--bg);
+  }
+  .top, main, footer{ max-width:560px; margin:0 auto; padding-left:16px; padding-right:16px; }
+  .top{ padding-top:14px; }
+  .back{ display:inline-flex; align-items:center; min-height:32px; color:var(--muted); text-decoration:none; font-size:13px; }
+  .back:hover{ color:var(--orange); }
+  h1{ font-family:'Orbitron', sans-serif; font-weight:800; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
+  .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:16px; }
+  h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
+  .panel h2.mt{ margin-top:24px; }
+  p, li{ line-height:1.5; }
+  .note, .panel-sub{ color:var(--muted); font-size:13px; margin:10px 0 0; }
+  .note a, .panel-sub a{ color:var(--cyan); display:inline-block; padding:4px 0; }
+  label, .field-label{ display:flex; justify-content:space-between; gap:10px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-top:8px; }
+  label output{ color:var(--text); font:700 13px 'Orbitron', sans-serif; letter-spacing:.5px; }
+  input[type=range]{ width:100%; height:32px; margin:4px 0 6px; accent-color:var(--cyan); }
+  input[type=number], select{
+    width:100%; min-height:44px; margin:4px 0 6px; padding:8px 10px; border-radius:8px; border:1px solid var(--border);
+    background:var(--field); color:var(--text); font:600 16px 'Exo 2', sans-serif;
+  }
+  input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+  .pair{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .pair label{ display:block; }
+  .seg{ display:flex; gap:8px; margin:4px 0 8px; }
+  .seg button{
+    flex:1; min-height:44px; border-radius:8px; border:1px solid var(--border); background:var(--field); color:var(--muted);
+    font:600 14px 'Exo 2', sans-serif; cursor:pointer;
+  }
+  .seg button[aria-pressed=true]{ background:var(--navy); border-color:var(--cyan); color:var(--text); }
+  .readout{ display:flex; gap:18px; flex-wrap:wrap; margin:6px 0 4px; }
+  .readout div{ font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  #warpWhat{ text-transform:none; }
+  .readout b{ display:block; font:800 24px/1.2 'Orbitron', sans-serif; letter-spacing:.5px; color:var(--text); text-transform:none; }
+  .stats{ display:grid; grid-template-columns:1fr 1fr; gap:0 14px; margin:6px 0 0; }
+  .stats div, .setup-row{ display:flex; justify-content:space-between; gap:10px; font-size:13px; padding:7px 0; border-top:1px solid var(--border); }
+  .stats span, .setup-row .k{ color:var(--muted); font-weight:700; }
+  .stats b, .setup-row .v{ text-align:right; }
+  ul.facts{ padding-left:20px; margin:8px 0 0; font-size:14px; }
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th, td{ padding:7px 4px; text-align:left; border-bottom:1px solid var(--border); }
+  thead th{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  details.man{ background:var(--field); border:1px solid var(--border); border-radius:10px; margin:8px 0; }
+  details.man summary{ cursor:pointer; padding:12px; min-height:44px; font-weight:700; color:var(--text); }
+  details.man[open] summary{ border-bottom:1px solid var(--border); }
+  details.man > div{ padding:4px 12px 12px; font-size:14px; }
+  details.man h3{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--orange); margin:12px 0 2px; }
+  details.man p{ margin:4px 0; }
+  details.man ol{ padding-left:22px; margin:4px 0; }
+  .checks{ list-style:none; padding:0; margin:6px 0 0; }
+  .checks label{ display:flex; justify-content:flex-start; align-items:center; gap:12px; min-height:44px; margin:0; padding:4px 0; font-size:14px; letter-spacing:0; text-transform:none; color:var(--text); cursor:pointer; }
+  .checks input{ width:22px; height:22px; accent-color:var(--green); flex:none; }
+  .ready{ font-weight:700; color:var(--muted); margin:8px 0 0; }
+  .ready.go{ color:var(--green); }
+  .btn{ min-height:44px; padding:0 16px; margin-top:8px; border-radius:8px; border:1px solid var(--border); background:var(--field); color:var(--text); font:600 14px 'Exo 2', sans-serif; cursor:pointer; }
+  .calls h3{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--orange); margin:14px 0 2px; }
+  .calls ul{ padding-left:20px; margin:4px 0; font-size:14px; }
+  /* Field setups and the Elite Hidden Tactic, filled in from shared/warp.js. */
+  .dc-groups{ display:grid; gap:12px; }
+  .setup-card{ background:var(--field); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .setup-card h3{ margin:0 0 8px; font-size:12.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--orange); }
+  .setup-row:first-of-type{ border-top:none; }
+  .setup-note{ font-size:12.5px; color:var(--muted); line-height:1.55; margin:12px 0 0; }
+  .setup-warn{ color:var(--red); font-weight:700; }
+  .donut ol{ margin:0 0 12px; padding-left:22px; font-size:13.5px; line-height:1.75; }
+  .pin-lead, .pin-clue{ text-align:center; }
+  .pin-lead{ margin-top:0; }
+  .pin-dots{ display:flex; gap:14px; justify-content:center; margin:14px 0 6px; }
+  .pin-dots span{ width:14px; height:14px; border-radius:50%; border:2px solid var(--muted); }
+  .pin-dots span.on{ background:var(--orange); border-color:var(--orange); }
+  .pin-status{ min-height:1.4em; margin:0 0 12px; text-align:center; font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .pin-status.granted{ color:var(--cyan); }
+  .pin-status.denied{ color:var(--red); }
+  .pin-pad{ display:grid; grid-template-columns:repeat(3, 68px); gap:10px; justify-content:center; }
+  .pin-pad button{ height:56px; border-radius:12px; border:1px solid var(--border); background:var(--panel); color:var(--text); font:700 20px 'Exo 2', sans-serif; cursor:pointer; }
+  .pin-pad button.small{ font-size:13px; }
+  .pin-pad button:active{ background:var(--navy); }
+  .shake{ animation:shake .4s; }
+  @keyframes shake{ 20%,60%{ transform:translateX(-8px); } 40%,80%{ transform:translateX(8px); } }
+  @media (prefers-reduced-motion:reduce){ .shake{ animation:none; } }
+  .elite-tactic h3:focus{ outline:none; }
+  .donut svg{ display:block; width:100%; max-width:300px; height:auto; margin:0 auto; }
+  footer{ padding-top:4px; padding-bottom:28px; color:var(--muted); font-size:11.5px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../">&larr; Back to Tool Portal</a>
+  <h1>HELM</h1>
+  <p class="sub">Handling, turns, manoeuvres and warp for the Helm</p>
+</header>
+
+<main>
+  <section class="panel" aria-labelledby="shipTitle">
+    <h2 id="shipTitle">Ship handling</h2>
+    <div class="seg" role="group" aria-label="Ship">
+      <button type="button" data-ship="takanami" aria-pressed="true">Takanami</button>
+      <button type="button" data-ship="havock" aria-pressed="false">Havock</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <p class="note">At 100% power. Impulse and turning scale with Engineering&rsquo;s impulse and manoeuvring effectiveness; check handling when you take the station.</p>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=30" target="_blank" rel="noopener">3.3 Propulsion</a> · <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=141" target="_blank" rel="noopener">Appendix H: Deck plans</a></p>
+  </section>
+
+  <section class="panel" aria-labelledby="timeTitle">
+    <h2 id="timeTitle">Time to target</h2>
+    <div class="pair">
+      <label for="dist">Distance <input type="number" id="dist" min="0" step="any" inputmode="decimal" value="1"></label>
+      <label for="unit">Units <select id="unit"><option value="20">Sectors (20U)</option><option value="1">U</option></select></label>
+    </div>
+    <label for="imp">Impulse effectiveness <output id="impOut" for="imp"></output></label>
+    <input type="range" id="imp" min="10" max="300" step="10" value="100">
+    <span class="field-label" id="levelLabel">Warp level</span>
+    <div class="seg" role="group" aria-labelledby="levelLabel" id="levels">
+      <button type="button" data-level="1" aria-pressed="false">1</button>
+      <button type="button" data-level="2" aria-pressed="true">2</button>
+      <button type="button" data-level="3" aria-pressed="false">3</button>
+      <button type="button" data-level="4" aria-pressed="false">4</button>
+    </div>
+    <label for="warpPct">Warp power <output id="warpPctOut" for="warpPct"></output></label>
+    <input type="range" id="warpPct" min="10" max="300" step="5" value="150">
+    <div class="readout" aria-live="polite">
+      <div>On impulse<b id="impTime"></b></div>
+      <div>At warp <span id="warpWhat"></span><b id="warpTime"></b></div>
+    </div>
+    <p class="note">Impulse is timed from a standstill, speeding up to full over 5 seconds. Warp is 1U a second per level at 100% power; allow a few seconds more for the drive to spin up (the warp table&rsquo;s times include it).</p>
+  </section>
+
+  <section class="panel" aria-labelledby="turnTitle">
+    <h2 id="turnTitle">Bearings and turns</h2>
+    <div class="pair">
+      <label for="heading">Your heading <input type="number" id="heading" min="0" max="359" step="1" inputmode="numeric" value="0"></label>
+      <label for="target">Target bearing <input type="number" id="target" min="0" max="359" step="1" inputmode="numeric" value="90"></label>
+    </div>
+    <label for="man">Manoeuvring effectiveness <output id="manOut" for="man"></output></label>
+    <input type="range" id="man" min="10" max="300" step="10" value="100">
+    <div class="readout" aria-live="polite">
+      <div>Turn<b id="turnWay"></b></div>
+      <div>Takes<b id="turnTime"></b></div>
+      <div>Put it astern<b id="astern"></b></div>
+    </div>
+    <p class="note">The shorter way round. Bearings run clockwise, so a clockwise turn is to starboard. &ldquo;Put it astern&rdquo; is the heading that turns your back on the target: the reciprocal of its bearing.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="cmTitle">
+    <h2 id="cmTitle">Combat manoeuvre</h2>
+    <ul class="facts">
+      <li>Forward boost heats <b>impulse</b>; a sideways strafe heats <b>manoeuvring</b>; a diagonal heats both.</li>
+      <li>A full boost or strafe empties the reserve in about 3 seconds, at about 20&deg; of heat a second (50&ndash;60&deg; in all).</li>
+      <li>A diagonal empties it in about 1.5 seconds, putting 25&ndash;30&deg; of heat into each.</li>
+      <li>It doesn&rsquo;t work at warp.</li>
+    </ul>
+    <h2 class="mt">Recharge time</h2>
+    <label for="cmImp">Impulse effectiveness <output id="cmImpOut" for="cmImp"></output></label>
+    <input type="range" id="cmImp" min="10" max="300" step="10" value="100">
+    <label for="cmMan">Manoeuvring effectiveness <output id="cmManOut" for="cmMan"></output></label>
+    <input type="range" id="cmMan" min="10" max="300" step="10" value="100">
+    <div class="readout"><div>Full again in<b id="recharge"></b></div></div>
+    <p class="note">About 20 seconds at 100%, scaled by the average of the two.</p>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=31" target="_blank" rel="noopener">3.3.3 Combat Manoeuvre</a></p>
+  </section>
+
+  <section class="panel" aria-labelledby="advTitle">
+    <h2 id="advTitle">Advanced manoeuvres</h2>
+    <p class="panel-sub">The Academy&rsquo;s set pieces, with who says what. Tap one to open it.</p>
+    <div id="manoeuvres"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="checkTitle">
+    <h2 id="checkTitle">Before engaging warp</h2>
+    <ul class="checks" id="checks"></ul>
+    <p class="ready" id="ready" aria-live="polite"></p>
+    <button type="button" class="btn" id="resetChecks">Reset checklist</button>
+    <div class="calls" id="calls"></div>
+    <p class="note">Mines stay dangerous after the fight: plot round them.</p>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=72" target="_blank" rel="noopener">5.1 Helm</a></p>
+  </section>
+
+  <section class="panel" aria-labelledby="warpTitle">
+    <h2 id="warpTitle">Warp guide</h2>
+    <p class="panel-sub">The Academy&rsquo;s fastest setup for each distance. Engineering sets the power and coolant: the full setups are in the <a href="../engineering/">Engineering</a> tool.</p>
+    <table>
+      <thead><tr><th scope="col">Sectors</th><th scope="col">Warp</th><th scope="col">Power</th><th scope="col">Top speed</th><th scope="col">Time</th></tr></thead>
+      <tbody id="warpTable"></tbody>
+    </table>
+    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=135" target="_blank" rel="noopener">Appendix F: Warp Power Configurations</a></p>
+    <div id="warpExtras"></div>
+  </section>
+</main>
+
+<footer>Figures from the unofficial UCN Academy Manual (3.3, 5.1 and Appendices F, G and H) and the UCN Effective Guide to Warp. Fan-made reference for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
+
+<script>
+  // ucn-lists:warp (from shared/warp.js, written on deploy: edit that file, not this code)
+  /* Warp travel, shared by Engineering and Helm: the Academy Manual's setups by
+     distance (Appendix F), the field setups from the UCN "Effective Guide to
+     Warp" (Tactical Aids: warp-guide.pdf), and its Elite Hidden Tactic, an
+     easter egg behind a pin pad. ucnWarpExtras(el) fills el with the field
+     setups and the hidden tactic and wires up the pad; each tool styles them.
+     Plain ES5, as some of the tools are. */
+  // distance: sectors, or Infinity for the setup that goes any distance.
+  var UCN_WARP_TABLE = [
+    { distance:5,  warpLevel:'Warp 4', warpPower:'210%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'8.40U/s', travelTime:'~21s' },
+    { distance:10, warpLevel:'Warp 3', warpPower:'135%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'4.05U/s', travelTime:'57s' },
+    { distance:15, warpLevel:'Warp 2', warpPower:'160%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'3.20U/s', travelTime:'1m 39s' },
+    { distance:20, warpLevel:'Warp 2', warpPower:'155%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'3.10U/s', travelTime:'2m 14s' },
+    { distance:25, warpLevel:'Warp 2', warpPower:'150%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'3.00U/s', travelTime:'2m 52s' },
+    { distance:30, warpLevel:'Warp 2', warpPower:'145%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'2.90U/s', travelTime:'3m 32s' },
+    { distance:35, warpLevel:'Warp 2', warpPower:'145%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'2.90U/s', travelTime:'4m 07s' },
+    { distance:40, warpLevel:'Warp 2', warpPower:'145%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'2.90U/s', travelTime:'4m 40s' },
+    { distance:45, warpLevel:'Warp 2', warpPower:'140%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'2.80U/s', travelTime:'5m 26s' },
+    { distance:50, warpLevel:'Warp 2', warpPower:'140%', warpCoolant:'100%', reactorPower:'100%', reactorCoolant:'0%',  topSpeed:'2.80U/s', travelTime:'6m 02s' },
+    { distance:Infinity, warpLevel:'Warp 1', warpPower:'125%', warpCoolant:'55%', reactorPower:'170%', reactorCoolant:'45%', topSpeed:'1.25U/s', travelTime:'—' }
+  ];
+  
+  var UCN_WARP_FIELD = [
+    { title: 'Long distance &amp; heat effective',
+      rows: [['Warp', '2'], ['Warp power', '136%'], ['Warp coolant', '100%'], ['Top speed', '2.72U/s'],
+        ['Warp drain', '3.1 energy/s'], ['Total drain', '3.6 energy/s'], ['Distance', '416U (~21 sectors)']],
+      note: 'The warp drive never builds heat in this setup: only the energy stored on the ship limits you. You&rsquo;ll arrive with drained power cells, but you&rsquo;ll get there.' },
+    { title: 'Very long distance',
+      rows: [['Warp', '1'], ['Warp', '149% power, 70% coolant'], ['Reactor', '149% power, 30% coolant'], ['Manoeuvring', '100% power'],
+        ['Scanners', '100% power'], ['Every other system', '0% power'], ['Top speed', '1.49U/s'], ['Distance', 'Unlimited']],
+      note: 'Everything except manoeuvring and scanners is switched off; those two stay online so you can avoid obstacles and scan incoming enemies. To keep more systems online, put more power and coolant into the reactor and take some from warp. The balance point is fine, so err on the side of the reactor.' },
+    { title: 'Warp 4 quick',
+      rows: [['Warp', '4'], ['Warp power', '300%'], ['Warp coolant', '100%'], ['Top speed', '12U/s (theoretical)'],
+        ['Max time', '20 seconds'], ['Distance', '110U (~5.5 sectors)']],
+      warn: 'Warning: this will completely destroy your warp drive. Don&rsquo;t take it lightly, and drop out of warp before the 20 seconds are up. If you don&rsquo;t, you may not be able to leave warp 4: the drive keeps overheating and destroys itself as you try to repair it.' }
+  ];
+  
+  // The pin is 1337, "elite" as a hacker writes it, which the clue gives away on purpose.
+  var UCN_ELITE_PIN = '1337';
+  
+  function ucnWarpExtras(el) {
+    var html = '<h2 class="mt">Field Setups</h2>' +
+      '<p class="panel-sub">Tried-and-tested setups from the UCN <a href="../tactical-aids/#doc=pdfs/engineering/warp-guide.pdf" target="_blank" rel="noopener">Effective Guide to Warp</a>, for when the table above isn&rsquo;t the whole story.</p>' +
+      '<div class="dc-groups">';
+    for (var i = 0; i < UCN_WARP_FIELD.length; i++) {
+      var c = UCN_WARP_FIELD[i];
+      html += '<div class="setup-card"><h3>' + c.title + '</h3>';
+      for (var j = 0; j < c.rows.length; j++) html += '<div class="setup-row"><span class="k">' + c.rows[j][0] + '</span><span class="v">' + c.rows[j][1] + '</span></div>';
+      html += c.warn ? '<p class="setup-note setup-warn">' + c.warn + '</p>' : '<p class="setup-note">' + c.note + '</p>';
+      html += '</div>';
+    }
+    var keys = '';
+    for (var d = 1; d <= 9; d++) keys += '<button type="button" data-key="' + d + '">' + d + '</button>';
+    html += '</div>' +
+      '<h2 class="mt">Elite Hidden Tactic</h2>' +
+      '<div class="setup-card donut">' +
+        '<div class="elite-lock">' +
+          '<p class="setup-note pin-lead">Classified. Enter the four-digit code to unlock.</p>' +
+          '<div class="pin-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>' +
+          '<p class="pin-status" role="status" aria-live="polite"></p>' +
+          '<div class="pin-pad" role="group" aria-label="Code pad">' + keys +
+            '<button type="button" data-key="clear" class="small">Clear</button><button type="button" data-key="0">0</button>' +
+            '<button type="button" data-key="back" class="small" aria-label="Delete last digit">&#9003;</button></div>' +
+          '<p class="setup-note pin-clue">Clue: how does a hacker write <b>ELITE</b>?</p>' +
+        '</div>' +
+        '<div class="elite-tactic" hidden>' +
+          '<h3 tabindex="-1">How to Pull a Sick Donut</h3>' +
+          '<ol><li>Increase manoeuvring to max on Engineering.</li><li>Go into warp 3.</li><li>Turn heavily, 180&deg;.</li>' +
+            '<li>Combat manoeuvre to the side, and adjust to hold the circle.</li><li>Come out of warp.</li></ol>' +
+          '<svg viewBox="0 0 260 170" role="img" aria-label="Diagram: you circle round the target while staying locked on to it">' +
+            '<ellipse cx="130" cy="80" rx="100" ry="62" fill="none" stroke="#8FA0BE" stroke-width="2" stroke-dasharray="10 9"/>' +
+            '<path d="M122 72l8-8 8 8-8 8z" fill="#EAF0FB"/>' +
+            '<text x="130" y="100" text-anchor="middle" fill="#8FA0BE" font-size="11" font-family="Exo 2, sans-serif">THEM</text>' +
+            '<path d="M196 27l18 10-16 6z" fill="#DD7A2B"/>' +
+            '<text x="200" y="20" fill="#DD7A2B" font-size="11" font-weight="700" font-family="Exo 2, sans-serif">YOU</text>' +
+            '<path d="M226 62l3 12-10-6" fill="none" stroke="#8FA0BE" stroke-width="2"/>' +
+            '<text x="130" y="163" text-anchor="middle" fill="#8FA0BE" font-size="10" font-family="Exo 2, sans-serif">Circle the target while staying locked on</text>' +
+          '</svg>' +
+          '<p class="setup-note setup-warn">Do not tell Dent if manoeuvre performed.</p>' +
+        '</div>' +
+      '</div>';
+    el.innerHTML = html;
+  
+    var lock = el.querySelector('.elite-lock'), status = el.querySelector('.pin-status');
+    var dots = el.querySelectorAll('.pin-dots span'), entered = '';
+    function show(text, state) {
+      for (var k = 0; k < dots.length; k++) dots[k].className = k < entered.length ? 'on' : '';
+      status.textContent = text;
+      status.className = 'pin-status' + (state ? ' ' + state : '');
+    }
+    el.querySelector('.pin-pad').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('button') : null, key = b && b.getAttribute('data-key');
+      if (!key || entered.length === 4) return;   // a full code is being checked
+      if (key === 'clear') entered = '';
+      else if (key === 'back') entered = entered.slice(0, -1);
+      else entered += key;
+      show(entered.length ? entered.length + ' of 4' : '');
+      if (entered.length < 4) return;
+      if (entered === UCN_ELITE_PIN) {
+        show('Access granted', 'granted');
+        setTimeout(function () {
+          lock.hidden = true;
+          el.querySelector('.elite-tactic').hidden = false;
+          el.querySelector('.elite-tactic h3').focus();
+        }, 600);
+      } else {
+        show('Access denied', 'denied');
+        lock.className = 'elite-lock shake';
+        setTimeout(function () { lock.className = 'elite-lock'; entered = ''; show(''); }, 800);
+      }
+    });
+  }
+  // ucn-lists:end
+</script>
+<script type="module">
+  import { SHIPS, impulseTime, warpTime, warpSpeed, turnTime, turn, reciprocal, rechargeTime, time, MANOEUVRES, WARP_CHECKS, CALLS } from './helm.js';
+
+  const $ = id => document.getElementById(id);
+  const KEY = 'ucnHelm_v1';
+  const manual = (page, text) => `<a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=${page}" target="_blank" rel="noopener">${text}</a>`;
+  const pad3 = b => String(Math.round(b) % 360).padStart(3, '0');
+
+  let shipId = 'takanami', level = 2;
+  try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved && SHIPS[saved.ship]) shipId = saved.ship; } catch (e) { /* storage blocked: Takanami */ }
+  const ship = () => SHIPS[shipId];
+
+  function press(group, attr, value) {
+    group.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === String(value))));
+  }
+
+  function showShip() {
+    const s = ship();
+    press(document.querySelector('[aria-label="Ship"]'), 'ship', shipId);
+    $('stats').innerHTML = [
+      ['Class', s.cls], ['Impulse', +(s.impulse * 60).toFixed(1) + 'U/min'],
+      ['Full impulse in', s.toFull + 's'], ['Turn rate', s.turn + '°/s'],
+      ['180° turn', time(turnTime(s, 180))], ['Shields', s.shields],
+      ['Hull', s.hull], ['Top speed', s.impulse + 'U/s'],
+    ].map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
+  }
+
+  function showTime() {
+    const d = parseFloat($('dist').value) * +$('unit').value, imp = +$('imp').value, pct = +$('warpPct').value;
+    $('impOut').textContent = imp + '%';
+    $('warpPctOut').textContent = pct + '%';
+    press($('levels'), 'level', level);
+    $('warpWhat').textContent = `${level} (${+warpSpeed(level, pct).toFixed(2)}U/s)`;
+    $('impTime').textContent = d >= 0 ? time(impulseTime(ship(), d, imp)) : '—';
+    $('warpTime').textContent = d >= 0 ? time(warpTime(level, d, pct)) : '—';
+  }
+
+  function showTurn() {
+    const h = $('heading').value, t = $('target').value, pct = +$('man').value;
+    $('manOut').textContent = pct + '%';
+    if (h === '' || t === '' || isNaN(h) || isNaN(t)) { $('turnWay').textContent = $('turnTime').textContent = $('astern').textContent = '—'; return; }
+    const { deg, dir } = turn(+h, +t);
+    $('turnWay').textContent = dir === 'none' ? 'On bearing' : dir === 'either' ? '180° either way' : `${+deg.toFixed(1)}° ${dir}`;
+    $('turnTime').textContent = time(turnTime(ship(), deg, pct));
+    $('astern').textContent = pad3(reciprocal(+t));
+  }
+
+  function showRecharge() {
+    const i = +$('cmImp').value, m = +$('cmMan').value;
+    $('cmImpOut').textContent = i + '%';
+    $('cmManOut').textContent = m + '%';
+    $('recharge').textContent = time(rechargeTime(i, m));
+  }
+
+  function showChecks() {
+    const boxes = [...$('checks').querySelectorAll('input')], done = boxes.filter(b => b.checked).length;
+    $('ready').textContent = done === boxes.length ? 'All clear: ready to engage warp.' : `${done} of ${boxes.length} checked`;
+    $('ready').className = 'ready' + (done === boxes.length ? ' go' : '');
+  }
+
+  document.querySelector('[aria-label="Ship"]').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    shipId = b.dataset.ship;
+    try { localStorage.setItem(KEY, JSON.stringify({ ship: shipId })); } catch (err) { /* not remembered */ }
+    showShip(); showTime(); showTurn();
+  });
+  $('levels').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { level = +b.dataset.level; showTime(); } });
+  ['dist', 'unit', 'imp', 'warpPct'].forEach(id => $(id).addEventListener('input', showTime));
+  ['heading', 'target', 'man'].forEach(id => $(id).addEventListener('input', showTurn));
+  ['cmImp', 'cmMan'].forEach(id => $(id).addEventListener('input', showRecharge));
+
+  $('manoeuvres').innerHTML = MANOEUVRES.map(m => `<details class="man"><summary>${m.title}</summary><div>
+    <p>${m.purpose}</p>
+    <h3>Use it when</h3><p>${m.use}</p>
+    <h3>Avoid it when</h3><p>${m.avoid}</p>
+    <h3>Step by step</h3><ol>${m.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+    <p class="note">Read it in the manual: ${manual(m.page, 'Appendix G: ' + m.title)}</p></div></details>`).join('');
+
+  $('checks').innerHTML = WARP_CHECKS.map(c => `<li><label><input type="checkbox"> ${c}</label></li>`).join('');
+  $('checks').addEventListener('change', showChecks);
+  $('resetChecks').addEventListener('click', () => { $('checks').querySelectorAll('input').forEach(b => { b.checked = false; }); showChecks(); });
+  $('calls').innerHTML = [['Ask Engineering', CALLS.engineering], ['Act at once on', CALLS.respond], ['Useful calls', CALLS.useful]]
+    .map(([h, list]) => `<h3>${h}</h3><ul>${list.map(c => `<li>${c}</li>`).join('')}</ul>`).join('');
+
+  $('warpTable').innerHTML = UCN_WARP_TABLE.map(r => `<tr><td>${r.distance === Infinity ? 'Any' : r.distance}</td><td>${r.warpLevel.replace('Warp ', '')}</td><td>${r.warpPower}</td><td>${r.topSpeed}</td><td>${r.travelTime}</td></tr>`).join('');
+  ucnWarpExtras($('warpExtras'));
+
+  showShip(); showTime(); showTurn(); showRecharge(); showChecks();
+</script>
+<script>
+  // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>

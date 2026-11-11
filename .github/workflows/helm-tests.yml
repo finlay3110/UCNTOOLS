@@ -1,0 +1,19 @@
+name: Helm tests
+
+on:
+  push:
+    paths: ['helm/**', '.github/workflows/helm-tests.yml']
+  pull_request:
+    paths: ['helm/**', '.github/workflows/helm-tests.yml']
+
+jobs:
+  figures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: helm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the figures
+        run: node test.js

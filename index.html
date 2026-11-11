@@ -694,6 +694,21 @@
             </div>
           </a>
 
+          <a class="subtool-item" href="helm/">
+            <div class="subtool-number">09</div>
+            <div class="subtool-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="7.5" stroke="white" stroke-width="1.6"/>
+                <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" stroke="white" stroke-width="1.4" stroke-linecap="round" opacity="0.65"/>
+                <path d="M12 7.5l2.2 4.5L12 16.5 9.8 12z" fill="white"/>
+              </svg>
+            </div>
+            <div class="subtool-text">
+              <h3 class="subtool-title">Helm</h3>
+              <div class="subtool-desc">Ship handling, time to target, turns and bearings, combat manoeuvre, the advanced manoeuvres and warp setups.</div>
+            </div>
+          </a>
+
         </div>
       </details>
     </div>
@@ -1397,7 +1412,7 @@
       document.getElementById('missionSkip').addEventListener('click', () => { box.hidden = true; });
       document.getElementById('missionUse').addEventListener('click', () => {
         if (!ucnSaveMission(m)) { document.getElementById('missionWhat').textContent = 'This browser is blocking saved data, so the mission could not be kept.'; return; }
-        const station = { Comms: ['commslog/', 'Comms Log'], 'Power Management': ['engineering/', 'Engineering'], 'Damage Control': ['engineering/', 'Engineering'],
+        const station = { Comms: ['commslog/', 'Comms Log'], 'Power Management': ['engineering/', 'Engineering'], 'Damage Control': ['engineering/', 'Engineering'], Helm: ['helm/', 'Helm'],
           Navigation: ['navigation/', 'Nav Reference'], Radar: ['navigation/', 'Nav Reference'] }[mine && mine.role];
         const links = [station, ['generallog/', 'General Log']].filter(Boolean);
         const open = document.getElementById('missionOpen');
@@ -1422,6 +1437,7 @@
     ['ucnHackingTrainer', 'Hacking Trainer'],
     ['ucnBridgeDrills', 'Bridge Drills'],
     ['ucnCrewRota', 'Crew Rota'],
+    ['ucnHelm', 'Helm'],
     ['ucnProfile', 'your name and rank'],
   ];
   // The Songbook's copy of the song list: it re-downloads that itself, and an
