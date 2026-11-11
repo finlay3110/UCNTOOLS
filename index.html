@@ -812,21 +812,6 @@
       </details>
     </div>
 
-    <div class="card" style="grid-column: 1 / -1;">
-      <div class="card-tag">Updates</div>
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3.5l2.2 5.3 5.3 2.2-5.3 2.2L12 18.5l-2.2-5.3L4.5 11l5.3-2.2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h2 class="card-title">WHAT'S NEW</h2>
-      <ul class="whats-new-list">
-        <!-- whats-new -->
-        <li>The latest changes are listed here on the live site.</li>
-        <!-- /whats-new -->
-      </ul>
-    </div>
-
     <div class="card">
       <div class="card-tag">Personnel</div>
       <div class="card-icon">
@@ -939,6 +924,35 @@
       <div class="backup-actions">
         <button type="button" class="card-btn" id="clearOffline">Clear offline copies &amp; reload</button>
       </div>
+    </div>
+
+    <div class="card dropdown-card" style="grid-column: 1 / -1;">
+      <details class="tool-dropdown">
+        <summary>
+          <div class="dropdown-summary-inner">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3.5l2.2 5.3 5.3 2.2-5.3 2.2L12 18.5l-2.2-5.3L4.5 11l5.3-2.2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">WHAT'S NEW</h2>
+              <div class="card-desc" style="margin-bottom:0;">The latest changes to the tools.</div>
+            </div>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" stroke="#8B96C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+
+        <div class="dropdown-content">
+          <ul class="whats-new-list">
+            <!-- whats-new -->
+            <li>The latest changes are listed here on the live site.</li>
+            <!-- /whats-new -->
+          </ul>
+        </div>
+      </details>
     </div>
 
   </main>
