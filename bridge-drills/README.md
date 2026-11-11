@@ -26,6 +26,8 @@ After a round, **Challenge a friend** shows a QR code (and link) holding the
 round's seed and your score, so a friend gets the same ten questions in the same
 order; their result says who won. The full-screen QR view is `shared/qr.js`.
 
+Each answer links to the section of the Academy Manual that covers it (`manual` on each question in `drills.js`), opening in Tactical Aids at that page after its agreement questions.
+
 The ship icons are the Navigation & Radar tool's, copied into `icons.js`.
 
 Fan-made. Not affiliated with Bridge Command / The London Space Elevator Ltd.

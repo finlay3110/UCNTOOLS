@@ -189,6 +189,9 @@ html,body{
   max-width:680px;
 }
 
+.manual-ref{ margin:-10px 0 18px; font-size:13px; line-height:1.55; }
+.manual-ref a{ color:var(--cyan); display:inline-block; padding:4px 0; }
+
 /* ---------- tables ---------- */
 .table-wrap{overflow-x:auto; border-radius:10px; border:1px solid var(--line);}
 .ref-table{
