@@ -26,6 +26,13 @@
   .back:hover{ color:var(--orange); }
   h1{ font-family:'Orbitron', sans-serif; font-weight:800; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
   .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+  /* Sticky, so another tab is a tap away however far down the page you are. */
+  .tabs{ position:sticky; top:0; z-index:5; display:flex; gap:4px; margin:0 -16px 12px; padding:8px 16px; background:var(--bg); border-bottom:1px solid var(--border); }
+  .tabs button{
+    flex:1 1 auto; min-height:44px; padding:0 6px; border:0; border-bottom:3px solid transparent; border-radius:8px 8px 0 0;
+    background:none; color:var(--muted); font:600 14px 'Exo 2', sans-serif; cursor:pointer;
+  }
+  .tabs button[aria-selected=true]{ color:var(--text); border-bottom-color:var(--orange); background:var(--panel); }
   .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:16px; }
   h2{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1px; color:var(--orange); margin:4px 0 10px; }
   .panel h2.mt{ margin-top:24px; }
@@ -109,104 +116,116 @@
   <a class="back" href="../">&larr; Back to Tool Portal</a>
   <h1>HELM</h1>
   <p class="sub">Handling, turns, manoeuvres and warp for the Helm</p>
+  <span class="field-label" id="shipLabel">Your ship</span>
+  <div class="seg" role="group" aria-labelledby="shipLabel" id="ships">
+    <button type="button" data-ship="takanami" aria-pressed="true">Takanami</button>
+    <button type="button" data-ship="havock" aria-pressed="false">Havock</button>
+  </div>
 </header>
 
 <main>
-  <section class="panel" aria-labelledby="shipTitle">
-    <h2 id="shipTitle">Ship handling</h2>
-    <div class="seg" role="group" aria-label="Ship">
-      <button type="button" data-ship="takanami" aria-pressed="true">Takanami</button>
-      <button type="button" data-ship="havock" aria-pressed="false">Havock</button>
-    </div>
-    <div class="stats" id="stats"></div>
-    <p class="note">At 100% power. Impulse and turning scale with Engineering&rsquo;s impulse and manoeuvring effectiveness; check handling when you take the station.</p>
-    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=30" target="_blank" rel="noopener">3.3 Propulsion</a> · <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=141" target="_blank" rel="noopener">Appendix H: Deck plans</a></p>
-  </section>
+  <div class="tabs" role="tablist" aria-label="Helm sections">
+    <button type="button" role="tab" id="tab-ship" aria-controls="p-ship" aria-selected="true" tabindex="0">Ship</button>
+    <button type="button" role="tab" id="tab-course" aria-controls="p-course" aria-selected="false" tabindex="-1">Course</button>
+    <button type="button" role="tab" id="tab-manoeuvres" aria-controls="p-manoeuvres" aria-selected="false" tabindex="-1">Manoeuvres</button>
+    <button type="button" role="tab" id="tab-warp" aria-controls="p-warp" aria-selected="false" tabindex="-1">Warp</button>
+  </div>
+  <div role="tabpanel" id="p-ship" aria-labelledby="tab-ship">
+    <section class="panel" aria-labelledby="shipTitle">
+      <h2 id="shipTitle">Ship handling</h2>
+      <div class="stats" id="stats"></div>
+      <p class="note">At 100% power. Impulse and turning scale with Engineering&rsquo;s impulse and manoeuvring effectiveness; check handling when you take the station.</p>
+      <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=30" target="_blank" rel="noopener">3.3 Propulsion</a> · <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=141" target="_blank" rel="noopener">Appendix H: Deck plans</a></p>
+    </section>
+    <section class="panel" aria-labelledby="cmTitle">
+      <h2 id="cmTitle">Combat manoeuvre</h2>
+      <ul class="facts">
+        <li>Forward boost heats <b>impulse</b>; a sideways strafe heats <b>manoeuvring</b>; a diagonal heats both.</li>
+        <li>A full boost or strafe empties the reserve in about 3 seconds, at about 20&deg; of heat a second (50&ndash;60&deg; in all).</li>
+        <li>A diagonal empties it in about 1.5 seconds, putting 25&ndash;30&deg; of heat into each.</li>
+        <li>It doesn&rsquo;t work at warp.</li>
+      </ul>
+      <h2 class="mt">Recharge time</h2>
+      <label for="cmImp">Impulse effectiveness <output id="cmImpOut" for="cmImp"></output></label>
+      <input type="range" id="cmImp" min="10" max="300" step="10" value="100">
+      <label for="cmMan">Manoeuvring effectiveness <output id="cmManOut" for="cmMan"></output></label>
+      <input type="range" id="cmMan" min="10" max="300" step="10" value="100">
+      <div class="readout"><div>Full again in<b id="recharge"></b></div></div>
+      <p class="note">About 20 seconds at 100%, scaled by the average of the two.</p>
+      <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=31" target="_blank" rel="noopener">3.3.3 Combat Manoeuvre</a></p>
+    </section>
+  </div>
 
-  <section class="panel" aria-labelledby="timeTitle">
-    <h2 id="timeTitle">Time to target</h2>
-    <div class="pair">
-      <label for="dist">Distance <input type="number" id="dist" min="0" step="any" inputmode="decimal" value="1"></label>
-      <label for="unit">Units <select id="unit"><option value="20">Sectors (20U)</option><option value="1">U</option></select></label>
-    </div>
-    <label for="imp">Impulse effectiveness <output id="impOut" for="imp"></output></label>
-    <input type="range" id="imp" min="10" max="300" step="10" value="100">
-    <span class="field-label" id="levelLabel">Warp level</span>
-    <div class="seg" role="group" aria-labelledby="levelLabel" id="levels">
-      <button type="button" data-level="1" aria-pressed="false">1</button>
-      <button type="button" data-level="2" aria-pressed="true">2</button>
-      <button type="button" data-level="3" aria-pressed="false">3</button>
-      <button type="button" data-level="4" aria-pressed="false">4</button>
-    </div>
-    <label for="warpPct">Warp power <output id="warpPctOut" for="warpPct"></output></label>
-    <input type="range" id="warpPct" min="10" max="300" step="5" value="150">
-    <div class="readout" aria-live="polite">
-      <div>On impulse<b id="impTime"></b></div>
-      <div>At warp <span id="warpWhat"></span><b id="warpTime"></b></div>
-    </div>
-    <p class="note">Impulse is timed from a standstill, speeding up to full over 5 seconds. Warp is 1U a second per level at 100% power; allow a few seconds more for the drive to spin up (the warp table&rsquo;s times include it).</p>
-  </section>
+  <div role="tabpanel" id="p-course" aria-labelledby="tab-course" hidden>
+    <section class="panel" aria-labelledby="timeTitle">
+      <h2 id="timeTitle">Time to target</h2>
+      <div class="pair">
+        <label for="dist">Distance <input type="number" id="dist" min="0" step="any" inputmode="decimal" value="1"></label>
+        <label for="unit">Units <select id="unit"><option value="20">Sectors (20U)</option><option value="1">U</option></select></label>
+      </div>
+      <label for="imp">Impulse effectiveness <output id="impOut" for="imp"></output></label>
+      <input type="range" id="imp" min="10" max="300" step="10" value="100">
+      <span class="field-label" id="levelLabel">Warp level</span>
+      <div class="seg" role="group" aria-labelledby="levelLabel" id="levels">
+        <button type="button" data-level="1" aria-pressed="false">1</button>
+        <button type="button" data-level="2" aria-pressed="true">2</button>
+        <button type="button" data-level="3" aria-pressed="false">3</button>
+        <button type="button" data-level="4" aria-pressed="false">4</button>
+      </div>
+      <label for="warpPct">Warp power <output id="warpPctOut" for="warpPct"></output></label>
+      <input type="range" id="warpPct" min="10" max="300" step="5" value="150">
+      <div class="readout" aria-live="polite">
+        <div>On impulse<b id="impTime"></b></div>
+        <div>At warp <span id="warpWhat"></span><b id="warpTime"></b></div>
+      </div>
+      <p class="note">Impulse is timed from a standstill, speeding up to full over 5 seconds. Warp is 1U a second per level at 100% power; allow a few seconds more for the drive to spin up (the warp table&rsquo;s times include it).</p>
+    </section>
+    <section class="panel" aria-labelledby="turnTitle">
+      <h2 id="turnTitle">Bearings and turns</h2>
+      <div class="pair">
+        <label for="heading">Your heading <input type="number" id="heading" min="0" max="359" step="1" inputmode="numeric" value="0"></label>
+        <label for="target">Target bearing <input type="number" id="target" min="0" max="359" step="1" inputmode="numeric" value="90"></label>
+      </div>
+      <label for="man">Manoeuvring effectiveness <output id="manOut" for="man"></output></label>
+      <input type="range" id="man" min="10" max="300" step="10" value="100">
+      <div class="readout" aria-live="polite">
+        <div>Turn<b id="turnWay"></b></div>
+        <div>Takes<b id="turnTime"></b></div>
+        <div>Put it astern<b id="astern"></b></div>
+      </div>
+      <p class="note">The shorter way round. Bearings run clockwise, so a clockwise turn is to starboard. &ldquo;Put it astern&rdquo; is the heading that turns your back on the target: the reciprocal of its bearing.</p>
+    </section>
+  </div>
 
-  <section class="panel" aria-labelledby="turnTitle">
-    <h2 id="turnTitle">Bearings and turns</h2>
-    <div class="pair">
-      <label for="heading">Your heading <input type="number" id="heading" min="0" max="359" step="1" inputmode="numeric" value="0"></label>
-      <label for="target">Target bearing <input type="number" id="target" min="0" max="359" step="1" inputmode="numeric" value="90"></label>
-    </div>
-    <label for="man">Manoeuvring effectiveness <output id="manOut" for="man"></output></label>
-    <input type="range" id="man" min="10" max="300" step="10" value="100">
-    <div class="readout" aria-live="polite">
-      <div>Turn<b id="turnWay"></b></div>
-      <div>Takes<b id="turnTime"></b></div>
-      <div>Put it astern<b id="astern"></b></div>
-    </div>
-    <p class="note">The shorter way round. Bearings run clockwise, so a clockwise turn is to starboard. &ldquo;Put it astern&rdquo; is the heading that turns your back on the target: the reciprocal of its bearing.</p>
-  </section>
+  <div role="tabpanel" id="p-manoeuvres" aria-labelledby="tab-manoeuvres" hidden>
+    <section class="panel" aria-labelledby="advTitle">
+      <h2 id="advTitle">Advanced manoeuvres</h2>
+      <p class="panel-sub">The Academy&rsquo;s set pieces, with who says what. Tap one to open it.</p>
+      <div id="manoeuvres"></div>
+    </section>
+  </div>
 
-  <section class="panel" aria-labelledby="cmTitle">
-    <h2 id="cmTitle">Combat manoeuvre</h2>
-    <ul class="facts">
-      <li>Forward boost heats <b>impulse</b>; a sideways strafe heats <b>manoeuvring</b>; a diagonal heats both.</li>
-      <li>A full boost or strafe empties the reserve in about 3 seconds, at about 20&deg; of heat a second (50&ndash;60&deg; in all).</li>
-      <li>A diagonal empties it in about 1.5 seconds, putting 25&ndash;30&deg; of heat into each.</li>
-      <li>It doesn&rsquo;t work at warp.</li>
-    </ul>
-    <h2 class="mt">Recharge time</h2>
-    <label for="cmImp">Impulse effectiveness <output id="cmImpOut" for="cmImp"></output></label>
-    <input type="range" id="cmImp" min="10" max="300" step="10" value="100">
-    <label for="cmMan">Manoeuvring effectiveness <output id="cmManOut" for="cmMan"></output></label>
-    <input type="range" id="cmMan" min="10" max="300" step="10" value="100">
-    <div class="readout"><div>Full again in<b id="recharge"></b></div></div>
-    <p class="note">About 20 seconds at 100%, scaled by the average of the two.</p>
-    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=31" target="_blank" rel="noopener">3.3.3 Combat Manoeuvre</a></p>
-  </section>
-
-  <section class="panel" aria-labelledby="advTitle">
-    <h2 id="advTitle">Advanced manoeuvres</h2>
-    <p class="panel-sub">The Academy&rsquo;s set pieces, with who says what. Tap one to open it.</p>
-    <div id="manoeuvres"></div>
-  </section>
-
-  <section class="panel" aria-labelledby="checkTitle">
-    <h2 id="checkTitle">Before engaging warp</h2>
-    <ul class="checks" id="checks"></ul>
-    <p class="ready" id="ready" aria-live="polite"></p>
-    <button type="button" class="btn" id="resetChecks">Reset checklist</button>
-    <div class="calls" id="calls"></div>
-    <p class="note">Mines stay dangerous after the fight: plot round them.</p>
-    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=72" target="_blank" rel="noopener">5.1 Helm</a></p>
-  </section>
-
-  <section class="panel" aria-labelledby="warpTitle">
-    <h2 id="warpTitle">Warp guide</h2>
-    <p class="panel-sub">The Academy&rsquo;s fastest setup for each distance. Engineering sets the power and coolant: the full setups are in the <a href="../engineering/">Engineering</a> tool.</p>
-    <table>
-      <thead><tr><th scope="col">Sectors</th><th scope="col">Warp</th><th scope="col">Power</th><th scope="col">Top speed</th><th scope="col">Time</th></tr></thead>
-      <tbody id="warpTable"></tbody>
-    </table>
-    <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=135" target="_blank" rel="noopener">Appendix F: Warp Power Configurations</a></p>
-    <div id="warpExtras"></div>
-  </section>
+  <div role="tabpanel" id="p-warp" aria-labelledby="tab-warp" hidden>
+    <section class="panel" aria-labelledby="checkTitle">
+      <h2 id="checkTitle">Before engaging warp</h2>
+      <ul class="checks" id="checks"></ul>
+      <p class="ready" id="ready" aria-live="polite"></p>
+      <button type="button" class="btn" id="resetChecks">Reset checklist</button>
+      <div class="calls" id="calls"></div>
+      <p class="note">Mines stay dangerous after the fight: plot round them.</p>
+      <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=72" target="_blank" rel="noopener">5.1 Helm</a></p>
+    </section>
+    <section class="panel" aria-labelledby="warpTitle">
+      <h2 id="warpTitle">Warp guide</h2>
+      <p class="panel-sub">The Academy&rsquo;s fastest setup for each distance. Engineering sets the power and coolant: the full setups are in the <a href="../engineering/">Engineering</a> tool.</p>
+      <table>
+        <thead><tr><th scope="col">Sectors</th><th scope="col">Warp</th><th scope="col">Power</th><th scope="col">Top speed</th><th scope="col">Time</th></tr></thead>
+        <tbody id="warpTable"></tbody>
+      </table>
+      <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=135" target="_blank" rel="noopener">Appendix F: Warp Power Configurations</a></p>
+      <div id="warpExtras"></div>
+    </section>
+  </div>
 </main>
 
 <footer>Figures from the unofficial UCN Academy Manual (3.3, 5.1 and Appendices F, G and H) and the UCN Effective Guide to Warp. Fan-made reference for the UCN tools. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
@@ -344,7 +363,7 @@
 
   function showShip() {
     const s = ship();
-    press(document.querySelector('[aria-label="Ship"]'), 'ship', shipId);
+    press($('ships'), 'ship', shipId);
     $('stats').innerHTML = [
       ['Class', s.cls], ['Impulse', +(s.impulse * 60).toFixed(1) + 'U/min'],
       ['Full impulse in', s.toFull + 's'], ['Turn rate', s.turn + '°/s'],
@@ -386,7 +405,7 @@
     $('ready').className = 'ready' + (done === boxes.length ? ' go' : '');
   }
 
-  document.querySelector('[aria-label="Ship"]').addEventListener('click', e => {
+  $('ships').addEventListener('click', e => {
     const b = e.target.closest('button');
     if (!b) return;
     shipId = b.dataset.ship;
@@ -415,6 +434,31 @@
   ucnWarpExtras($('warpExtras'));
 
   showShip(); showTime(); showTurn(); showRecharge(); showChecks();
+
+  // Tabs. Arrow keys, Home and End move between them, as a tablist should.
+  const tabs = [...document.querySelectorAll('[role=tab]')];
+  function selectTab(tab) {
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    // Start the new tab at its top if the page was scrolled down past the tabs.
+    const top = document.querySelector('main').offsetTop;
+    if (window.scrollY > top) window.scrollTo(0, top);
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => selectTab(t));
+    t.addEventListener('keydown', e => {
+      const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (to === undefined) return;
+      e.preventDefault();
+      const next = tabs[(to + tabs.length) % tabs.length];
+      selectTab(next);
+      next.focus();
+    });
+  });
 </script>
 <script>
   // Offline support. Only over https (or localhost): a page opened as a file has nothing to store.
