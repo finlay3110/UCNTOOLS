@@ -29,8 +29,10 @@ jobs:
       - name: Validate the songs
         run: node tools/validate-songs.mjs
 
+      # A new song has no number until the deploy gives it one on main, so
+      # number it here first, in this checkout only, as the deploy does.
       - name: Build songs.json, as the deploy does
-        run: node tools/build-songs.mjs
+        run: node tools/number-songs.mjs && node tools/build-songs.mjs
 
       - name: Check the app's files are all present
         run: |
