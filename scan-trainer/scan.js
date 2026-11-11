@@ -1,44 +1,52 @@
 // The Scan Trainer's sums, with no page code, so test.js can check them in Node.
-// A waveform is { length, height }, each 0–100 as its sliders read.
+// Modelled on the in-game scan as it plays: each scan is two stages; in each,
+// sliders (one at level 1, two at level 2) hide a setting. The further off
+// they are, the noisier the signal; on target it comes clean, and held there
+// it locks. Tuned by eye from gameplay, not taken from the game.
 
-// Waveforms to lock: level 1 is one, level 2 is two.
-export const LEVELS = [1, 2];
-// How close each slider must be to the contact's, out of 100, to lock.
-export const TOLERANCE = 3;
-// Where the sliders start for every contact.
-export const START = { length: 50, height: 50 };
+export const LEVELS = [1, 2];     // sliders per stage
+export const STAGES = 2;          // a scan is [1/2] then [2/2]
+export const LOCK_ERROR = 0.05;   // total slider error (0–1 each) under which the signal is clean
+export const HOLD = 2;            // seconds held clean before it locks
+export const CYCLES = 6;          // waves across the trace
 
-const pick = rand => 10 + Math.round(rand() * 80);   // kept off the slider ends
+// Our own names for the signal being tuned.
+export const NAMES = [
+  'Subspace harmonic drift', 'Tachyon echo alignment', 'Ion wake calibration', 'Hull resonance sweep',
+  'Gravimetric phase match', 'Thermal bloom filter', 'Neutrino scatter trim', 'Plasma whistle tuning',
+  'Ghost-band suppression', 'Kettle static filter', 'Quantum flutter damping', 'Biscuit tin interference',
+];
 
-const near = (a, b) => Math.abs(a.length - b.length) <= TOLERANCE && Math.abs(a.height - b.height) <= TOLERANCE;
+// Total distance of the sliders from their targets.
+export const error = (values, target) => target.reduce((sum, t, i) => sum + Math.abs(values[i] - t), 0);
+export const clean = (values, target) => error(values, target) < LOCK_ERROR;
 
-// Every waveform of yours sits on the contact's.
-export const locked = (yours, theirs) => theirs.every((t, i) => near(yours[i], t));
-
-// A new contact's waveforms, none already locked from the starting sliders,
-// so every scan needs each waveform set.
-export function newContact(count, rand = Math.random) {
-  return Array.from({ length: count }, () => {
-    let w;
-    do w = { length: pick(rand), height: pick(rand) }; while (near(START, w));
-    return w;
-  });
+// The signal in words, for screen readers and the status line.
+export function quality(e) {
+  return e < LOCK_ERROR ? 'clean' : e < 0.15 ? 'strong' : e < 0.35 ? 'fair' : 'weak';
 }
 
-// How well one of your waveforms matches the contact's, 0–100: 100 when exact,
-// falling 2 a step for each slider step off.
-export const match = (yours, theirs) =>
-  Math.max(0, 100 - 2 * (Math.abs(yours.length - theirs.length) + Math.abs(yours.height - theirs.height)));
+// A stage: its name, the hidden setting, and where the sliders start (well off it).
+export function newStage(sliders, rand = Math.random, avoid = '') {
+  let name;
+  do name = NAMES[Math.floor(rand() * NAMES.length)]; while (name === avoid);
+  const target = Array.from({ length: sliders }, () => 0.1 + rand() * 0.8);
+  let start;
+  do start = target.map(() => rand()); while (error(start, target) < 0.3);
+  return { name, target, start };
+}
 
-// Slider value to drawing: length to the wave's period in px, height to its peak in px.
-export const period = length => 28 + length * 1.7;
-export const peak = height => 3 + height * 0.27;   // up to 30px, inside its 35px half of the scope
-
-// An SVG path of the waveform, w px wide, centred on y = mid, shifted by phase (radians).
-export function wavePath(wave, w, mid, phase = 0) {
-  const p = period(wave.length), a = peak(wave.height);
+// One colour's line of the trace, w × h px, for a slider error e. The three
+// colours (k = -1, 0, 1) drift apart in period and phase as e grows, and
+// noise scaled by e is added on top; at e = 0 they are the same clean wave.
+export function tracePath(e, k, w, h, rand = Math.random) {
+  const err = Math.min(e, 1), a = h * 0.34, mid = h / 2;
+  const turns = CYCLES * (1 + k * 0.3 * err), shift = k * err * 2.4;
   let d = '';
-  for (let x = 0; x <= w; x += 2) d += (x ? 'L' : 'M') + x + ' ' + (mid - a * Math.sin(2 * Math.PI * x / p + phase)).toFixed(1);
+  for (let x = 0; x <= w; x += 3) {
+    const y = mid - a * Math.sin(2 * Math.PI * turns * x / w + shift) + (rand() * 2 - 1) * h * 0.42 * err;
+    d += (x ? 'L' : 'M') + x + ' ' + Math.max(1, Math.min(h - 1, y)).toFixed(1);
+  }
   return d;
 }
 

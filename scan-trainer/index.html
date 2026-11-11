@@ -4,15 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Scan Trainer — UCN</title>
-<meta name="description" content="Practise scanning contacts: set the length and height of your waveform until it lies over the contact's, one waveform or two, against the clock.">
+<meta name="description" content="Practise scanning contacts: tune each stage's sliders until the noisy signal comes clean and locks, one slider or two, against the clock.">
 <meta name="theme-color" content="#0b0f1c">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M4 12q3-7 6 0t6 0 6 0 6 0' fill='none' stroke='%234FA8C9' stroke-width='2.2'/%3E%3Cpath d='M4 22q3-7 6 0t6 0 6 0 6 0' fill='none' stroke='%23DD7A2B' stroke-width='2.2'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M4 16q3-8 6 0t6 0 6 0 6 0' fill='none' stroke='%23e0e6f2' stroke-width='2.2'/%3E%3Cpath d='M4 13l3 6 3-9 3 8 3-7 3 9 3-6 3 5 3-4' fill='none' stroke='%23e0524f' stroke-width='1.2' opacity='.8'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#8c98bf;
     --orange:#DD7A2B; --cyan:#4FA8C9; --green:#2FB574; --field:#0f1730; --navy:#1B2A5E;
+    --scope:#0a1020; --track:#060a14;
   }
   *{ box-sizing:border-box; }
   body{
@@ -38,35 +39,33 @@
     font:600 14px 'Exo 2', sans-serif; cursor:pointer;
   }
   .seg button[aria-pressed=true]{ background:var(--navy); border-color:var(--cyan); color:var(--text); }
+  .seg button:disabled{ opacity:.5; cursor:default; }
   button:focus-visible, input:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
   .row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   .stat{ flex:1; color:var(--muted); font-size:12px; letter-spacing:1px; text-transform:uppercase; }
   .stat b{ display:block; font:800 22px/1.2 'Orbitron', sans-serif; color:var(--text); text-transform:none; letter-spacing:.5px; font-variant-numeric:tabular-nums; }
   .btn{
-    min-height:44px; padding:0 16px; border-radius:8px; border:1.5px solid var(--orange); background:none;
-    color:var(--orange); font:700 14px 'Exo 2', sans-serif; cursor:pointer;
+    min-height:44px; padding:0 22px; border-radius:22px; border:1px solid #c9d1e3; background:#0d1222;
+    color:var(--text); font:700 15px 'Exo 2', sans-serif; letter-spacing:.5px; cursor:pointer;
   }
-  .btn:hover{ background:var(--orange); color:#1a0e02; }
+  .btn:hover{ background:#1a2240; }
   .status{ min-height:3em; margin:10px 0 4px; color:var(--muted); font-size:14px; }
   .status strong{ color:var(--green); }
-  .wave{ border-top:1px solid var(--border); padding-top:12px; margin-top:12px; }
-  .wave h3{ margin:0 0 6px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
-  .scope{ display:block; width:100%; height:auto; background:var(--field); border:1px solid var(--border); border-radius:8px; }
-  .scope path{ fill:none; stroke-width:2.5; stroke-linejoin:round; }
-  .scope .yours{ stroke:var(--cyan); }
-  .scope .theirs{ stroke:var(--orange); stroke-width:5; stroke-opacity:.75; }
-  .legend{ display:flex; align-items:center; gap:6px; margin:6px 0 0; font-size:12px; color:var(--muted); }
-  .key{ display:inline-block; width:18px; height:3px; border-radius:2px; }
-  .key.yours{ background:var(--cyan); }
-  .key.theirs{ background:var(--orange); height:5px; margin-left:10px; }
-  .wave.locked .scope path{ stroke:var(--green); }
-  label{ display:block; margin-top:8px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
-  input[type=range]{ width:100%; height:32px; margin:2px 0 0; accent-color:var(--cyan); }
-  .match{ display:flex; align-items:center; gap:10px; margin-top:6px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
-  .bar{ flex:1; height:10px; border-radius:5px; background:#1a2346; overflow:hidden; }
-  .fill{ height:100%; width:0; background:var(--orange); transition:width .15s; }
-  .wave.locked .fill{ background:var(--green); }
-  .match b{ min-width:3.2em; text-align:right; color:var(--text); font-variant-numeric:tabular-nums; }
+  /* The scan dialog, as the scan plays: a title, the signal trace, sliders, Cancel. */
+  .dialog{ margin-top:12px; padding:12px; border:1px solid #3a4560; border-radius:12px; background:#121829; }
+  .dialog h3{ margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid #3a4560; text-align:center; font-size:15px; font-weight:600; letter-spacing:.5px; }
+  .trace{ position:relative; border:1px solid #46506a; border-radius:12px; background:var(--scope); overflow:hidden; }
+  .trace svg{ display:block; width:100%; height:auto; }
+  .trace path{ fill:none; stroke-width:1.6; stroke-linejoin:round; mix-blend-mode:screen; }
+  .trace .k-1{ stroke:#e0524f; } .trace .k0{ stroke:#3fbf6a; } .trace .k1{ stroke:#4a7fe0; }
+  .trace.locked path{ stroke:#c9d1e3; mix-blend-mode:normal; }
+  .locked-tag{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:800 26px 'Orbitron', sans-serif; letter-spacing:2px; color:#fff; text-shadow:0 0 8px #000; }
+  .slider{ display:block; width:100%; height:36px; margin:12px 0 0; background:none; -webkit-appearance:none; appearance:none; }
+  .slider::-webkit-slider-runnable-track{ height:30px; border-radius:15px; background:var(--track); border:1px solid #2a3350; }
+  .slider::-webkit-slider-thumb{ -webkit-appearance:none; width:28px; height:28px; margin-top:0; border-radius:50%; background:#e3e7ef; border:none; box-shadow:0 0 0 2px #0006; }
+  .slider::-moz-range-track{ height:30px; border-radius:15px; background:var(--track); border:1px solid #2a3350; }
+  .slider::-moz-range-thumb{ width:28px; height:28px; border-radius:50%; background:#e3e7ef; border:none; }
+  .dialog .cancel{ display:block; margin:14px auto 0; min-width:60%; }
   footer{ padding-top:4px; padding-bottom:28px; color:var(--muted); font-size:11.5px; line-height:1.5; text-align:center; }
 </style>
 </head>
@@ -76,133 +75,158 @@
   <a class="back" href="../">&larr; Back to Tool Portal</a>
   <a class="back" href="./" data-ucn-latest style="margin-left:14px"><span aria-hidden="true">&#8635;</span>&nbsp;Get latest version</a>
   <h1>SCAN TRAINER</h1>
-  <p class="sub">Lock the waveforms to scan the contact</p>
+  <p class="sub">Tune out the noise and lock the scan</p>
 </header>
 
 <main>
   <section class="panel" aria-labelledby="scanTitle">
     <h2 id="scanTitle">Scan a contact</h2>
     <div class="seg" role="group" aria-label="Level" id="levels">
-      <button type="button" data-level="1" aria-pressed="true">Level 1 · one wave</button>
-      <button type="button" data-level="2" aria-pressed="false">Level 2 · two waves</button>
+      <button type="button" data-level="1" aria-pressed="true">Level 1 · one slider</button>
+      <button type="button" data-level="2" aria-pressed="false">Level 2 · two sliders</button>
     </div>
     <div class="row">
       <div class="stat">Time<b id="clock">0.0s</b></div>
       <div class="stat">Best<b id="best">—</b></div>
-      <button type="button" class="btn" id="next">New contact</button>
+      <button type="button" class="btn" id="scan">Scan</button>
     </div>
     <p class="status" id="status" role="status" aria-live="polite"></p>
-    <div id="waves"></div>
+    <div class="dialog" id="dialog" hidden>
+      <h3 id="stageTitle"></h3>
+      <div class="trace" id="trace">
+        <svg viewBox="0 0 300 64" aria-hidden="true"><path class="k-1"/><path class="k0"/><path class="k1"/></svg>
+      </div>
+      <div id="sliders"></div>
+      <button type="button" class="btn cancel" id="cancel">Cancel</button>
+    </div>
   </section>
 
   <section class="panel" aria-labelledby="aboutTitle">
-    <h2 id="aboutTitle">After the lock</h2>
+    <h2 id="aboutTitle">How it works</h2>
     <ul class="facts">
-      <li>A <b>primary scan</b> gives the contact&rsquo;s faction, class, hull, shields and systems. Shields read as numbers separated by colons, one per projector, numbered clockwise from the front: call them as &ldquo;Shield 2 down to 71&rdquo;.</li>
-      <li>A <b>secondary scan</b> goes deeper: the exact signals, internal systems, beam firing arcs, and the shield and beam frequencies.</li>
-      <li>More <b>scanner power</b> makes the lock easier and quicker. Ask Engineering for a scanner spike when the scan matters, not because the button exists.</li>
+      <li>Every scan has two stages. In each, move the slider until the noisy red, green and blue signal pulls together into one clean wave, then hold it there until it <b>locks</b>.</li>
+      <li><b>Level 1</b> has one slider per stage; <b>level 2</b> has two, and the signal only comes clean when both are right.</li>
+      <li>A <b>primary scan</b> gives the contact&rsquo;s faction, class, hull, shields and systems; a <b>secondary scan</b> goes deeper, to the exact signals, internal systems, beam firing arcs, and the shield and beam frequencies.</li>
+      <li>More <b>scanner power</b> makes the lock easier and quicker. Ask Engineering for a scanner spike when the scan matters.</li>
     </ul>
     <p class="note">Read it in the manual: <a href="../tactical-aids/#doc=pdfs/general-info/UCN-Academy-Manual.pdf&amp;page=29" target="_blank" rel="noopener">3.2 Scanning, Detection &amp; Signals</a></p>
   </section>
 </main>
 
-<footer>Practice for the Radar station, with notes from the unofficial UCN Academy Manual (3.2 and Table 3-13). Fan-made. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
+<footer>Practice for the Radar station, modelled on how the scan plays, with notes from the unofficial UCN Academy Manual (3.2 and Table 3-13). Fan-made. Not affiliated with, endorsed by, or approved by Bridge Command / The London Space Elevator Limited.</footer>
 
 <script type="module">
-  import { START, locked, newContact, match, wavePath, time } from './scan.js';
+  import { STAGES, HOLD, error, clean, quality, newStage, tracePath, time } from './scan.js';
 
   const $ = id => document.getElementById(id);
   const KEY = 'ucnScanTrainer_v1';
-  const W = 320, H = 80;   // the scope; both waves share its midline
+  const W = 300, H = 64;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const paths = [...$('trace').querySelectorAll('path')];
 
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: nothing remembered */ }
   const best = saved.best || {};
   let level = saved.level === 2 ? 2 : 1;
-  let contact, yours, started = 0, done = false;
+  // A scan in progress: its stage number, the stage, slider values, when it began, when the signal came clean.
+  let scan = null;
 
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify({ level, best })); } catch (e) { /* not remembered */ }
-  }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ level, best })); } catch (e) { /* not remembered */ } };
 
-  // The contact's waveform with yours laid over it: matched, they become one line.
-  function scope() {
-    return `<svg class="scope" viewBox="0 0 ${W} ${H}" aria-hidden="true">
-      <line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" stroke="#2a3a66"/>
-      <path class="theirs"/><path class="yours"/></svg>
-      <p class="legend"><span class="key yours"></span>Yours <span class="key theirs"></span>Contact</p>`;
-  }
-
-  function newScan() {
-    contact = newContact(level);
-    yours = contact.map(() => ({ ...START }));
-    started = 0; done = false;
+  function showLevel() {
     document.querySelectorAll('#levels button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.level === level)));
-    $('waves').innerHTML = contact.map((_, i) => `<div class="wave" id="wave${i}">
-      <h3>${level > 1 ? 'Waveform ' + (i + 1) : 'Waveform'}</h3>${scope()}
-      <label for="len${i}">${level > 1 ? 'Waveform ' + (i + 1) + ' length' : 'Length'}</label>
-      <input type="range" id="len${i}" min="0" max="100" step="1" value="${START.length}" data-i="${i}" data-k="length">
-      <label for="hgt${i}">${level > 1 ? 'Waveform ' + (i + 1) + ' height' : 'Height'}</label>
-      <input type="range" id="hgt${i}" min="0" max="100" step="1" value="${START.height}" data-i="${i}" data-k="height">
-      <div class="match"><span>Match</span><div class="bar" aria-hidden="true"><div class="fill"></div></div><b></b></div>
-    </div>`).join('');
-    $('clock').textContent = time(0);
     $('best').textContent = best[level] ? time(best[level]) : '—';
+  }
+
+  function idle(text) {
+    scan = null;
+    $('dialog').hidden = true;
+    document.querySelectorAll('#levels button').forEach(b => { b.disabled = false; });
+    $('status').innerHTML = text;
+  }
+
+  function startStage(n, avoid) {
+    const stage = newStage(level, Math.random, avoid);
+    scan.n = n; scan.stage = stage; scan.values = [...stage.start]; scan.cleanSince = 0; scan.locked = false;
+    $('stageTitle').textContent = `[${n}/${STAGES}] ${stage.name}`;
+    $('trace').classList.remove('locked');
+    $('trace').querySelector('.locked-tag')?.remove();
+    $('sliders').innerHTML = stage.start.map((v, i) =>
+      `<input type="range" class="slider" min="0" max="1000" step="1" value="${Math.round(v * 1000)}" data-i="${i}" aria-label="${level > 1 ? 'Tuning slider ' + (i + 1) : 'Tuning slider'}">`).join('');
+    describe();
+    draw();
+    $('sliders').querySelector('input').focus();
+  }
+
+  // Screen readers hear the signal's state on each slider.
+  function describe() {
+    const q = quality(error(scan.values, scan.stage.target));
+    $('sliders').querySelectorAll('input').forEach(r => r.setAttribute('aria-valuetext', `${Math.round(r.value / 10)}%, signal ${q}`));
+  }
+
+  function draw() {
+    if (!scan) return;
+    const e = scan.locked ? 0 : error(scan.values, scan.stage.target);
+    paths.forEach((p, i) => p.setAttribute('d', tracePath(e, i - 1, W, H)));
+  }
+
+  function lockStage() {
+    scan.locked = true;
+    $('trace').classList.add('locked');
+    $('trace').insertAdjacentHTML('beforeend', '<div class="locked-tag" aria-hidden="true">LOCKED</div>');
+    $('sliders').querySelectorAll('input').forEach(r => { r.disabled = true; });
+    draw();
+    const done = scan.n === STAGES, current = scan;
+    $('status').textContent = done ? '' : `Stage ${scan.n} locked.`;
+    setTimeout(() => {
+      if (scan !== current) return;   // cancelled meanwhile
+      if (!done) return startStage(scan.n + 1, scan.stage.name);
+      const s = (performance.now() - scan.began) / 1000, record = !best[level] || s < best[level];
+      if (record) { best[level] = s; save(); }
+      $('clock').textContent = time(s);
+      showLevel();
+      idle(`<strong>Scan complete in ${time(s)}.</strong>${record ? ' A new best for this level.' : ''}`);
+      $('scan').focus();
+    }, 900);
+  }
+
+  $('scan').addEventListener('click', () => {
+    scan = { began: performance.now() };
+    document.querySelectorAll('#levels button').forEach(b => { b.disabled = true; });
+    $('dialog').hidden = false;
     $('status').textContent = level > 1
-      ? 'Set both waveforms: length and height on each, until each of your waves (blue) lies exactly over the contact’s (orange). The clock starts when you move a slider.'
-      : 'Set the length and height until your wave (blue) lies exactly over the contact’s (orange). The clock starts when you move a slider.';
-    draw(0);
-  }
-
-  function draw(phase) {
-    contact.forEach((c, i) => {
-      const box = $('wave' + i);
-      box.querySelector('.yours').setAttribute('d', wavePath(yours[i], W, H / 2, phase));
-      box.querySelector('.theirs').setAttribute('d', wavePath(c, W, H / 2, phase));
-      const m = match(yours[i], c);
-      box.querySelector('.fill').style.width = m + '%';
-      box.querySelector('.match b').textContent = m + '%';
-    });
-  }
-
-  function finish() {
-    done = true;
-    const s = started ? (performance.now() - started) / 1000 : 0;
-    const record = !best[level] || s < best[level];
-    if (record) { best[level] = s; save(); }
-    $('clock').textContent = time(s);
-    $('best').textContent = time(best[level]);
-    document.querySelectorAll('.wave').forEach(w => w.classList.add('locked'));
-    document.querySelectorAll('#waves input').forEach(r => { r.disabled = true; });
-    $('status').innerHTML = `<strong>Lock achieved: contact scanned in ${time(s)}.</strong>${record ? ' A new best for this level.' : ''}`;
-    $('next').focus();
-  }
-
-  $('waves').addEventListener('input', e => {
-    if (done || !e.target.dataset.k) return;
-    if (!started) started = performance.now();
-    yours[+e.target.dataset.i][e.target.dataset.k] = +e.target.value;
-    if (still) draw(0);
+      ? 'Move both sliders until the signal comes clean, then hold them there.'
+      : 'Move the slider until the signal comes clean, then hold it there.';
+    startStage(1);
   });
-  // Locks on letting go of a slider (or a key press), not while sweeping past.
-  $('waves').addEventListener('change', e => {
-    if (!done && e.target.dataset.k && locked(yours, contact)) { draw(0); finish(); }
+  $('cancel').addEventListener('click', () => { idle('Scan cancelled.'); $('clock').textContent = time(0); $('scan').focus(); });
+  $('sliders').addEventListener('input', e => {
+    if (!scan || scan.locked) return;
+    scan.values[+e.target.dataset.i] = e.target.value / 1000;
+    const ok = clean(scan.values, scan.stage.target);
+    if (ok && !scan.cleanSince) scan.cleanSince = performance.now();
+    if (!ok) scan.cleanSince = 0;
+    describe();
+    if (still) draw();
   });
   $('levels').addEventListener('click', e => {
     const b = e.target.closest('button');
-    if (!b) return;
-    level = +b.dataset.level; save(); newScan();
+    if (!b || scan) return;
+    level = +b.dataset.level; save(); showLevel();
+    $('clock').textContent = time(0);
   });
-  $('next').addEventListener('click', newScan);
 
-  // The traces scroll, and the clock runs while a scan is on.
-  function frame(t) {
-    if (!still) draw(t / 400);
-    if (started && !done) $('clock').textContent = time((performance.now() - started) / 1000);
+  // The noise flickers, the clock runs, and a clean signal held long enough locks.
+  function frame() {
+    if (scan && !scan.locked) {
+      $('clock').textContent = time((performance.now() - scan.began) / 1000);
+      if (scan.cleanSince && performance.now() - scan.cleanSince >= HOLD * 1000) lockStage();
+      else if (!still) draw();
+    }
     requestAnimationFrame(frame);
   }
-  newScan();
+  showLevel();
+  idle('Press <b>Scan</b> to start. The clock runs from the moment you press it.');
   requestAnimationFrame(frame);
 </script>
 <script>
