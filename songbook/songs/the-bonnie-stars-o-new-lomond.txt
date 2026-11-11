@@ -1,0 +1,44 @@
+id: 32
+title: The Bonnie Stars o' New Lomond
+category: Bar/Drinking Songs
+words: Sub Lt. Tetra
+tune: The Bonnie Banks o' Loch Lomond; trad
+source_book: UCN Songbook
+source_page: 35
+---
+By yon starlit docks and yon bright orbital rings,
+Where the cold suns shine o'er New Lomond,
+Where me and my true crew were ever wont tae roam,
+On the bonnie, bonnie stars o' New Lomond.
+
+Chorus:
+Oh ye'll take the warp lane, and I'll take the impulse lane,
+And I'll be in Sol afore ye,
+But me and my true crew may never meet again,
+On the bonnie, bonnie stars o' New Lomond.
+
+'Twas there that we parted in yon silent void,
+Beside Havock's shuttle gliding,
+Where the nebulae burned in soft violet hue,
+And the pale moons watched us hiding.
+
+Repeat chorus
+
+The comm beacons fade and the great warp core hums,
+And the starfields lie cold and sleeping,
+But the weary heart kens nae second dawn again,
+Though the lost may cease from their grieving.
+
+Repeat chorus
+
+For the void calls on through the endless black seas,
+And the fleet still sails through the silence,
+With the old flags worn and the hull plating scarred,
+Still we answer the stars with defiance.
+
+Repeat chorus
+
+Oh ye'll take the warp lane, and I'll take the impulse lane,
+And I'll be in Sol afore ye,
+But me and my true crew may never meet again,
+On the bonnie, bonnie stars o' New Lomond.

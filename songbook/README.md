@@ -30,7 +30,7 @@ A fan-made digital songbook for the **United Confederation Navy (UCN)** communit
 ├── styles.css                 # All styling, including the light/dark themes
 ├── app.js                     # App logic — search, filtering, routing, settings
 ├── lyrics.js                  # Shared lyric parser (used by the app AND the PDF)
-├── songs.json                 # All song data — edit this file to add/update songs
+├── songs/                     # One .txt file per song — add or edit songs here
 ├── pdf-export.js              # PDF export engine (jsPDF + fonts + logo/QR assets)
 │                              # Lazily loaded only when someone exports,
 │                              # so normal browsing never downloads it
@@ -39,54 +39,67 @@ A fan-made digital songbook for the **United Confederation Navy (UCN)** communit
 ├── fonts/                     # Self-hosted Exo 2 + OpenDyslexic (OFL, see LICENSE.md)
 ├── icons/                     # App icons for install / home screen / favicon
 └── tools/
-    ├── gen-187ab8a3.html       # Song entry generator (see "Maintainer tools")
-    └── validate-songs.mjs      # Checks songs.json before it ships (see below)
+    ├── songs-lib.mjs           # Reads, checks, numbers and tidies the song files
+    ├── validate-songs.mjs      # Checks every song (CI runs it on each change)
+    ├── number-songs.mjs        # Gives new songs their id (the deploy runs it)
+    ├── build-songs.mjs         # Builds songs.json from songs/ (the deploy runs it)
+    ├── submission.mjs          # Turns a "Submit a song" issue into a song file
+    └── test.mjs                # Tests for all of the above
 ```
 
-Everything except `tools/` must be deployed together in the same folder — the app fetches `songs.json` at runtime and loads `pdf-export.js` on demand. The `tools/` folder is for maintainers only and has no effect on the live app.
+The app fetches one `songs.json` at runtime. That file is **built, not edited**: the deploy combines the files in `songs/` into it (`node tools/build-songs.mjs` does the same locally). The `tools/` folder has no effect on the live app.
 
-There is **no build step**. Plain HTML, CSS and JavaScript, edited and deployed as-is.
+Apart from that one step, plain HTML, CSS and JavaScript, edited and deployed as-is.
 
 ---
 
 ## Adding a new song
 
-Songs live in `songs.json` as a plain JSON array. To add one:
+**The easy way:** fill in the [Submit a song](https://github.com/finlay3110/UCNTOOLS/issues/new?template=submit-a-song.yml) form (also linked from the app's About sheet). A bot tidies the chorus and repeat markers, checks the song, and replies with a preview of how it will read. If it passes, the bot opens a pull request; if not, it says what to fix, and editing the issue checks it again. Merge the pull request and the song goes live.
 
-1. Open `songs.json`
-2. Paste a new entry before the closing `]`, separated from the previous entry by a comma
-3. **Run `node tools/validate-songs.mjs`** — catches the mistakes that silently break rendering
-4. Commit and push — the site redeploys automatically
+> The bot can only open pull requests once **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** is switched on.
 
-Step 3 also runs automatically on every push via GitHub Actions (`.github/workflows/songbook-validate.yml` at the repo root).
+**By hand:** add a file to `songs/`, run `node tools/validate-songs.mjs`, and open a pull request. The validator also runs automatically on every pull request (`.github/workflows/songbook-validate.yml` at the repo root).
 
-### Song entry format
+**Leave the `id` out of a new song.** When the change reaches `main`, the deploy gives each new song the next free number and saves it back to its file, one deploy at a time, so two songs merged together never clash. Never change an existing song's id: favourites, set lists and shared links all point at it.
 
-```json
-{
-  "id": 75,
-  "title": "Song Title",
-  "category": "Bar/Drinking Songs",
-  "words": "Author Name",
-  "tune": "Original Tune; Composer",
-  "lyrics": "Verse one line one\nVerse one line two\n\nChorus:\nChorus line one\nChorus line two\n\nRepeat chorus",
-  "source_book": "UCN Songbook",
-  "source_page": 12
-}
+### Song file format
+
+`songs/song-title.txt`:
+
+```text
+id: 75
+title: Song Title
+category: Bar/Drinking Songs
+words: Author Name
+tune: Original Tune; Composer
+source_book: UCN Songbook
+source_page: 12
+---
+Verse one line one
+Verse one line two
+
+Chorus:
+Chorus line one
+Chorus line two
+
+Repeat chorus
 ```
+
+Details above the `---`, lyrics below it, written exactly as they should appear.
 
 **Field reference:**
 
 | Field | Description |
 |---|---|
-| `id` | Unique number — always increment from the last song in the file |
+| `id` | Unique number. Leave it out of a new song: it's added on merge |
 | `title` | Song title as shown in the app |
 | `category` | Must exactly match one of the categories listed below |
 | `words` | Lyric author / credit |
 | `tune` | Original tune the song is sung to |
-| `lyrics` | Full lyrics as a single string (see formatting rules below) |
-| `source_book` | Name of the physical booklet, or `null` if none |
-| `source_page` | Page number in that booklet (integer), or `null` |
+| lyrics | Everything below the `---` (see formatting rules below) |
+| `source_book` | Name of the physical booklet. Optional |
+| `source_page` | Page number in that booklet (a whole number). Optional |
 
 **Valid categories:**
 `Patriotic Songs` · `Bar/Drinking Songs` · `Crew Ballads` · `Accompanied Songs` · `Songs About Us` · `Fragments and Works in Progress` · `Traditional Songs` · `Movie/TV` · `Improvised Songs` · `Folk & Other`
@@ -95,22 +108,17 @@ Adding a brand-new category also needs an icon adding to `CAT_ICON_NAMES` in `ap
 
 ### Lyrics formatting
 
-Blocks are separated by a **blank line** (`\n\n`). The first line of a block can be a heading:
+Blocks are separated by a **blank line**. The first line of a block can be a heading:
 
 | Syntax | Result |
 |---|---|
-| `\n` | New line |
-| `\n\n` | Blank line / new block |
 | `Chorus:` | Highlighted chorus box |
 | `[Chorus]`, `[Chorus 1:]`, `[Second Chorus]`, `[Refrain]` | Also a chorus box, labelled with whatever you wrote |
 | `Repeat chorus` alone on a line | Italic repeat marker |
 | `[Repeat Chorus 2]` | Repeat marker pointing at a specific chorus |
 | `[Verse 2]`, `[Bridge]`, `[Outro]` | Small labelled section heading — the lines under it stay ordinary lyrics |
 
-A heading only works as the **first line of a block**, so always leave a blank line above it. The validator catches it when you forget.
-
-A companion song-entry generator is included — see **Maintainer tools** below. Fill in the
-fields, and copy the formatted output straight into `songs.json`.
+A heading only works as the **first line of a block**, so always leave a blank line above it. The validator catches it when you forget, and the submission form's bot fixes it for you.
 
 ---
 
@@ -148,28 +156,6 @@ The export button offers three scopes — the whole songbook, the current filter
 **Lyric parsing lives in one place.** `lyrics.js` turns a song's `lyrics` string into typed blocks (`verse`, `chorus`, `label`, `repeat`), and both the app and the PDF exporter render from that. The two used to carry separate copies of this logic, which drifted — a chorus-detection bug had to be found and fixed in both, and it wasn't. If you change how lyrics are interpreted, change it in `lyrics.js` only.
 
 **Keyboard shortcuts:** `/` focuses search, `r` opens a random song, `Space` toggles auto-scroll in a song, `Esc` backs out.
-
----
-
-## Maintainer tools
-
-The song entry generator is reachable from the app by a hidden gesture:
-
-**Tap the UCN logo in the header ten times.** Taps have to be quick — leave more than 1.5
-seconds between two of them and the count starts over. The generator opens in a new tab.
-
-Nothing appears until the tenth tap, so nobody discovers it by fumbling.
-
-### What this is not
-
-It is a doorway nobody trips over by accident, **not security**. The songbook is plain
-files that every visitor downloads, so anyone who opens the browser's developer tools can
-read the address and go straight there. The only thing genuinely keeping people out is that
-the generator has an unguessable filename (`tools/gen-187ab8a3.html`).
-
-If that address ever gets out, rename the file and update `TOOL_URL` in `app.js` to match.
-
-**Never put anything behind this that would matter if it leaked.**
 
 ---
 

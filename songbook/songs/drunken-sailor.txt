@@ -1,0 +1,44 @@
+id: 64
+title: Drunken Sailor
+category: Traditional Songs
+words: Traditional
+tune: Drunken Sailor; trad
+source_book: Traditional Songs
+source_page: 15
+---
+What shall we do with a drunken sailor? x3
+Earlye in the morning
+
+Chorus:
+Weigh heigh and up she rises x3
+Earlye in the morning
+
+Shave his belly with a rusty razor x3
+Earlye in the morning
+
+Repeat chorus
+
+Stick him in the scuppers with a hosepipe on him x3
+Earlye in the morning
+
+Repeat chorus
+
+Heave him by the leg in a runnin' bowline x3
+Earlye in the morning
+
+Repeat chorus
+
+Give 'im a taste of the bosun's rope-end x3
+Earlye in the morning
+
+Repeat chorus
+
+Put him in the brig until he's sober x3
+Earlye in the morning
+
+Repeat chorus
+
+That's what we do with a drunken sailor x3
+Earlye in the morning
+
+Repeat chorus

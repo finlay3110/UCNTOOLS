@@ -1,0 +1,73 @@
+name: Song submissions
+
+# A "Submit a song" issue (.github/ISSUE_TEMPLATE/submit-a-song.yml) becomes a
+# pull request adding the song once it passes the songbook's checks; otherwise
+# the reply says what to fix, and editing the issue checks it again. Anyone can
+# open an issue, so its text is only ever read as data, by
+# songbook/tools/submission.mjs, and never put into a command.
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: song-submission-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  song:
+    if: github.event.issue.state == 'open' && contains(github.event.issue.body, '### Song title') && contains(github.event.issue.body, '### Lyrics')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Read, tidy and check the song
+        id: song
+        run: node songbook/tools/submission.mjs "$GITHUB_EVENT_PATH" "$RUNNER_TEMP"
+
+      - name: Open or update the pull request
+        if: steps.song.outputs.ok == 'true'
+        env:
+          FILE: ${{ steps.song.outputs.file }}
+          TITLE: ${{ steps.song.outputs.title }}
+        run: |
+          branch="song-submission/$ISSUE"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -q -c "$branch"
+          git add "songbook/songs/$FILE"
+          git commit -q -m "Songbook: add $TITLE" -m "From the Submit a song form, #$ISSUE."
+          git push -q --force origin "$branch"
+          pr=$(gh pr list --head "$branch" --state open --json url --jq '.[0].url // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "Songbook: add $TITLE" --body-file "$RUNNER_TEMP/pr.md" > /dev/null
+          else
+            pr=$(gh pr create --head "$branch" --base main --title "Songbook: add $TITLE" --body-file "$RUNNER_TEMP/pr.md") || pr=''
+          fi
+          if [ -n "$pr" ]; then
+            printf '\n➡️ Pull request: %s\n' "$pr" >> "$RUNNER_TEMP/comment.md"
+          else
+            printf '\n⚠️ The pull request could not be opened. The repository owner needs to switch on **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**; then edit this issue to try again.\n' >> "$RUNNER_TEMP/comment.md"
+          fi
+
+      # One reply per submission, updated each time it's checked.
+      - name: Reply on the issue
+        if: always() && steps.song.outcome == 'success'
+        run: |
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | contains("<!-- songbook-submission -->"))) | .id' | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F "body=@$RUNNER_TEMP/comment.md" > /dev/null
+          else
+            gh issue comment "$ISSUE" --body-file "$RUNNER_TEMP/comment.md"
+          fi

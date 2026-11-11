@@ -35,8 +35,9 @@ const inTool = (tool, skip) => listFiles(path.join(ROOT, tool))
 // Same scheme the Mess Log has always used: sha256 of its four cached files, in this order.
 stamp('messtracker', /(var CACHE_VERSION = 'ucn-mess-log-)[0-9a-f]+(';)/, h => h,
   ['index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'].map(f => path.join(ROOT, 'messtracker', f)));
-// songs.json is fetched network-first, so editing a song needs no new cache.
-stamp('songbook', /(var VERSION = 'ucn-songbook-)[^']+(';)/, h => h, inTool('songbook', ['sw.js', 'songs.json']));
+// songs.json is fetched network-first, so editing a song (in songs/) needs no new cache.
+stamp('songbook', /(var VERSION = 'ucn-songbook-)[^']+(';)/, h => h,
+  inTool('songbook', ['sw.js', 'songs.json']).filter(f => !path.relative(path.join(ROOT, 'songbook'), f).startsWith('songs' + path.sep)));
 // manifest.json is fetched network-first and rebuilt on deploy.
 stamp('tactical-aids', /(const CACHE_VERSION = ')[^']+(';)/, h => h, inTool('tactical-aids', ['sw.js', 'manifest.json']));
 stamp('mission-companion', /(const CACHE_VERSION = 'ucn-mission-companion-)[^']+(';)/, h => h, inTool('mission-companion', ['sw.js']));

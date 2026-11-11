@@ -1,0 +1,14 @@
+id: 34
+title: The Election that Doesn't End
+category: Bar/Drinking Songs
+words: Lt. Cmdr. Kane
+tune: The Song That Doesn't End; Shari Lewis/Norman Martin
+source_book: UCN Songbook
+source_page: 38
+---
+This is the election that doesn't end
+Yes it goes on and on citizen
+Some greyhats hacked it to elect a Byte
+And now we'll keep on voting in it just because
+
+[Repeat indefinitely]

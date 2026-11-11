@@ -1,0 +1,87 @@
+name: Submit a song
+description: Add a song to the UCN Shanty Songbook. It's checked automatically, then reviewed before it goes live.
+title: "Song: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for adding to the songbook! Fill this in and submit. A bot checks the song, replies with a preview of how it will read, and opens a pull request for review. If it flags anything, edit this issue and it checks again.
+
+  - type: input
+    id: title
+    attributes:
+      label: Song title
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Patriotic Songs
+        - Bar/Drinking Songs
+        - Crew Ballads
+        - Accompanied Songs
+        - Songs About Us
+        - Fragments and Works in Progress
+        - Traditional Songs
+        - Movie/TV
+        - Improvised Songs
+        - Folk & Other
+    validations:
+      required: true
+
+  - type: input
+    id: words
+    attributes:
+      label: Words by
+      description: Who wrote these words, e.g. "Lt. Cmdr. Jim - Ship's Councillor".
+    validations:
+      required: true
+
+  - type: input
+    id: tune
+    attributes:
+      label: Tune
+      description: The tune it's sung to and its composer, e.g. "Jerusalem; Hubert Parry". For a new tune, write "Original".
+    validations:
+      required: true
+
+  - type: textarea
+    id: lyrics
+    attributes:
+      label: Lyrics
+      description: |
+        Leave a **blank line between verses**.
+        - Start the chorus with a line saying `Chorus:` and put its lines straight underneath.
+        - To sing the chorus again later, put `Repeat chorus` on a line of its own.
+        - Headings such as `[Verse 2]` or `[Bridge]` work the same way. Several choruses? Use `Chorus 1:` and `Chorus 2:`, then `Repeat chorus 2`.
+
+        Close variations like `(Chorus)`, `CHORUS` or `Chorus x2` are tidied for you, and the bot's preview shows exactly how it will read.
+      placeholder: |
+        First line of verse one
+        Second line of verse one
+
+        Chorus:
+        First line of the chorus
+        Second line of the chorus
+
+        First line of verse two
+        Second line of verse two
+
+        Repeat chorus
+    validations:
+      required: true
+
+  - type: input
+    id: source_book
+    attributes:
+      label: Source book
+      description: Optional. The printed songbook it appears in, if any.
+
+  - type: input
+    id: source_page
+    attributes:
+      label: Source page
+      description: Optional. Its page number in that book.

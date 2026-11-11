@@ -1,0 +1,27 @@
+id: 1
+title: And Did Those Fleets
+category: Patriotic Songs
+words: Lt. Cmdr. Jim - Ship's Councillor
+tune: Jerusalem; Hubert Parry
+source_book: UCN Songbook
+source_page: 3
+---
+And did those fleets in ancient time
+Warp into Gliese's system belt:
+And was the gravium they found
+The source of renewed hope they felt
+
+And did the mining ships of old
+Dig deep into the asteroids
+And was Xanadu builded here
+As people spread across the void
+
+Attune our beams of burning light
+Load our tubes with HVLIs
+Set all our shield frequencies right
+Bring us in range and prep to fire!
+
+We will not cease from astral fight
+Nor from our solemn duty hide
+Until humanity safely sleeps
+In Sol and Gliese all system-wide
