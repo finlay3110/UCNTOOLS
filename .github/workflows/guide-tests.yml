@@ -1,0 +1,18 @@
+name: User guide tests
+
+# The guide must cover every tool the homepage links to, so adding a tool
+# without a guide section (or its screenshot) fails here.
+on:
+  push:
+    paths: ['index.html', 'guide/**', '.github/workflows/guide-tests.yml']
+  pull_request:
+    paths: ['index.html', 'guide/**', '.github/workflows/guide-tests.yml']
+
+jobs:
+  guide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the guide covers every tool
+        run: node guide/test.js

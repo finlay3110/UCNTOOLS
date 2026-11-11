@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User guide — UCN Fleet Digital Suite</title>
+<meta name="description" content="How to use the UCN tools: getting started, before a session, at your station, after the mission, off duty, and fixes for common problems.">
+<meta name="theme-color" content="#0b0f1c">
+<link rel="icon" href="ucn-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0b0f1c; --panel:#141c38; --border:#2a3a66; --text:#e8ecf7; --muted:#a3adcc; --orange:#DD7A2B; --cyan:#4FA8C9; }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; color:var(--text); font-family:'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; line-height:1.55;
+    background:radial-gradient(ellipse at top, #1b2a5e 0%, var(--bg) 60%) fixed, var(--bg); }
+  .wrap{ max-width:720px; margin:0 auto; padding:14px 16px 32px; }
+  .back{ display:inline-flex; align-items:center; min-height:32px; color:var(--muted); text-decoration:none; font-size:13px; }
+  .back:hover{ color:var(--orange); }
+  h1{ font-family:'Orbitron', sans-serif; font-size:24px; letter-spacing:2px; margin:6px 0 2px; }
+  .sub{ margin:0 0 14px; color:var(--orange); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+  h2{ font-family:'Orbitron', sans-serif; font-size:17px; letter-spacing:1px; color:var(--orange); margin:30px 0 8px; scroll-margin-top:12px; }
+  h3{ font-size:17px; margin:0 0 4px; color:var(--text); }
+  a{ color:var(--cyan); }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin:12px 0; scroll-margin-top:12px; }
+  .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+  fieldset{ border:0; margin:0; padding:0; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  legend{ float:left; margin-right:6px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .seg label{ display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:0 14px; border:1px solid var(--border); border-radius:20px; cursor:pointer; font-weight:600; }
+  .seg input{ accent-color:var(--orange); }
+  .seg label:has(input:checked){ border-color:var(--orange); color:var(--orange); }
+  .btn{ font:600 15px 'Exo 2', sans-serif; color:var(--text); background:none; border:1px solid var(--orange); border-radius:10px; padding:0 16px; min-height:40px; cursor:pointer; }
+  .btn:hover{ background:var(--orange); color:#1a0e02; }
+  nav ol{ margin:6px 0 0; padding-left:20px; columns:2; column-gap:24px; }
+  nav li{ margin:0; break-inside:avoid; }
+  nav li a{ display:inline-block; padding:5px 0; }
+  .what{ margin:0 0 8px; color:var(--muted); }
+  ul.steps{ margin:6px 0 0; padding-left:20px; }
+  ul.steps li{ margin:4px 0; }
+  .tool-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .tool-head a{ font-size:14px; display:inline-flex; align-items:center; min-height:32px; }
+  details{ margin-top:10px; }
+  summary{ cursor:pointer; color:var(--cyan); font-size:14px; }
+  details img{ display:block; margin:10px auto 0; width:min(240px, 100%); height:auto; border:1px solid var(--border); border-radius:14px; }
+  .note{ border-left:3px solid var(--orange); padding:6px 10px; margin:10px 0 0; font-size:14px; color:var(--muted); background:rgba(221,122,43,.07); }
+  .v-cadet{ display:none; }
+  body.cadet .v-cadet{ display:block; }
+  body.cadet .v-plain{ display:none; }
+  .v-cadet{ font-style:italic; }
+  dl{ margin:0; }
+  dt{ font-weight:700; margin-top:10px; }
+  dd{ margin:2px 0 0; color:var(--muted); }
+  footer{ margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+  @media (max-width:520px){ nav ol{ columns:1; } }
+  @media print{
+    body{ background:#fff; color:#111; }
+    .controls, .back, details, footer .noprint{ display:none !important; }
+    .panel{ background:#fff; border-color:#ccd; break-inside:avoid; }
+    h2{ color:#14214a; }
+    a{ color:#14214a; }
+    .what, dd, .note{ color:#333; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="../">&larr; Back to Tool Portal</a>
+  <h1>USER GUIDE</h1>
+  <p class="sub">How to use the UCN tools</p>
+
+  <div class="panel controls">
+    <fieldset class="seg">
+      <legend>Style</legend>
+      <label><input type="radio" name="voice" value="plain" checked> Plain</label>
+      <label><input type="radio" name="voice" value="cadet"> Cadet handbook</label>
+    </fieldset>
+    <button type="button" class="btn" id="print">Print or save as PDF</button>
+  </div>
+
+  <div class="v-plain"><p>Everything here works on a phone, keeps working with no signal once opened, and keeps your data on your own device. Want just the basics? There's a one-page <a href="quick-start.html">quick-start sheet</a> to print.</p></div>
+  <div class="v-cadet"><p>Welcome aboard, Cadet. This handbook is issued to every officer of the United Confederation Navy. Commit it to memory: on the bridge there is seldom time to read. A one-page <a href="quick-start.html">quick-start card</a> is posted at every station.</p></div>
+
+  <nav class="panel" aria-label="Contents">
+    <strong>Contents</strong>
+    <ol>
+      <li><a href="#start">Getting started</a></li>
+      <li><a href="#before">Before a session</a></li>
+      <li><a href="#station">At your station</a></li>
+      <li><a href="#after">After the mission</a></li>
+      <li><a href="#offduty">Off duty</a></li>
+      <li><a href="#faq">Problems and questions</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============ GETTING STARTED ============ -->
+  <h2 id="start">1. Getting started</h2>
+  <div class="v-plain"><p>Five minutes, once, and every tool is ready for you.</p></div>
+  <div class="v-cadet"><p>Before you report for duty, your personal terminal must be configured. It takes five minutes. Do it in the mess, not on the bridge.</p></div>
+  <section class="panel">
+    <ul class="steps">
+      <li><b>Open the site</b> by scanning a QR code (from the quick-start sheet, or <b>Share this site</b> on someone's homepage) or going to <b>finlay3110.github.io/UCNTOOLS</b>.</li>
+      <li><b>Add it to your home screen.</b> iPhone: Share → Add to Home Screen, <em>from the homepage only</em>. Each iPhone home-screen app keeps its own data, so one icon for the homepage lets every tool share your details. Android: menu ⋮ → Install app.</li>
+      <li><b>Set your name and rank</b> in the homepage's <b>Your Name &amp; Rank</b> card. Every tool fills them in wherever its own are blank. <b>Send to another phone</b> shows a QR code to copy them to a second device.</li>
+      <li><b>Open each tool you'll use once with signal.</b> After that it works with none.</li>
+      <li><b>Back up now and then</b> with <b>Save backup</b> on the homepage: one file holds every tool's data. <b>Restore backup</b> puts it on a new phone.</li>
+    </ul>
+    <p class="note">Everything you type stays on your own device. Nothing is sent anywhere unless you share it.</p>
+  </section>
+
+  <!-- ============ BEFORE A SESSION ============ -->
+  <h2 id="before">2. Before a session</h2>
+  <div class="v-plain"><p>Whoever is running the session plans the crew and sets up the mission. Everyone else scans one QR code.</p></div>
+  <div class="v-cadet"><p>A ship sails on its preparation. Command assigns stations and files the mission; the crew acknowledge their orders with a single scan.</p></div>
+
+  <section class="panel" id="tool-crew-rota">
+    <div class="tool-head"><h3>Crew Rota</h3><a href="../crew-rota/">Open →</a></div>
+    <p class="what v-plain">Shares out the stations fairly, so everyone gets a turn somewhere new.</p>
+    <p class="what v-cadet">The duty roster. Every officer serves at every post in turn; the roster remembers who has stood where.</p>
+    <ul class="steps">
+      <li>Add <b>who's here</b>. Names are suggested from past rotas and Mission Companion's player roster.</li>
+      <li>Remove any stations not in use, and tick <b>Shuttle in use</b> if it is.</li>
+      <li>Pick anyone by hand who must have a station (often the Captain): they stay put.</li>
+      <li><b>Shuffle fairly</b> fills the rest, favouring stations people have had least. Shuffle again for a different rota.</li>
+      <li><b>Share</b> it as a link, <b>Copy as text</b> for Discord, or <b>Show QR code</b>. On this device, Mission Companion, General Log and Mission Stats can fill in from it.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/crew-rota.jpg" alt="Crew Rota on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-mission-companion">
+    <div class="tool-head"><h3>Mission Companion</h3><a href="../mission-companion/">Open →</a></div>
+    <p class="what v-plain">The mission's record: briefing, crew, a timed log during the mission, the debrief, and a PDF report at the end.</p>
+    <p class="what v-cadet">The ship's official record, kept by Command. Fleet Regulations require a report for every mission; this is how you file it.</p>
+    <ul class="steps">
+      <li><b>Briefing</b> tab: operation, ship, date, mission type, who's filing the report, the briefing itself, and the Flight Controller and Training Officer.</li>
+      <li><b>Crew</b> tab: a card per station. Type names (the player roster suggests them) or tap <b>Fill crew from the Crew Rota</b>.</li>
+      <li><b>More → Mission QR for the crew</b>: show this code before the mission. Each player scans it and taps <b>Load it into my tools</b>; their logs then fill in the operation, ship and their own station.</li>
+      <li>During the mission, use the <b>Log</b> tab (with Quick Actions and alert buttons) and <b>Notes</b>. After it, see <a href="#after">After the mission</a>.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/mission-companion.jpg" alt="Mission Companion on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <!-- ============ AT YOUR STATION ============ -->
+  <h2 id="station">3. At your station</h2>
+  <div class="v-plain"><p>Open the tool for your station. If you scanned the Mission QR, its setup is already filled in.</p>
+    <p>Captain and First Officer: Mission Companion. Comms: Comms Log. Power Management and Damage Control: Engineering. Navigation and Radar: Nav Reference. Beams and Drone Operator: Tractor &amp; Drones. Anyone: General Log for your own notes.</p></div>
+  <div class="v-cadet"><p>Report to your post and bring up your station terminal. Your orders are already loaded if you acknowledged the Mission QR. Remember the first rule of the bridge: never touch another officer's console without asking.</p>
+    <p>Command: Mission Companion. Comms: Comms Log. Engineering and Damage Control: Engineering. Navigation and Radar: Nav Reference. Beams and Drones: Tractor &amp; Drones. Every officer keeps a General Log.</p></div>
+
+  <section class="panel" id="tool-commslog">
+    <div class="tool-head"><h3>Comms Log</h3><a href="../commslog/">Open →</a></div>
+    <p class="what v-plain">Logs every message to and from other ships, ship by ship.</p>
+    <p class="what v-cadet">Every hail, every reply, every threat. If it was said over comms, it belongs in this log.</p>
+    <ul class="steps">
+      <li><b>Briefing</b>: your name and rank, the mission, ship, date and time, and the Captain.</li>
+      <li><b>Ships</b>: add each ship you talk to, then log messages under it.</li>
+      <li><b>Overall</b>: every message from every ship, in time order.</li>
+      <li><b>Export</b>: a PDF of the log, the JSON file, <b>Share Log</b>, or <b>Share Log as a Link</b> for the report.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/commslog.jpg" alt="Comms Log on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-engineering">
+    <div class="tool-head"><h3>Engineering Reference</h3><a href="../engineering/">Open →</a></div>
+    <p class="what v-plain">Power, heat and warp reference, a Spike Timer, damage control locations for each ship, and an action log.</p>
+    <p class="what v-cadet">The Chief Engineer's bible. Keep the reactor fed, the systems cool, and know where every OCP and crystal lives before JUDITH asks for them.</p>
+    <ul class="steps">
+      <li><b>Setup</b>: your name, the mission, the ship, and which sections you're running (Power, Damage Control, or both).</li>
+      <li><b>Power Management</b>, <b>Thermal &amp; Power Guide</b> and <b>Warp Guide</b>: the figures from the Academy Manual. The <b>Spike Timer</b> (in Thermal &amp; Power) counts down how long a spike can be held.</li>
+      <li><b>Damage Control</b>: where each OCP, crystal and warp switch is on the Takanami and the Havock, with the ship maps and your spare counts.</li>
+      <li><b>Action Log</b>: what you did and when. Export it as a PDF or JSON, or <b>Share as link</b> for the report.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/engineering.jpg" alt="Engineering Reference on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-navigation">
+    <div class="tool-head"><h3>Nav Reference</h3><a href="../navigation/">Open →</a></div>
+    <p class="what v-plain">Logs waypoints by type and colour, with a quick reference for radar icons and colours.</p>
+    <p class="what v-cadet">The Navigator plots the course and marks every contact. Helm should never have to ask where to go.</p>
+    <ul class="steps">
+      <li><b>Setup</b>: the date, mission, your name and rank, and the ship.</li>
+      <li>Add waypoints under their type, such as route, hostile, hazard or objective. Each type has its own colour, matching what Helm sees.</li>
+      <li>Mark waypoints complete as you reach them; the <b>Quick Reference</b> covers radar icons and colours.</li>
+      <li><b>Share log</b> or <b>Share log as a link</b> sends it for the report.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/navigation.jpg" alt="Nav Reference on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-tractor-drones">
+    <div class="tool-head"><h3>Tractor &amp; Drones</h3><a href="../tractor-drones/">Open →</a></div>
+    <p class="what v-plain">How far the tractor beam reaches at each arc, what it can drag, and drone and probe range by scanner power.</p>
+    <p class="what v-cadet">A narrow beam reaches far; a wide beam catches more. Know the difference before the torpedo arrives.</p>
+    <ul class="steps">
+      <li>Drag the <b>beam arc</b> to see its reach, drawn to scale, and which incoming ordnance it can push clear.</li>
+      <li>Check <b>what the tractor can drag</b> at Cargo Docks 100% and 200–300%.</li>
+      <li>Drag <b>scanner effectiveness</b> to see drone control range and probe scan radius.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/tractor-drones.jpg" alt="Tractor and Drones on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-generallog">
+    <div class="tool-head"><h3>General Log</h3><a href="../generallog/">Open →</a></div>
+    <p class="what v-plain">Your own log from any station: orders, contacts, damage, repairs and anything else worth noting.</p>
+    <p class="what v-cadet">Every officer keeps a log. When the inquiry asks what happened, yours will be the one they trust.</p>
+    <ul class="steps">
+      <li><b>Setup</b>: your name, rank, station, ship and mission. The Mission QR and Crew Rota fill in whatever they can.</li>
+      <li>Add entries as they happen, each with a type: Order, Contact, Engagement, Damage, Repair, Comms, Navigation, Medical, Boarding, Observation or Incident.</li>
+      <li>Export a PDF or JSON, or <b>Share log</b> / <b>Share as a link</b> for the report.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/generallog.jpg" alt="General Log on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-tactical-aids">
+    <div class="tool-head"><h3>Tactical Aids Archive</h3><a href="../tactical-aids/">Open →</a></div>
+    <p class="what v-plain">A searchable library of reference PDFs: navigation, engineering, identification, ship layouts and more.</p>
+    <p class="what v-cadet">The Academy library. Every chart and tactical aid the Fleet has issued, filed and searchable.</p>
+    <ul class="steps">
+      <li>Search by name, or browse by category.</li>
+      <li>The <b>UCN Academy Manual</b> is under General Info. It asks a few questions first, at the author's request.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/tactical-aids.jpg" alt="Tactical Aids Archive on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <!-- ============ AFTER THE MISSION ============ -->
+  <h2 id="after">4. After the mission</h2>
+  <div class="v-plain"><p>Each player sends their log to whoever writes the report, who adds them to Mission Companion and exports the PDF.</p></div>
+  <div class="v-cadet"><p>The mission is not over until the report is filed. Every officer submits their log to Command before standing down.</p></div>
+  <section class="panel">
+    <ul class="steps">
+      <li><b>Players:</b> in your tool, tap <b>Share log</b> (sends the file) or <b>Share as a link</b>. The link opens Mission Companion on the other phone, which asks before adding your log. Very long logs make long links: Discord only takes about 2,000 characters, so send those as a file.</li>
+      <li><b>Report writer:</b> in Mission Companion's <b>Debrief</b> tab, record the outcome, promotions and medals, and import any log files you were sent. Links add themselves when opened.</li>
+      <li><b>Export PDF</b>: choose whether to include the <b>Report Certification</b> page. If you do, the Captain (and the Reporting Officer, if that's someone else) can sign in a box on the phone, and the signature goes into the PDF. Leave a box empty to sign the printed copy.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="tool-missionstats">
+    <div class="tool-head"><h3>Mission Stats</h3><a href="../missionstats/">Open →</a></div>
+    <p class="what v-plain">Your personal mission history and charts, from the Bridge Command portal's deployment export.</p>
+    <p class="what v-cadet">Your service record. Every deployment, every ship, every station you have stood.</p>
+    <ul class="steps">
+      <li><b>Import</b> the CSV of your deployments from the Bridge Command portal.</li>
+      <li><b>Log</b>: each mission as a card. Rate it and set the station you took; new ones start with your station from the Crew Rota.</li>
+      <li><b>Charts</b>: missions per month and your splits by ship, station and type, with a PDF export.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/missionstats.jpg" alt="Mission Stats on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <!-- ============ OFF DUTY ============ -->
+  <h2 id="offduty">5. Off duty</h2>
+  <div class="v-plain"><p>Training games, the songbook, the mess and your ID card.</p></div>
+  <div class="v-cadet"><p>Rest is part of readiness. So is practice. The Academy recommends both, ideally not at the same time as the shanties.</p></div>
+
+  <section class="panel" id="tool-hacking-trainer">
+    <div class="tool-head"><h3>Hacking Trainer</h3><a href="../hacking-trainer/">Open →</a></div>
+    <p class="what v-plain">Practise breaching a defence grid, as the Academy Manual describes hacking.</p>
+    <p class="what v-cadet">The Academy standard: a full breach on Secure in under 40 seconds without tripping a single defence routine. Few cadets manage it first time.</p>
+    <ul class="steps">
+      <li>Pick a level: Basic, Secure, Hardened or Fortified. Your first probe is always safe.</li>
+      <li>Numbers show how many defence routines touch that node. Two routines end the attempt.</li>
+      <li>Past the threshold you can <b>Apply</b> a partial breach; watch the Scanner heat and what the hack does to the target.</li>
+      <li>After an attempt, <b>Challenge a friend</b>: a QR code gives them the same grid, and the result says who won.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/hacking-trainer.jpg" alt="Hacking Trainer on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-bridge-drills">
+    <div class="tool-head"><h3>Bridge Drills</h3><a href="../bridge-drills/">Open →</a></div>
+    <p class="what v-plain">Ten-question quizzes from the Academy Manual.</p>
+    <p class="what v-cadet">Drill until it's instinct. On the bridge you won't have time to think about which colour means hostile.</p>
+    <ul class="steps">
+      <li>Pick a drill: <b>Radar recognition</b>, <b>Ordnance choice</b>, <b>Callouts</b> or <b>Damage Control</b> (where every OCP, crystal and switch is on each ship, with the map shown once you answer).</li>
+      <li>Your best score and time are kept, and can be shared as a picture with your name.</li>
+      <li><b>Challenge a friend</b> after a round: the same ten questions, and the result says who won.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/bridge-drills.jpg" alt="Bridge Drills on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-songbook">
+    <div class="tool-head"><h3>Shanty Songbook</h3><a href="../songbook/">Open →</a></div>
+    <p class="what v-plain">Every song, searchable, with chorus highlighting, favourites and set lists.</p>
+    <p class="what v-cadet">A ship that sings together fights together. Learn the words.</p>
+    <ul class="steps">
+      <li>Search by title, tune, author or lyrics, or filter by category. Star your favourites.</li>
+      <li><b>Set lists</b>: line songs up in order and share the set as a link.</li>
+      <li>Auto-scroll and keep-screen-awake for singing hands-free, and a PDF of the whole book.</li>
+      <li>Know one that's missing? <b>Suggest a song</b> above the song list.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/songbook.jpg" alt="Shanty Songbook on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-messtracker">
+    <div class="tool-head"><h3>Mess Drink Tracker</h3><a href="../messtracker/">Open →</a></div>
+    <p class="what v-plain">Logs the drinks you've tried from the mess menu.</p>
+    <p class="what v-cadet">The mess keeps a menu. Officers keep count.</p>
+    <ul class="steps">
+      <li>Set your profile, then <b>Log a drink</b> from the menu.</li>
+      <li><b>This session</b> shows tonight's tally, and the <b>Menu</b> marks every drink you've tried.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/messtracker.jpg" alt="Mess Drink Tracker on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-idcard">
+    <div class="tool-head"><h3>ID Card Generator</h3><a href="../idcard/">Open →</a></div>
+    <p class="what v-plain">Makes a UCN ID card with your photo, ready to print.</p>
+    <p class="what v-cadet">Every officer carries identification. Keep yours current.</p>
+    <ul class="steps">
+      <li>Fill in your details and add a photo; choose a barcode or QR code.</li>
+      <li>Download print-ready files, or follow <b>Get it printed on plastic</b>.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/idcard.jpg" alt="ID Card Generator on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <section class="panel" id="tool-shipsearch">
+    <div class="tool-head"><h3>Ship Search</h3><a href="../shipsearch/">Open →</a></div>
+    <p class="what v-plain">Which ship, the UCS Havock or the UCS Takanami, is running at a given date and time, or a whole day's timetable.</p>
+    <p class="what v-cadet">Know which vessel you're reporting to before you arrive at the dock.</p>
+    <ul class="steps">
+      <li>Pick a date and time to see which ship is running, or view the day's timetable.</li>
+    </ul>
+    <details><summary>What it looks like</summary><img src="img/shipsearch.jpg" alt="Ship Search on a phone" width="360" height="640" loading="lazy"></details>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <h2 id="faq">6. Problems and questions</h2>
+  <section class="panel">
+    <dl>
+      <dt>A tool looks out of date.</dt>
+      <dd>On the homepage, <b>Get the latest version</b> clears the offline copies and reloads. Your logs and records are kept.</dd>
+      <dt>My logs have gone, or I have a new phone.</dt>
+      <dd>Everything lives only on the phone it was made on. <b>Restore backup</b> on the homepage brings back a backup you saved. Without one, it can't be recovered, so back up regularly.</dd>
+      <dt>On iPhone, my name isn't filling in, or the Mission QR didn't reach a tool.</dt>
+      <dd>Each iPhone home-screen app keeps separate data. Add only the homepage to your home screen and open the tools from there.</dd>
+      <dt>The Mission QR didn't fill in my station.</dt>
+      <dd>Your name in the tools must match the crew list. It only fills fields that are blank, and lasts 18 hours.</dd>
+      <dt>A QR code won't scan.</dt>
+      <dd>Turn the screen brightness up and hold the phones a little further apart. Every QR screen also has <b>Copy link</b> and <b>Share</b>.</dd>
+      <dt>A log link didn't work.</dt>
+      <dd>Long links can be cut short by some apps (Discord takes about 2,000 characters). Send it again through WhatsApp or email, or share the file instead.</dd>
+      <dt>Something's broken, or you have an idea.</dt>
+      <dd>Post in the BC Discord or message Tetra (Discord: finlay3110).</dd>
+    </dl>
+  </section>
+
+  <footer>Fan-made tools for the UCN community. Not approved by or affiliated with Bridge Command / The London Space Elevator Limited.</footer>
+</main>
+
+<script>
+  // The chosen style, remembered on this device only.
+  var KEY = 'ucnGuideVoice';
+  function setVoice(v) { document.body.classList.toggle('cadet', v === 'cadet'); }
+  try { var saved = localStorage.getItem(KEY); if (saved) { document.querySelector('input[value="' + (saved === 'cadet' ? 'cadet' : 'plain') + '"]').checked = true; setVoice(saved); } } catch (e) { /* storage blocked */ }
+  document.querySelectorAll('input[name="voice"]').forEach(function (r) {
+    r.addEventListener('change', function () { setVoice(r.value); try { localStorage.setItem(KEY, r.value); } catch (e) { /* storage blocked */ } });
+  });
+  document.getElementById('print').addEventListener('click', function () { window.print(); });
+</script>
+</body>
+</html>
