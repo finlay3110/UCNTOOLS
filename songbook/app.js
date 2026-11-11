@@ -233,7 +233,8 @@
         ? '<div class="no-res"><div class="nr-icon" style="color:var(--star)">' + icon('starOutline', 'icn icn-lg') +
           '</div><div>No favourites yet</div><div style="font-size:.8rem;margin-top:6px;color:var(--text-dim);">Tap the star on any song to add it here</div></div>'
         : '<div class="no-res"><div class="nr-icon">' + icon('searchSlash', 'icn icn-lg') +
-          '</div><div>No songs found</div></div>';
+          '</div><div>No songs found</div><div style="font-size:.8rem;margin-top:6px;color:var(--text-dim);">Can\'t find it? <a href="' +
+          $('suggest-btn').href + '" target="_blank" rel="noopener" style="color:var(--accent);">Suggest a song</a></div></div>';
       return;
     }
 
