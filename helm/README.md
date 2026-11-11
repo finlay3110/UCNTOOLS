@@ -1,7 +1,9 @@
 # UCN Helm
 
 A quick reference for the Helm, using the figures in the UCN Academy Manual
-(also in Tactical Aids → General Info):
+(also in Tactical Aids → General Info). The ship picker sits at the top; the
+rest is in four tabs: Ship (handling, combat manoeuvre), Course (time to
+target, bearings and turns), Manoeuvres and Warp (checklist, warp guide).
 
 - **Ship handling**: the Takanami's or the Havock's speed, acceleration, turn
   rate, shields and hull (3.3 and Appendix H). The tool remembers the ship.
