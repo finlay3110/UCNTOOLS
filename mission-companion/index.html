@@ -1190,6 +1190,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       </div>
     </div>
 
+    <div class="card" id="rotaCard" style="display:none;">
+      <div class="section-sub" id="rotaInfo" style="margin:0 0 8px;"></div>
+      <button class="add-btn" id="btnFillRota" type="button" style="margin-top:0;">⬇ Fill crew from the Crew Rota</button>
+    </div>
+
     <div class="section-title">Ship Crew<span></span></div>
     <div class="section-sub">Mission players, not cast. Delete a card to remove an unused role from this mission.</div>
     <div id="shipCrewList"></div>
@@ -1515,6 +1520,40 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 </div>
 
 
+<script>
+// ucn-lists:rota (from shared/rota.js, written on deploy: edit that file, not this code)
+/* The crew rota made in the Crew Rota tool on this device, for the tools that
+   can fill themselves in from it. ucnCrewRota() is the rota, or null: its
+   date, ship and crew ([{ role, name }], stations in use only).
+   ucnRotaFor(name) is the station and ship it gives that person (by default
+   whoever set their name in the tools), or null. Plain ES5, as some of the
+   tools are. */
+function ucnCrewRota() {
+  try {
+    var r = JSON.parse(localStorage.getItem('ucnCrewRota_v1')).current;
+    if (!r || !r.crew || !r.crew.length) return null;
+    var crew = [];
+    for (var i = 0; i < r.crew.length; i++) {
+      var c = r.crew[i];
+      if (c && typeof c.role === 'string' && typeof c.name === 'string') crew.push({ role: c.role, name: c.name });
+    }
+    return { date: String(r.date || ''), ship: String(r.ship || ''), crew: crew };
+  } catch (e) { return null; }
+}
+function ucnRotaFor(name) {
+  if (name === undefined) {
+    try { name = (JSON.parse(localStorage.getItem('ucnProfile_v1')) || {}).name; } catch (e) { name = ''; }
+  }
+  name = String(name || '').trim().toLowerCase();
+  var r = ucnCrewRota();
+  if (!name || !r) return null;
+  for (var i = 0; i < r.crew.length; i++) {
+    if (r.crew[i].name.trim().toLowerCase() === name) return { role: r.crew[i].role, ship: r.ship, date: r.date };
+  }
+  return null;
+}
+// ucn-lists:end
+</script>
 <script>
 (function(){
 'use strict';
@@ -2660,6 +2699,51 @@ function initCrewSetup(){
   document.getElementById('btnRestoreShuttle').addEventListener('click', function(){
     state.shuttleCrew = SHUTTLE_ROLES.map(function(r){ return {id:newId(), role:r, name:'', callsign:'', rank:'', pronouns:''}; });
     scheduleSave(); renderShuttleCrew(); refreshCrewDropdowns();
+  });
+
+  /* The Crew Rota tool's rota on this device fills the crew cards in one go. Names
+     and stations come from the rota; callsigns and pronouns from the player roster. */
+  function syncRotaCard(){
+    var r = ucnCrewRota();
+    var on = r ? r.crew.filter(function(c){ return c.name; }) : [];
+    document.getElementById('rotaCard').style.display = on.length ? '' : 'none';
+    if(on.length){
+      document.getElementById('rotaInfo').textContent = 'Crew Rota on this device: ' +
+        [r.ship, r.date].filter(Boolean).concat(on.length + ' on stations').join(' · ');
+    }
+  }
+  syncRotaCard();
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'visible') syncRotaCard(); });
+  document.getElementById('btnFillRota').addEventListener('click', function(){
+    var r = ucnCrewRota();
+    if(!r) return;
+    var had = state.shipCrew.concat(state.shuttleCrew).some(function(c){ return c.name; });
+    if(had && !confirm('Replace the crew names already entered with the Crew Rota\'s?')) return;
+    function fill(arr, roles){
+      roles.forEach(function(role){
+        var on = r.crew.find(function(c){ return c.role === role; });
+        if(!on) return;   // a station the rota doesn't use: its card is left as it is
+        var card = arr.find(function(c){ return c.role === role; });
+        if(!card){
+          if(!on.name) return;
+          card = {id:newId(), role:role, name:'', callsign:'', rank:'', pronouns:''};
+          arr.push(card);
+        }
+        if(card.name === on.name) return;
+        var p = playerRoster.find(function(x){ return x.name && x.name.toLowerCase() === on.name.toLowerCase(); });
+        card.name = on.name;
+        card.callsign = p ? (p.callsign || '') : '';
+        card.pronouns = p ? (p.pronouns || '') : '';
+        card.rank = '';
+      });
+      arr.sort(function(a, b){ return roles.indexOf(a.role) - roles.indexOf(b.role); });
+    }
+    fill(state.shipCrew, SHIP_ROLES);
+    fill(state.shuttleCrew, SHUTTLE_ROLES);
+    if(r.crew.some(function(c){ return c.name && SHUTTLE_ROLES.indexOf(c.role) !== -1; })) state.shuttleEnabled = true;
+    if(!state.ship && r.ship) state.ship = r.ship;
+    scheduleSave(); renderAll(); refreshCrewDropdowns();
+    toast('Crew filled from the Crew Rota');
   });
 
   var shuttleToggle = document.getElementById('shuttleToggle');
