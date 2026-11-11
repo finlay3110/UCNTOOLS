@@ -1,6 +1,6 @@
 // Writes shared/ucn-lists.json (the operations and the rank ladder),
 // shared/profile.js (the shared name and rank), shared/rota.js (the Crew
-// Rota, for the tools that fill in from it), shared/qr.js (the QR code view), shared/share.js (the Share
+// Rota, for the tools that fill in from it), shared/qr.js (the QR code view), shared/mission.js (the Mission QR), shared/share.js (the Share
 // log button) and shared/offline-sw.js (five tools' offline copy) into every
 // tool that keeps a
 // copy, between "ucn-lists:<part>" and "ucn-lists:end" marker lines, in that
@@ -98,6 +98,7 @@ const FORMAT = {
   profile: () => sharedCode('profile.js'),
   rota: () => sharedCode('rota.js'),
   qr: () => sharedCode('qr.js'),
+  mission: () => sharedCode('mission.js'),
   share: () => sharedCode('share.js'),
   'offline-sw': () => sharedCode('offline-sw.js'),
 };
@@ -109,13 +110,13 @@ function sharedCode(name) {
 }
 
 const TARGETS = [
-  ['mission-companion/index.html', ['mc-ranks', 'mc-operations', 'rota']],
+  ['mission-companion/index.html', ['mc-ranks', 'mc-operations', 'rota', 'qr', 'mission']],
   ['engineering/js/mission.js', ['eng-ranks', 'eng-operations', 'share']],
-  ['engineering/index.html', ['profile']],
-  ['navigation/index.html', ['nav-operations', 'nav-ranks', 'profile', 'share']],
+  ['engineering/index.html', ['profile', 'mission']],
+  ['navigation/index.html', ['nav-operations', 'nav-ranks', 'profile', 'share', 'mission']],
   ['commslog/js/app.js', ['comms-operations', 'share']],
-  ['commslog/index.html', ['profile']],
-  ['generallog/index.html', ['glog-operations', 'spaced-ranks', 'profile', 'share', 'rota']],
+  ['commslog/index.html', ['profile', 'mission']],
+  ['generallog/index.html', ['glog-operations', 'spaced-ranks', 'profile', 'share', 'rota', 'mission']],
   ['messtracker/index.html', ['spaced-ranks', 'profile', 'mess-menu']],
   ['idcard/index.html', ['option-ranks', 'profile']],
   ['missionstats/src/index.template.html', ['compact-ranks', 'profile', 'rota']],
@@ -131,7 +132,7 @@ const TARGETS = [
   ['bridge-drills/index.html', ['profile', 'qr']],
   ['crew-rota/sw.js', ['offline-sw']],
   ['crew-rota/index.html', ['qr']],
-  ['index.html', ['spaced-ranks', 'profile', 'qr']],
+  ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
 ];
 
 let changed = 0;

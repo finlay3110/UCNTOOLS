@@ -60,6 +60,12 @@ bridge:
 Every importer validates strictly and tells you what it rejected or skipped, rather than quietly
 showing you fewer rows than the file contained.
 
+### Mission QR for the crew
+
+**More → Mission QR for the crew** shows one QR code holding the operation, mission type, ship and crew. Each player scans it with their phone's camera: the homepage opens, says which station they're on (from the name they've set in the tools), and **Load it into my tools** keeps the mission on their phone for 18 hours. Comms Log, Engineering, Navigation and General Log then fill in any blank operation, type, ship, captain and station. The mission is kept on this device too, for those tools opened here. The code is `shared/mission.js`, with its tests in `shared/test.js`.
+
+The Crew tab's **Fill crew from the Crew Rota** does the opposite direction: it takes the names from the Crew Rota tool.
+
 ### Player roster
 
 A list of the people you play with, kept separately from any one mission so it survives *New
