@@ -184,6 +184,11 @@ header.app-header{
 .modal-body-text p{margin:0 0 12px 0;}
 .modal-body-text b{color:var(--orange);}
 .modal-actions{display:flex; gap:8px; margin-top:14px;}
+.sign-pad{margin-bottom:14px;}
+.sign-pad-head{display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin-bottom:6px;}
+.sign-pad-head b{color:var(--text); font-size:13px;}
+.sign-pad canvas{display:block; width:100%; aspect-ratio:3/1; background:#fff; border-radius:10px; touch-action:none; cursor:crosshair;}
+.sign-clear{background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:0 14px; min-height:36px; font-size:12px;}
 
 .more-menu-list{display:flex; flex-direction:column; gap:8px;}
 .more-menu-item{
@@ -1434,6 +1439,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     </div>
     <div class="modal-actions">
       <button class="hbtn" id="btnIntroOk" type="button" style="background:var(--orange); color:#241100; flex:1;">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div id="signOverlay" class="modal-overlay">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="signModalTitle">
+    <div class="modal-header">
+      <span class="modal-title" id="signModalTitle">Sign the Report</span>
+      <button type="button" class="modal-close" id="signCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-sub">Sign in the white box with a finger or stylus. Leave a box empty to sign the printed copy instead. Signatures go only into this PDF and aren't saved.</div>
+    <div id="signPads"></div>
+    <div class="modal-actions">
+      <button class="hbtn" id="btnSignExport" type="button" style="background:var(--orange); color:#241100; flex:1;">Export PDF</button>
     </div>
   </div>
 </div>
@@ -4980,7 +4999,7 @@ function pdfBlockNote(doc, title, note, opts){
    matches one of the known imported medal images (MEDAL_IMAGES, keyed by exact name from
    MEDAL_LIST). Falls back to the plain text-only pdfBlockNote layout for a custom/"Other" medal
    name that has no matching artwork. */
-function pdfSignatureBlock(doc, printName, rank, position){
+function pdfSignatureBlock(doc, printName, rank, position, signature){
   var boxH = 34;
   pdfEnsureSpace(doc, boxH+6);
   doc.setDrawColor(PDF_LINE[0],PDF_LINE[1],PDF_LINE[2]);
@@ -5017,6 +5036,11 @@ function pdfSignatureBlock(doc, printName, rank, position){
   doc.setDrawColor(PDF_TEXT[0],PDF_TEXT[1],PDF_TEXT[2]);
   doc.setLineWidth(0.2);
   doc.line(PDF_MARGIN_L+padX, pdfCursorY+30, PDF_PAGE_W-PDF_MARGIN_R-padX, pdfCursorY+30);
+  /* A signature drawn on the device sits on the line, clear of the label; 3:1 like its pad. */
+  if(signature){
+    try{ doc.addImage(signature, 'PNG', PDF_MARGIN_L+padX+22, pdfCursorY+16, 42, 14); }
+    catch(e){ console.warn('UCN Mission Companion: signature not added', e); }
+  }
 
   pdfCursorY += boxH + 6;
 }
@@ -5617,12 +5641,13 @@ function buildDirectPdf(s, navyLogoDataUrl, opts){
     var captain = s.shipCrew.find(function(c){ return c.role === 'Captain'; });
     var captainName = (captain && captain.name) ? captain.name : '';
     var captainRank = (captain && captain.rank) ? captain.rank : '';
-    pdfSignatureBlock(doc, captainName, captainRank, 'Captain');
+    var signatures = opts.signatures || {};
+    pdfSignatureBlock(doc, captainName, captainRank, 'Captain', signatures['Captain']);
 
     var filedByName = (s.filedBy||'').trim();
     if(filedByName && filedByName.toLowerCase() !== captainName.trim().toLowerCase()){
       pdfCursorY += 4;
-      pdfSignatureBlock(doc, filedByName, '', 'Reporting Officer');
+      pdfSignatureBlock(doc, filedByName, '', 'Reporting Officer', signatures['Reporting Officer']);
     }
   }
 
@@ -5642,7 +5667,7 @@ function doExportPdf(includeCertification){
   btn.innerHTML = '<span class="ico">⏳</span>Preparing…';
   pdfLoadNavyLogo().then(function(navyLogoDataUrl){
     try{
-      var doc = buildDirectPdf(state, navyLogoDataUrl, {includeCertification: includeCertification});
+      var doc = buildDirectPdf(state, navyLogoDataUrl, {includeCertification: includeCertification, signatures: reportSignatures});
       var safeName = (state.opName || 'Mission').replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'Mission';
       doc.save('UCN_Mission_Report_'+safeName+'.pdf');
       toast('PDF ready ✔');
@@ -5987,8 +6012,80 @@ function initCopySummary(){
   });
 }
 
+/* ================= SIGNATURES ================= */
+/* The certification page can carry real signatures, drawn on this device before export.
+   Kept in memory for this visit only (so a re-export needn't be signed again), never saved. */
+var reportSignatures = {};
+
+/* Who signs: the Captain, and the Reporting Officer when that's someone else — as the PDF has it. */
+function reportSignatories(){
+  var captain = state.shipCrew.find(function(c){ return c.role === 'Captain'; });
+  var captainName = (captain && captain.name) ? captain.name : '';
+  var list = [{position:'Captain', name:captainName}];
+  var filed = (state.filedBy||'').trim();
+  if(filed && filed.toLowerCase() !== captainName.trim().toLowerCase()) list.push({position:'Reporting Officer', name:filed});
+  return list;
+}
+
+function makeSignPad(holder, who){
+  var wrap = document.createElement('div');
+  wrap.className = 'sign-pad';
+  wrap.innerHTML = '<div class="sign-pad-head"><span><b></b> <span></span></span><button type="button" class="sign-clear">Clear</button></div><canvas role="img"></canvas>';
+  wrap.querySelector('b').textContent = who.position;
+  wrap.querySelector('b + span').textContent = who.name ? '— ' + who.name : '';
+  var canvas = wrap.querySelector('canvas');
+  canvas.setAttribute('aria-label', 'Signature box for the ' + who.position + '. Draw with a finger, stylus or mouse.');
+  holder.appendChild(wrap);
+  var ratio = window.devicePixelRatio || 1, box = canvas.getBoundingClientRect();
+  canvas.width = Math.round(box.width * ratio); canvas.height = Math.round(box.height * ratio);
+  var ctx = canvas.getContext('2d');
+  ctx.scale(ratio, ratio);
+  ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#10162b'; ctx.fillStyle = '#10162b';
+  if(reportSignatures[who.position]){
+    var img = new Image();
+    img.onload = function(){ ctx.drawImage(img, 0, 0, box.width, box.height); };
+    img.src = reportSignatures[who.position];
+  }
+  var last = null;
+  function at(e){ var r = canvas.getBoundingClientRect(); return {x:e.clientX - r.left, y:e.clientY - r.top}; }
+  canvas.addEventListener('pointerdown', function(e){
+    e.preventDefault();
+    canvas.setPointerCapture(e.pointerId);
+    last = at(e);
+    ctx.beginPath(); ctx.arc(last.x, last.y, 1.2, 0, Math.PI*2); ctx.fill();
+  });
+  canvas.addEventListener('pointermove', function(e){
+    if(!last) return;
+    var p = at(e);
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p;
+  });
+  function end(){
+    if(!last) return;
+    last = null;
+    reportSignatures[who.position] = canvas.toDataURL('image/png');
+  }
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  wrap.querySelector('.sign-clear').addEventListener('click', function(){
+    ctx.clearRect(0, 0, box.width, box.height);
+    delete reportSignatures[who.position];
+  });
+}
+
+function openSignatures(){
+  closeModal('exportOptionsOverlay');
+  openModal('signOverlay');
+  var holder = document.getElementById('signPads');
+  holder.innerHTML = '';
+  /* Pads are sized from their laid-out width, so they're made once the sheet is showing. */
+  reportSignatories().forEach(function(who){ makeSignPad(holder, who); });
+}
+
 function initExportOptions(){
-  document.getElementById('btnExportWithCert').addEventListener('click', function(){ doExportPdf(true); });
+  document.getElementById('btnExportWithCert').addEventListener('click', openSignatures);
+  document.getElementById('btnSignExport').addEventListener('click', function(){ closeModal('signOverlay'); doExportPdf(true); });
+  document.getElementById('signCloseBtn').addEventListener('click', function(){ closeModal('signOverlay'); });
   document.getElementById('btnExportNoCert').addEventListener('click', function(){ doExportPdf(false); });
   document.getElementById('btnExportCancel').addEventListener('click', function(){
     closeModal('exportOptionsOverlay');

@@ -46,6 +46,8 @@ type, date and time, and who filed the report.
 the briefing, notes, the full timeline, promotion and medal cards with their insignia, and an
 optional Captain's certification page. It is the thing to keep — see *Your data* below.
 
+**Signatures:** choose to include the Report Certification page and a **Sign the Report** sheet opens, with a box each for the Captain and (when it's someone else) the Reporting Officer. Sign with a finger or stylus and the signature is placed on that signature line in the PDF; leave a box empty to sign the printed copy. Signatures are kept in memory for that visit only, never saved.
+
 ### Importing from the other UCN tools
 
 The Debrief tab can absorb JSON exported by the sibling fan tools, so one report covers the whole
