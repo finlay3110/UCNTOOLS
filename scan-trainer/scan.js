@@ -1,12 +1,12 @@
 // The Scan Trainer's sums, with no page code, so test.js can check them in Node.
-// Modelled on the in-game scan as it plays: each scan is two stages; in each,
-// sliders (one at level 1, two at level 2) hide a setting. The further off
+// Modelled on the in-game scan as it plays: each scan is a few stages; in each,
+// sliders (one per level: one at level 1 up to four at level 4) hide a setting. The further off
 // they are, the noisier the signal; on target it comes clean, and held there
 // it locks. Tuned by eye from gameplay, not taken from the game.
 
-export const LEVELS = [1, 2];     // sliders per stage
-export const STAGES = 2;          // a scan is [1/2] then [2/2]
-export const LOCK_ERROR = 0.05;   // total slider error (0–1 each) under which the signal is clean
+export const LEVELS = [1, 2, 3, 4];               // sliders per stage
+export const STAGES = { 1: 2, 2: 2, 3: 3, 4: 4 }; // stages per scan: [1/2] [2/2] at levels 1 and 2, [1/4]… at level 4; level 3's is a guess
+export const LOCK_ERROR = 0.05;   // slider error (see error) under which the signal is clean
 export const HOLD = 2;            // seconds held clean before it locks
 export const CYCLES = 6;          // waves across the trace
 
@@ -17,8 +17,9 @@ export const NAMES = [
   'Ghost-band suppression', 'Kettle static filter', 'Quantum flutter damping', 'Biscuit tin interference',
 ];
 
-// Total distance of the sliders from their targets.
-export const error = (values, target) => target.reduce((sum, t, i) => sum + Math.abs(values[i] - t), 0);
+// Total distance of the sliders from their targets; from level 3 it is per pair of
+// sliders, so each slider needs the same care as at level 2 and the noise still answers every move.
+export const error = (values, target) => target.reduce((sum, t, i) => sum + Math.abs(values[i] - t), 0) / Math.max(1, target.length / 2);
 export const clean = (values, target) => error(values, target) < LOCK_ERROR;
 
 // The signal in words, for screen readers and the status line.
@@ -51,7 +52,7 @@ export function tracePath(e, k, w, h, rand = Math.random) {
 }
 
 // A repeatable random sequence, so a challenge gives a friend the same contact:
-// both stages' names, hidden settings and starting sliders.
+// every stage's name, hidden setting and starting sliders.
 export const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
 export const newSeed = () => 1 + Math.floor(Math.random() * 2147483645);
 
