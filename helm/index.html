@@ -307,8 +307,8 @@
             '<ellipse cx="130" cy="80" rx="100" ry="62" fill="none" stroke="#8FA0BE" stroke-width="2" stroke-dasharray="10 9"/>' +
             '<path d="M122 72l8-8 8 8-8 8z" fill="#EAF0FB"/>' +
             '<text x="130" y="100" text-anchor="middle" fill="#8FA0BE" font-size="11" font-family="Exo 2, sans-serif">THEM</text>' +
-            '<path d="M196 27l18 10-16 6z" fill="#DD7A2B"/>' +
-            '<text x="200" y="20" fill="#DD7A2B" font-size="11" font-weight="700" font-family="Exo 2, sans-serif">YOU</text>' +
+            '<path class="you" d="M9 0L-7-7V7z" fill="#DD7A2B"/>' +
+            '<text class="you-label" y="-11" text-anchor="middle" fill="#DD7A2B" font-size="11" font-weight="700" font-family="Exo 2, sans-serif">YOU</text>' +
             '<path d="M226 62l3 12-10-6" fill="none" stroke="#8FA0BE" stroke-width="2"/>' +
             '<text x="130" y="163" text-anchor="middle" fill="#8FA0BE" font-size="10" font-family="Exo 2, sans-serif">Circle the target while staying locked on</text>' +
           '</svg>' +
@@ -317,6 +317,25 @@
       '</div>';
     if (eliteEl && eliteEl !== el) { el.innerHTML = html; eliteEl.innerHTML = elite; el = eliteEl; }
     else el.innerHTML = html + elite;
+  
+    // You on the dotted orbit (centre 130,80, radii 100 by 62) at angle th, nose along it, clockwise.
+    var ship = el.querySelector('.you'), label = el.querySelector('.you-label');
+    function place(th) {
+      var at = 'translate(' + (130 + 100 * Math.cos(th)).toFixed(1) + ' ' + (80 + 62 * Math.sin(th)).toFixed(1) + ')';
+      ship.setAttribute('transform', at + ' rotate(' + (Math.atan2(62 * Math.cos(th), -100 * Math.sin(th)) * 180 / Math.PI).toFixed(1) + ')');
+      label.setAttribute('transform', at);
+    }
+    place(-0.72);   // top right, until it moves
+    // Circles once every 6 s from the unlock; stays parked where reduced motion is asked for.
+    function orbit() {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var t0 = 0;
+      (function frame(now) {
+        t0 = t0 || now;
+        place(-0.72 + (now - t0) / 6000 * 2 * Math.PI);
+        requestAnimationFrame(frame);
+      })(0);
+    }
   
     var lock = el.querySelector('.elite-lock'), status = el.querySelector('.pin-status');
     var dots = el.querySelectorAll('.pin-dots span'), entered = '';
@@ -338,6 +357,7 @@
         setTimeout(function () {
           lock.hidden = true;
           el.querySelector('.elite-tactic').hidden = false;
+          orbit();
           el.querySelector('.elite-tactic h3').focus();
         }, 600);
       } else {
