@@ -1,6 +1,7 @@
 // Checks the sums in scan.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { LEVELS, STAGES, LOCK_ERROR, HOLD, NAMES, error, clean, quality, newStage, tracePath, time } from './scan.js';
+import { LEVELS, STAGES, LOCK_ERROR, HOLD, NAMES, error, clean, quality, newStage, tracePath, time,
+  seeded, newSeed, challengeLink, readChallenge, compare, record } from './scan.js';
 
 // A repeatable "random" for the checks.
 let seed = 7;
@@ -42,6 +43,32 @@ assert.equal(new Set(lines(0.5)).size, 3, 'three drifting lines');
 const ys = d => d.split(/[ML]/).filter(Boolean).map(p => +p.split(' ')[1]);
 for (const d of [...lines(0), ...lines(5)]) for (const y of ys(d)) assert.ok(y >= 1 && y <= 59, 'stays in the box');
 assert.ok(tracePath(0, 0, 300, 60, zero).startsWith('M0 30.0'));
+
+// Challenges: the same seed gives the same contact, both stages.
+const contact = seed => { const r = seeded(seed), a = newStage(2, r); return [a, newStage(2, r, a.name)]; };
+const sd = newSeed();
+assert.ok(Number.isInteger(sd) && sd >= 1 && sd <= 2147483646);
+assert.deepEqual(contact(sd), contact(sd));
+assert.notDeepEqual(contact(12345), contact(54321));
+// A link reads back; a bad or tampered one is refused; names are tidied.
+const c = { level: 2, seed: 987654321, ms: 6342.4, name: 'Zoë  \n Ash' };
+assert.deepEqual(readChallenge(challengeLink(c)), { level: 2, seed: 987654321, ms: 6342, name: 'Zoë Ash' });
+const link = o => Buffer.from(JSON.stringify(o)).toString('base64url');
+assert.equal(readChallenge('nonsense'), null);
+assert.equal(readChallenge(link({ l: 3, s: 5, t: 100 })), null, 'no level 3');
+assert.equal(readChallenge(link({ l: 1, s: 0, t: 100 })), null, 'bad seed');
+assert.equal(readChallenge(link({ l: 1, s: 5, t: -1 })), null, 'bad time');
+assert.equal(readChallenge(link({ l: 1, s: 5, t: 100, n: 'x'.repeat(99) })).name.length, 40);
+// Faster wins; a twentieth of a second either way is a dead heat.
+assert.ok(compare({ ms: 5000 }, { ms: 6000 }) > 0);
+assert.ok(compare({ ms: 7000 }, { ms: 6000 }) < 0);
+assert.equal(compare({ ms: 6020 }, { ms: 6000 }), 0);
+// Records: scans counted, best time kept.
+const recs = {};
+assert.equal(record(recs, 1, 8000.4), true);
+assert.equal(record(recs, 1, 9000), false);
+assert.equal(record(recs, 1, 7000), true);
+assert.deepEqual(recs, { 1: { scans: 3, bestMs: 7000 } });
 
 assert.equal(time(6.34), '6.3s'); assert.equal(time(64), '1m 04s');
 

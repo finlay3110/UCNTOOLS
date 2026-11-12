@@ -13,8 +13,13 @@ Practice for the Radar station's scan, modelled on how the in-game scan plays:
 - **Level 1** has one slider per stage. **Level 2** has two, and both must be
   right before the signal comes clean.
 
-The clock runs from pressing Scan to the second lock. The level and your best
-time for each are saved (`ucnScanTrainer_v1`). Screen readers hear the signal
+The clock runs from pressing Scan to the second lock. The level, and each
+level's best time and number of scans, are saved (`ucnScanTrainer_v1`); the
+records can be shared as a picture with your name (shared with the other tools
+as your name and rank). After a scan, **Challenge a friend** shows a QR code
+and link that give them the same contact: the seed in the link makes both
+stages' names, hidden settings and starting sliders the same, and their result
+says who was faster (within a twentieth of a second is a dead heat). Screen readers hear the signal
 as weak, fair, strong or clean on each slider. Below the scope are the UCN
 Academy Manual's notes on what a primary and a secondary scan tell you (3.2),
 and that more scanner power makes the lock easier (Table 3-13).

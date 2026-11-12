@@ -138,7 +138,7 @@ const TARGETS = [
   ['helm/index.html', ['warp']],
   ['helm/sw.js', ['offline-sw']],
   ['scan-trainer/sw.js', ['offline-sw']],
-  ['scan-trainer/index.html', ['latest']],
+  ['scan-trainer/index.html', ['qr', 'profile', 'latest']],
   ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
   ['guide/quick-start.html', ['qr']],
   ['bridge-drills/index.html', ['latest']],
