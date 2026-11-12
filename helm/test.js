@@ -1,6 +1,7 @@
 // Checks the figures and sums in helm.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { SHIPS, SECTOR, impulseTime, warpSpeed, warpTime, turnTime, bearing, reciprocal, turn, rechargeTime, time, MANOEUVRES, WARP_CHECKS, CALLS } from './helm.js';
+import { SHIPS, SECTOR, impulseTime, warpSpeed, warpTime, turnTime, bearing, reciprocal, turn, rechargeTime, time, MANOEUVRES, WARP_CHECKS, CALLS,
+  DEMOS, pose, shown, caption } from './helm.js';
 
 const close = (a, b, msg) => assert.ok(Math.abs(a - b) < 1e-9, `${msg}: ${a} vs ${b}`);
 const { takanami: T, havock: H } = SHIPS;
@@ -54,6 +55,35 @@ for (const m of MANOEUVRES) {
   assert.ok(m.page >= 136 && m.page <= 140, m.title + ' page');
 }
 assert.equal(WARP_CHECKS.length, 5);
+
+// The diagrams: one per manoeuvre, keys in time order within the run, everything inside the box.
+assert.deepEqual(Object.keys(DEMOS), MANOEUVRES.map(m => m.title));
+for (const [name, d] of Object.entries(DEMOS)) {
+  assert.ok(d.dur > 0 && d.alt && d.captions.length >= 3, name);
+  for (const thing of ['you', 'enemy', 'mine', 'shot'].map(k => d[k]).filter(Boolean)) {
+    thing.keys.forEach((k, i) => {
+      assert.equal(k.length, 4, name);
+      assert.ok(k[0] >= 0 && k[0] <= d.dur && (!i || k[0] > thing.keys[i - 1][0]), `${name}: keys in order`);
+      assert.ok(k[1] >= 0 && k[1] <= 300 && k[2] >= 0 && k[2] <= 170, `${name}: ${k} inside the box`);
+    });
+  }
+  d.captions.forEach(([at], i) => assert.ok(at >= 0 && at < d.dur && (!i || at > d.captions[i - 1][0]), `${name}: captions in order`));
+  if (d.blast) assert.ok(d.blast[2] < d.blast[3] && d.blast[3] <= d.dur, name);
+}
+// Moving and turning between keys: halfway is halfway, and the turn takes the shorter way.
+const keys = [[0, 0, 0, 170], [2, 100, 50, -170]];
+assert.deepEqual(pose(keys, -1), [0, 0, 170], 'before the first key');
+assert.deepEqual(pose(keys, 1), [50, 25, 180], 'halfway, turning through 180 not the long way');
+assert.deepEqual(pose(keys, 5), [100, 50, -170], 'after the last key');
+// About Face really does turn 180°: nose to the enemy at the start, tail to them after.
+const af = DEMOS['About Face'].you.keys;
+assert.equal(((pose(af, 0)[2] % 360) + 360) % 360, 180);
+assert.equal(((pose(af, 6)[2] % 360) + 360) % 360, 0);
+// On stage only from its first key until it is used up.
+const mine = DEMOS['Special Delivery'].mine;
+assert.ok(!shown(mine, 1, 11) && shown(mine, 5, 11) && !shown(mine, 8.5, 11));
+assert.equal(caption(DEMOS['Monkey at the Zoo'], 0), DEMOS['Monkey at the Zoo'].captions[0][1]);
+assert.equal(caption(DEMOS['Monkey at the Zoo'], 8), '“Mine clear.”');
 assert.ok(CALLS.engineering.length && CALLS.respond.length && CALLS.useful.length);
 
 console.log('helm: all checks passed');

@@ -96,6 +96,82 @@ export const MANOEUVRES = [
       'Once the mine has gone off, been avoided, or left tractor range: “Mine clear.”', 'Engineering resets impulse when directed.'] },
 ];
 
+// Each manoeuvre as a diagram that can play, in a 300 by 170 box seen from
+// above. Keys are [seconds, x, y, heading]; heading 0 points right, 90 down.
+// Between keys a ship slides in a straight line and turns the shorter way.
+// Drawn from the manual's steps (it has no figures), so positions are illustrative.
+const arc = (t0, t1, cx, cy, r, from, to, n = 4) => Array.from({ length: n + 1 }, (_, i) => {
+  const th = (from + (to - from) * i / n) * Math.PI / 180, dir = to > from ? 90 : -90;
+  return [+(t0 + (t1 - t0) * i / n).toFixed(2), +(cx + r * Math.cos(th)).toFixed(1), +(cy + r * Math.sin(th)).toFixed(1), from + (to - from) * i / n + dir];
+});
+export const DEMOS = {
+  'About Face': {
+    dur: 9.5,
+    alt: 'You start nose-on to the enemy with a failing front shield, turn through 180 degrees, and open distance with the rear shield towards them.',
+    you: { keys: [[0, 180, 85, 180], ...arc(1.5, 4.5, 180, 70, 15, 90, 270), [6, 180, 55, 360], [8.5, 260, 55, 360]], shields: ['#ee7b7b', '#2FB574'] },
+    enemy: { keys: [[0, 50, 85, 0]], label: 'ENEMY', fire: [[0, 9.5]] },
+    captions: [[0, 'Front shield failing, rear stronger: “Prepare About Face.”'], [1.5, 'Helm turns through 180°, with a manoeuvring spike if needed.'],
+      [4.5, 'Beams: “Aft presented.” The fresh rear shield takes the fire.'], [6, 'Open distance while the front shield recovers.']],
+  },
+  Breakthrough: {
+    dur: 11,
+    alt: 'You line up a clear path past a large enemy, warp burst past it so it has to turn, and drop a mine behind you.',
+    you: { keys: [[0, 40, 95, 0], [1.5, 40, 95, 0], [3, 55, 90, -12], [4, 55, 90, -12], [5, 250, 48, -12], [5.8, 265, 45, -12], [8.5, 290, 40, -12]], shields: ['#e8c547', '#2FB574'] },
+    enemy: { keys: [[0, 170, 100, 180], [5, 170, 100, 180], [7.5, 170, 100, 330]], label: 'ENEMY', big: true, fire: [[0, 4.5], [7.5, 11]] },
+    mine: { keys: [[5.8, 263, 45, 0], [6.8, 249, 48, 0]] },
+    captions: [[0, 'Front shield holding, rear stronger: “Prepare Breakthrough.”'], [1.5, 'Reduce impulse and turn to a clear line past the enemy.'],
+      [3, '“Reset manoeuvring. Warp burst on my mark.”'], [4, 'A short warp burst past them: now they have to turn.'],
+      [5.8, '“Fire mine.” It drifts about 1U behind you before arming.'], [7.5, 'Their fire meets your fresher rear shield. Keep opening distance.']],
+  },
+  'Special Delivery': {
+    dur: 11,
+    alt: 'The tractor holds a mine ahead of you while you carry it at Warp 1 in a dead straight line, release it near a stationary target, and break away.',
+    you: { keys: [[0, 30, 85, 0], [3, 30, 85, 0], [7, 200, 85, 0], [7.6, 212, 78, -35], [9, 240, 40, -50]], tractor: [[2, 7]] },
+    enemy: { keys: [[0, 265, 85, 180]], label: 'TARGET' },
+    mine: { keys: [[1.5, 42, 85, 0], [2.5, 48, 85, 0], [3, 48, 85, 0], [7, 218, 85, 0], [8, 250, 85, 0]], until: 8 },
+    blast: [255, 85, 8, 9.5],
+    captions: [[0, 'Target stationary: “Prepare Special Delivery.” Line up a straight run.'], [1.5, 'Docks up, warp power to 48%. “Drop mine.” The tractor holds it 1U ahead.'],
+      [3, 'Warp 1, dead straight: any course change loses the mine.'], [7, 'Near the target: “Mine away.” Helm breaks off.'], [8, 'The mine arms and detonates by the target.']],
+  },
+  'Longbow Shot': {
+    dur: 10,
+    alt: 'The target is beyond Tactical range. You turn to the bearing Radar gives, and the tractor pushes the shot out so it reaches the target.',
+    you: { keys: [[0, 50, 125, -120], [1.5, 50, 125, -120], [3.5, 50, 125, -25]], tractor: [[4, 6]] },
+    enemy: { keys: [[0, 249, 32, 155]], label: 'TARGET' },
+    shot: { keys: [[5, 59, 121, -25], [6, 100, 102, -25], [7.6, 245, 34, -25]], until: 7.6 },
+    ring: [50, 125, 42, 'Tactical range'],
+    blast: [249, 32, 7.6, 9],
+    captions: [[0, 'Radar: “Target bearing 065.” It is beyond Tactical range.'], [1.5, 'Helm turns to the bearing and steadies: “On bearing.”'],
+      [3.5, 'Tractor forward, 2U, Push. Missiles fires: “Longbow away.”'], [5, 'The tractor pushes the shot out, carrying it far past normal range.'], [7.6, 'Radar: “Impact expected.”']],
+  },
+  'Monkey at the Zoo': {
+    dur: 11,
+    alt: 'You retreat in reverse with your bow to the pursuer, leave a mine ahead of your bow, then push it into the pursuer with the forward tractor.',
+    you: { keys: [[0, 120, 85, 180], [8, 250, 85, 180], [11, 270, 85, 180]], tractor: [[4.5, 7.8]] },
+    enemy: { keys: [[0, 40, 85, 0], [8, 120, 85, 0]], label: 'PURSUER' },
+    mine: { keys: [[2.5, 161, 85, 0], [4.5, 161, 85, 0], [7.8, 128, 85, 0]], until: 7.8 },
+    blast: [126, 85, 7.8, 9.3],
+    captions: [[0, 'Enemy dead ahead: full reverse impulse, “Retreating astern.”'], [1.2, 'Tractor forward, 0°, 2U, Push: “Tractor configured.”'],
+      [2.5, '“Mine away.” Keep reversing, past the mine before it arms.'], [4.5, 'The tractor pushes the mine at the pursuer: “Holding line.”'], [7.8, '“Mine clear.”']],
+  },
+};
+
+// Where a ship or object is at time t: clamped to its first and last keys.
+export function pose(keys, t) {
+  if (t <= keys[0][0]) return keys[0].slice(1);
+  const i = keys.findIndex(k => k[0] >= t);
+  if (i < 0) return keys[keys.length - 1].slice(1);
+  const [t0, x0, y0, a0] = keys[i - 1], [t1, x1, y1, a1] = keys[i];
+  const f = (t - t0) / (t1 - t0), turn = ((a1 - a0) % 360 + 540) % 360 - 180;
+  return [x0 + (x1 - x0) * f, y0 + (y1 - y0) * f, a0 + turn * f];
+}
+
+// Is it on stage at t: from its first key until its until (or the end).
+export const shown = (thing, t, dur) => t >= thing.keys[0][0] && t <= (thing.until ?? dur);
+
+// The caption for time t.
+export const caption = (demo, t) => demo.captions.reduce((c, [at, text]) => (at <= t ? text : c), demo.captions[0][1]);
+
 // Before engaging warp (5.1).
 export const WARP_CHECKS = [
   'The route is clear, or being watched',

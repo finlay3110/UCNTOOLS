@@ -18,7 +18,9 @@ Warp (checklist, warp guide).
   refill (3.3.3).
 - **Advanced manoeuvres**: About Face, Breakthrough, Special Delivery,
   Longbow Shot and Monkey at the Zoo, step by step with the calls (Appendix G),
-  then the Elite Hidden Tactic from the UCN Effective Guide to Warp.
+  each with a diagram of the routes that **Start demonstration** plays out with
+  captions (the manual has no figures, so positions are illustrative), then the
+  Elite Hidden Tactic from the UCN Effective Guide to Warp.
 - **Before engaging warp**: the checklist and the calls to know (5.1).
 - **Warp guide**: the Academy's setup for each distance (Appendix F) and the
   field setups from the UCN Effective Guide to Warp.
