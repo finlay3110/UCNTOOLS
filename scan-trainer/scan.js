@@ -50,6 +50,36 @@ export function tracePath(e, k, w, h, rand = Math.random) {
   return d;
 }
 
+// A repeatable random sequence, so a challenge gives a friend the same contact:
+// both stages' names, hidden settings and starting sliders.
+export const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
+export const newSeed = () => 1 + Math.floor(Math.random() * 2147483645);
+
+// A challenge in a link: the level and seed that made the contact, and the
+// sender's name and time. Anyone can make a link, so reading one checks everything.
+const toB64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
+export const challengeLink = c => toB64(JSON.stringify({ l: c.level, s: c.seed, t: Math.round(c.ms), n: c.name || '' }));
+export function readChallenge(text) {
+  let o;
+  try { o = JSON.parse(fromB64(String(text))); } catch (e) { return null; }
+  const whole = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+  if (!o || !LEVELS.includes(o.l) || !whole(o.s, 1, 2147483646) || !whole(o.t, 1, 36e5)) return null;
+  const name = typeof o.n === 'string' ? o.n.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40) : '';
+  return { level: o.l, seed: o.s, ms: o.t, name };
+}
+// Who scanned the same contact faster: above 0 if a beat b; within a twentieth of a second is a dead heat.
+export const compare = (a, b) => (Math.abs(b.ms - a.ms) < 50 ? 0 : b.ms - a.ms);
+
+// Adds a finished scan to its level's records; true if it is a new best time.
+export function record(records, level, ms) {
+  const r = records[level] = { scans: 0, bestMs: null, ...records[level] };
+  r.scans++;
+  const best = r.bestMs === null || ms < r.bestMs;
+  if (best) r.bestMs = Math.round(ms);
+  return best;
+}
+
 // "6.3s", "1m 04s".
 export function time(s) {
   if (s < 60) return s.toFixed(1) + 's';
