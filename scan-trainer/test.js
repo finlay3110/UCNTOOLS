@@ -7,8 +7,8 @@ import { LEVELS, STAGES, LOCK_ERROR, HOLD, NAMES, error, clean, quality, newStag
 let seed = 7;
 const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 
-assert.deepEqual(LEVELS, [1, 2]);
-assert.equal(STAGES, 2);
+assert.deepEqual(LEVELS, [1, 2, 3, 4]);
+assert.deepEqual(STAGES, { 1: 2, 2: 2, 3: 3, 4: 4 });
 assert.ok(HOLD > 0);
 assert.equal(new Set(NAMES).size, NAMES.length, 'no name twice');
 
@@ -33,6 +33,11 @@ assert.ok(clean([0.52], [0.5]));
 assert.ok(!clean([0.5 + LOCK_ERROR], [0.5]), 'the edge is not clean');
 assert.ok(!clean([0.5, 0.2], [0.5, 0.6]), 'one slider right is not enough at level 2');
 assert.ok(clean([0.51, 0.61], [0.5, 0.6]));
+// Levels 3 and 4: counted per pair of sliders, so 2% off on each of four is clean, 4% off is not.
+assert.ok(Math.abs(error([0.4, 0.6, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5]) - 0.1) < 1e-12);
+assert.ok(clean([0.52, 0.48, 0.52, 0.48], [0.5, 0.5, 0.5, 0.5]));
+assert.ok(!clean([0.54, 0.46, 0.54, 0.46], [0.5, 0.5, 0.5, 0.5]));
+assert.ok(!clean([0.5, 0.5, 0.2], [0.5, 0.5, 0.5]), 'every slider counts at level 3');
 assert.equal(quality(0.01), 'clean'); assert.equal(quality(0.1), 'strong'); assert.equal(quality(0.2), 'fair'); assert.equal(quality(0.6), 'weak');
 
 // The trace: on target the three colours draw the same clean line; off target they differ.
@@ -44,8 +49,8 @@ const ys = d => d.split(/[ML]/).filter(Boolean).map(p => +p.split(' ')[1]);
 for (const d of [...lines(0), ...lines(5)]) for (const y of ys(d)) assert.ok(y >= 1 && y <= 59, 'stays in the box');
 assert.ok(tracePath(0, 0, 300, 60, zero).startsWith('M0 30.0'));
 
-// Challenges: the same seed gives the same contact, both stages.
-const contact = seed => { const r = seeded(seed), a = newStage(2, r); return [a, newStage(2, r, a.name)]; };
+// Challenges: the same seed gives the same contact, every stage.
+const contact = seed => { const r = seeded(seed), a = newStage(4, r); return [a, newStage(4, r, a.name)]; };
 const sd = newSeed();
 assert.ok(Number.isInteger(sd) && sd >= 1 && sd <= 2147483646);
 assert.deepEqual(contact(sd), contact(sd));
@@ -55,7 +60,8 @@ const c = { level: 2, seed: 987654321, ms: 6342.4, name: 'Zoë  \n Ash' };
 assert.deepEqual(readChallenge(challengeLink(c)), { level: 2, seed: 987654321, ms: 6342, name: 'Zoë Ash' });
 const link = o => Buffer.from(JSON.stringify(o)).toString('base64url');
 assert.equal(readChallenge('nonsense'), null);
-assert.equal(readChallenge(link({ l: 3, s: 5, t: 100 })), null, 'no level 3');
+assert.equal(readChallenge(link({ l: 5, s: 5, t: 100 })), null, 'no level 5');
+assert.equal(readChallenge(link({ l: 4, s: 5, t: 100 })).level, 4);
 assert.equal(readChallenge(link({ l: 1, s: 0, t: 100 })), null, 'bad seed');
 assert.equal(readChallenge(link({ l: 1, s: 5, t: -1 })), null, 'bad time');
 assert.equal(readChallenge(link({ l: 1, s: 5, t: 100, n: 'x'.repeat(99) })).name.length, 40);

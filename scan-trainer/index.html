@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Scan Trainer — UCN</title>
-<meta name="description" content="Practise scanning contacts: tune each stage's sliders until the noisy signal comes clean and locks, one slider or two, against the clock.">
+<meta name="description" content="Practise scanning contacts: tune each stage's sliders until the noisy signal comes clean and locks, one slider up to four, against the clock.">
 <meta name="theme-color" content="#0b0f1c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B2A5E'/%3E%3Cpath d='M4 16q3-8 6 0t6 0 6 0 6 0' fill='none' stroke='%23e0e6f2' stroke-width='2.2'/%3E%3Cpath d='M4 13l3 6 3-9 3 8 3-7 3 9 3-6 3 5 3-4' fill='none' stroke='%23e0524f' stroke-width='1.2' opacity='.8'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,9 +33,9 @@
   .note{ color:var(--muted); font-size:13px; margin:10px 0 0; }
   .note a{ color:var(--cyan); display:inline-block; padding:4px 0; }
   ul.facts{ padding-left:20px; margin:8px 0 0; font-size:14px; }
-  .seg{ display:flex; gap:8px; margin:0 0 10px; }
+  .seg{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 10px; }
   .seg button{
-    flex:1; min-height:44px; border-radius:8px; border:1px solid var(--border); background:var(--field); color:var(--muted);
+    flex:1 1 40%; min-height:44px; border-radius:8px; border:1px solid var(--border); background:var(--field); color:var(--muted);
     font:600 14px 'Exo 2', sans-serif; cursor:pointer;
   }
   .seg button[aria-pressed=true]{ background:var(--navy); border-color:var(--cyan); color:var(--text); }
@@ -103,6 +103,8 @@
     <div class="seg" role="group" aria-label="Level" id="levels">
       <button type="button" data-level="1" aria-pressed="true">Level 1 · one slider</button>
       <button type="button" data-level="2" aria-pressed="false">Level 2 · two sliders</button>
+      <button type="button" data-level="3" aria-pressed="false">Level 3 · three sliders</button>
+      <button type="button" data-level="4" aria-pressed="false">Level 4 · four sliders</button>
     </div>
     <div class="row">
       <div class="stat">Time<b id="clock">0.0s</b></div>
@@ -136,8 +138,8 @@
   <section class="panel" aria-labelledby="aboutTitle">
     <h2 id="aboutTitle">How it works</h2>
     <ul class="facts">
-      <li>Every scan has two stages. In each, move the slider until the noisy red, green and blue signal pulls together into one clean wave, then hold it there until it <b>locks</b>.</li>
-      <li><b>Level 1</b> has one slider per stage; <b>level 2</b> has two, and the signal only comes clean when both are right.</li>
+      <li>Every scan has stages: two at levels 1 and 2, three at level 3, four at level 4. In each, move the sliders until the noisy red, green and blue signal pulls together into one clean wave, then hold it there until it <b>locks</b>.</li>
+      <li>Each level has that many sliders per stage, from one at <b>level 1</b> to four at <b>level 4</b>, and the signal only comes clean when they are all right.</li>
       <li>A <b>primary scan</b> gives the contact&rsquo;s faction, class, hull, shields and systems; a <b>secondary scan</b> goes deeper, to the exact signals, internal systems, beam firing arcs, and the shield and beam frequencies.</li>
       <li>More <b>scanner power</b> makes the lock easier and quicker. Ask Engineering for a scanner spike when the scan matters.</li>
     </ul>
@@ -329,14 +331,14 @@
   const W = 300, H = 64;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const paths = [...$('trace').querySelectorAll('path')];
-  const LABEL = { 1: 'Level 1 · one slider', 2: 'Level 2 · two sliders' };
+  const LABEL = { 1: 'Level 1 · one slider', 2: 'Level 2 · two sliders', 3: 'Level 3 · three sliders', 4: 'Level 4 · four sliders' };
 
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* storage blocked: nothing remembered */ }
   const records = saved.records || {};
   // The first version kept only best times, in seconds.
   if (saved.best) for (const l of LEVELS) if (saved.best[l] && !records[l]) records[l] = { scans: 1, bestMs: Math.round(saved.best[l] * 1000) };
-  let level = saved.level === 2 ? 2 : 1;
+  let level = LEVELS.includes(saved.level) ? saved.level : 1;
   // A scan in progress: its seed and random sequence, stage number, the stage, slider values, when it began, when the signal came clean.
   let scan = null;
   // taking: a challenge being played; last: the scan just finished, for Challenge a friend.
@@ -361,7 +363,7 @@
   function startStage(n, avoid) {
     const stage = newStage(level, scan.rand, avoid);
     scan.n = n; scan.stage = stage; scan.values = [...stage.start]; scan.cleanSince = 0; scan.locked = false;
-    $('stageTitle').textContent = `[${n}/${STAGES}] ${stage.name}`;
+    $('stageTitle').textContent = `[${n}/${STAGES[level]}] ${stage.name}`;
     $('trace').classList.remove('locked');
     $('trace').querySelector('.locked-tag')?.remove();
     $('sliders').innerHTML = stage.start.map((v, i) =>
@@ -407,7 +409,7 @@
     $('trace').insertAdjacentHTML('beforeend', '<div class="locked-tag" aria-hidden="true">LOCKED</div>');
     $('sliders').querySelectorAll('input').forEach(r => { r.disabled = true; });
     draw();
-    const done = scan.n === STAGES, current = scan;
+    const done = scan.n === STAGES[level], current = scan;
     $('status').textContent = done ? '' : `Stage ${scan.n} locked.`;
     setTimeout(() => {
       if (scan !== current) return;   // cancelled meanwhile
@@ -422,7 +424,7 @@
     $('dialog').hidden = false;
     $('challengeBtn').hidden = true;
     $('status').textContent = (taking ? `Challenge on: ${taking.name || 'your challenger'}'s contact. ` : '') + (level > 1
-      ? 'Move both sliders until the signal comes clean, then hold them there.'
+      ? `Move ${level > 2 ? 'all the' : 'both'} sliders until the signal comes clean, then hold them there.`
       : 'Move the slider until the signal comes clean, then hold it there.');
     startStage(1);
   });
@@ -446,7 +448,7 @@
     if (!b || scan) return;
     level = +b.dataset.level; save(); showLevel();
     $('clock').textContent = time(0);
-    if (taking && taking.level !== level) { taking = null; $('status').textContent = 'Challenge dropped: it was set on the other level.'; }
+    if (taking && taking.level !== level) { taking = null; $('status').textContent = 'Challenge dropped: it was set on another level.'; }
   });
 
   // ---- Challenges: the same contact for a friend, by QR code or link ----
@@ -502,19 +504,20 @@
     x.font = '800 60px Orbitron';
     text('LOCKED', (S - x.measureText('LOCKED').width) / 2, 352, x.font, '#ffffff');
     LEVELS.forEach((l, i) => {
-      const y = 460 + i * 220;
+      const y = 410 + i * 148;
       x.beginPath();
-      (x.roundRect || x.rect).call(x, 70, y, S - 140, 190, 18);
+      (x.roundRect || x.rect).call(x, 70, y, S - 140, 132, 18);
       x.fillStyle = '#141c38';
       x.fill();
       x.lineWidth = 2;
       x.strokeStyle = '#2a3a66';
       x.stroke();
-      text(`LEVEL ${l}`, 104, y + 80, '700 40px Orbitron', '#e8ecf7');
-      text(l > 1 ? 'Two sliders a stage' : 'One slider a stage', 104, y + 128, '400 27px "Exo 2"', '#8c98bf');
+      const sliders = LABEL[l].split(' · ')[1];
+      text(`LEVEL ${l}`, 104, y + 60, '700 36px Orbitron', '#e8ecf7');
+      text(sliders[0].toUpperCase() + sliders.slice(1) + ' a stage', 104, y + 102, '400 25px "Exo 2"', '#8c98bf');
       [['BEST TIME', bestOf(l), '#DD7A2B'], ['SCANS', String(records[l] ? records[l].scans : 0), '#e8ecf7']].forEach(([k, v, colour], j) => {
-        text(k, 560 + j * 230, y + 72, '600 21px "Exo 2"', '#8c98bf');
-        text(v, 560 + j * 230, y + 124, '700 40px Orbitron', colour);
+        text(k, 560 + j * 230, y + 52, '600 21px "Exo 2"', '#8c98bf');
+        text(v, 560 + j * 230, y + 100, '700 38px Orbitron', colour);
       });
     });
     text('Train at finlay3110.github.io/UCNTOOLS', 72, 1022, '400 24px "Exo 2"', '#8c98bf');
