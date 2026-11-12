@@ -121,6 +121,7 @@ function ucnWarpExtras(el, eliteEl) {
           '<path d="M226 62l3 12-10-6" fill="none" stroke="#8FA0BE" stroke-width="2"/>' +
           '<text x="130" y="163" text-anchor="middle" fill="#8FA0BE" font-size="10" font-family="Exo 2, sans-serif">Circle the target while staying locked on</text>' +
         '</svg>' +
+        '<button type="button" class="pill-btn demo-btn">Start demonstration</button>' +
         '<p class="setup-note setup-warn">Do not tell Dent if manoeuvre performed.</p>' +
       '</div>' +
     '</div>';
@@ -134,17 +135,19 @@ function ucnWarpExtras(el, eliteEl) {
     ship.setAttribute('transform', at + ' rotate(' + (Math.atan2(62 * Math.cos(th), -100 * Math.sin(th)) * 180 / Math.PI).toFixed(1) + ')');
     label.setAttribute('transform', at);
   }
-  place(-0.72);   // top right, until it moves
-  // Circles once every 6 s from the unlock; stays parked where reduced motion is asked for.
-  function orbit() {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  place(-0.72);   // parked top right until the demonstration starts
+  // Start demonstration: once round every 6 s until stopped, then back to the parked spot.
+  var demo = el.querySelector('.demo-btn'), spin = 0;
+  demo.addEventListener('click', function () {
+    if (spin) { cancelAnimationFrame(spin); spin = 0; place(-0.72); demo.textContent = 'Start demonstration'; return; }
+    demo.textContent = 'Stop demonstration';
     var t0 = 0;
     (function frame(now) {
       t0 = t0 || now;
       place(-0.72 + (now - t0) / 6000 * 2 * Math.PI);
-      requestAnimationFrame(frame);
+      spin = requestAnimationFrame(frame);
     })(0);
-  }
+  });
 
   var lock = el.querySelector('.elite-lock'), status = el.querySelector('.pin-status');
   var dots = el.querySelectorAll('.pin-dots span'), entered = '';
@@ -166,7 +169,6 @@ function ucnWarpExtras(el, eliteEl) {
       setTimeout(function () {
         lock.hidden = true;
         el.querySelector('.elite-tactic').hidden = false;
-        orbit();
         el.querySelector('.elite-tactic h3').focus();
       }, 600);
     } else {

@@ -399,6 +399,7 @@ html,body{
 @keyframes shake{20%,60%{transform:translateX(-8px);} 40%,80%{transform:translateX(8px);}}
 @media (prefers-reduced-motion:reduce){ .shake{animation:none;} }
 .elite-tactic h3:focus{outline:none;}
+.donut .demo-btn{display:block; min-height:44px; margin:12px auto 0;}
 .donut svg{display:block; width:100%; max-width:300px; height:auto; margin:0 auto;}
 
 /* ---------- footer ---------- */
