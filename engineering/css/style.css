@@ -84,13 +84,6 @@ html,body{
   align-items:center;
   gap:14px;
 }
-.brand-ring{
-  width:52px; height:52px; border-radius:50%;
-  background:var(--navy);
-  display:flex; align-items:center; justify-content:center;
-  flex:none;
-}
-.brand-ring-img{width:72%; height:72%; object-fit:contain;}
 .eyebrow{
   margin:0;
   font-size:11px;

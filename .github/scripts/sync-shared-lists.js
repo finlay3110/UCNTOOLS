@@ -104,6 +104,8 @@ const FORMAT = {
   share: () => sharedCode('share.js'),
   pdf: () => sharedCode('pdf.js'),
   // The UCN emblem the reports put on their covers, for tools that work offline from one file.
+  // The UCN logo in every tool's header: one image, one size (not the ID card, not the homepage's crest).
+  logo: () => [`<img class="ucn-logo" src="data:image/png;base64,${fs.readFileSync(path.join(ROOT, 'shared/vendor/ucn-logo.png')).toString('base64')}" alt="" width="32" height="32" style="width:32px;height:32px;flex:none;display:block">`],
   emblem: () => [`var UCN_EMBLEM_PNG = 'data:image/png;base64,${fs.readFileSync(path.join(ROOT, 'shared/vendor/ucn-emblem.png')).toString('base64')}';`],
   'offline-sw': () => sharedCode('offline-sw.js'),
 };
@@ -143,6 +145,25 @@ const TARGETS = [
   ['scan-trainer/sw.js', ['offline-sw']],
   ['scan-trainer/index.html', ['qr', 'profile', 'latest']],
   ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
+  // The UCN logo in each tool's header.
+  ['mission-companion/index.html', ['logo']],
+  ['engineering/index.html', ['logo']],
+  ['navigation/index.html', ['logo']],
+  ['commslog/index.html', ['logo']],
+  ['generallog/index.html', ['logo']],
+  ['tactical-aids/index.html', ['logo']],
+  ['songbook/index.html', ['logo']],
+  ['shipsearch/index.html', ['logo']],
+  ['missionstats/src/index.template.html', ['logo']],
+  ['missionstats/index.html', ['logo']],
+  ['messtracker/index.html', ['logo']],
+  ['tractor-drones/index.html', ['logo']],
+  ['helm/index.html', ['logo']],
+  ['hacking-trainer/index.html', ['logo']],
+  ['bridge-drills/index.html', ['logo']],
+  ['scan-trainer/index.html', ['logo']],
+  ['crew-rota/index.html', ['logo']],
+  ['guide/index.html', ['logo']],
   // The mission reports' page numbers and date style.
   ['mission-companion/index.html', ['pdf']],
   ['engineering/js/pdf-report.js', ['pdf']],

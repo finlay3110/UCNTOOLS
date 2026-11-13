@@ -113,7 +113,6 @@ html,body{height:100%;overflow:hidden;font-family:system-ui,-apple-system,sans-s
   display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;z-index:10;}
 .hdr::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 15% 35%,rgba(255,255,255,.35) 0%,transparent 100%),radial-gradient(1px 1px at 40% 65%,rgba(255,255,255,.2) 0%,transparent 100%),radial-gradient(1px 1px at 72% 28%,rgba(255,255,255,.3) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 58% 52%,rgba(79,168,201,.5) 0%,transparent 100%);}
 .hdr-l{display:flex;align-items:center;gap:10px;z-index:1;min-width:0;}.hdr-r{display:flex;align-items:center;gap:6px;z-index:1;flex-shrink:0;}
-.logo{height:38px;width:auto;flex-shrink:0;}
 /* Kept on one line — the four header buttons used to squeeze this into a
    wrapped two-line title. Below ~420px there is genuinely not room for it
    next to those buttons, so the wordmark gives way to the logo rather than
