@@ -2,9 +2,9 @@ name: Bridge Drills tests
 
 on:
   push:
-    paths: ['bridge-drills/**', '.github/workflows/bridge-drills-tests.yml']
+    paths: ['bridge-drills/**', 'shared/challenge.js', '.github/workflows/bridge-drills-tests.yml']
   pull_request:
-    paths: ['bridge-drills/**', '.github/workflows/bridge-drills-tests.yml']
+    paths: ['bridge-drills/**', 'shared/challenge.js', '.github/workflows/bridge-drills-tests.yml']
 
 jobs:
   questions:

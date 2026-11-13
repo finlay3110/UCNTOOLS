@@ -8,7 +8,7 @@ A quick lookup tool for the United Confederation Navy (UCN) fan community — fi
 
 ## Features
 
-- **Find my ship** — enter a date + time, get told which ship is running (or that nothing's scheduled)
+- **Find my ship** — enter a date + time, get told which ship is running; if no mission starts then, each ship's nearest slot that day (`test.js` checks this; CI runs it)
 - **Full day timetable** — enter just a date to see both ships' complete schedule for that day, weekday or weekend
 - **Private slot toggle** — private mission slots are hidden by default; a "Show private mission slots" checkbox reveals them
 - **PDF export** — download any day's schedule as a UCN-themed PDF, generated client-side with [jsPDF](https://github.com/parallax/jsPDF) (no server required)

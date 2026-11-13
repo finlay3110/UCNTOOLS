@@ -53,7 +53,7 @@ index.html              main page
 css/style.css            styling
 js/app.js                app logic (state, autosave, tabs, ship log, JSON export/import)
 js/pdf-export.js         PDF report generation + on-demand loading of the vendor bundle
-js/vendor/jspdf.umd.min.js   jsPDF library (local copy, not loaded from a CDN)
+../shared/vendor/jspdf.umd.min.js   jsPDF library (the site's one local copy, not loaded from a CDN)
 js/vendor/ucn-fonts.js       Exo 2 / Orbitron fonts, base64-encoded for the PDF
 js/vendor/ucn-logo.js        UCN emblem, base64-encoded for the PDF cover
 fonts/*.ttf               Exo 2 / Orbitron font files for on-screen display

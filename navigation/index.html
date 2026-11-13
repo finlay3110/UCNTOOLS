@@ -3005,8 +3005,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       waypoints: waypoints
     }, null, 2)], {type:'application/json'});
   }
+  // Today's date where the player is: toISOString() alone is UTC's, still yesterday just after midnight in summer.
+  function localDay(){
+    var d = new Date();
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  }
   function exportFileName(){
-    return 'ucn-waypoints-' + new Date().toISOString().slice(0,10) + '.json';
+    return 'ucn-waypoints-' + localDay() + '.json';
   }
 
   function exportWaypoints(){
@@ -3997,7 +4002,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
       var slug = (mission.name || 'ucn-mission').toLowerCase()
                    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'ucn-mission';
-      var filename = slug + '-report-' + new Date().toISOString().slice(0, 10) + '.pdf';
+      var filename = slug + '-report-' + localDay() + '.pdf';
       var fontNote = pdfFontsOk ? '' : ' Embedded fonts failed; fell back to Helvetica.';
 
       // A file download can fail silently on iOS, and does so reliably once the

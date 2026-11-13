@@ -2,9 +2,9 @@ name: Hacking Trainer tests
 
 on:
   push:
-    paths: ['hacking-trainer/**', '.github/workflows/hacking-trainer-tests.yml']
+    paths: ['hacking-trainer/**', 'shared/challenge.js', '.github/workflows/hacking-trainer-tests.yml']
   pull_request:
-    paths: ['hacking-trainer/**', '.github/workflows/hacking-trainer-tests.yml']
+    paths: ['hacking-trainer/**', 'shared/challenge.js', '.github/workflows/hacking-trainer-tests.yml']
 
 jobs:
   rules:

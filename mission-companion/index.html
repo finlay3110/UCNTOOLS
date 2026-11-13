@@ -2207,8 +2207,21 @@ function loadRoster(){
     return parsed;
   }catch(e){ return []; }
 }
+/* Returns true if the roster was saved. A failure is said out loud once, not on every keystroke
+   while storage stays full: the roster shares the site's storage with the mission, and a silent
+   failure looked exactly like a save until the roster was found empty next time. */
+var rosterSaveFailed = false;
 function persistRoster(){
-  try{ localStorage.setItem(ROSTER_STORAGE_KEY, JSON.stringify(playerRoster)); }catch(e){}
+  try{
+    localStorage.setItem(ROSTER_STORAGE_KEY, JSON.stringify(playerRoster));
+    rosterSaveFailed = false;
+    return true;
+  }catch(e){
+    console.error('UCN Mission Companion: could not save the player roster.', e);
+    if(!rosterSaveFailed) alert('The Player Roster could NOT be saved: this phone\'s storage for the site is full. Use Export List to keep a copy, then free some space (an old mission, or photos and signatures) and try again.');
+    rosterSaveFailed = true;
+    return false;
+  }
 }
 var playerRoster = loadRoster();
 
@@ -2725,8 +2738,8 @@ function pronounFieldHtml(id, value, labelText){
   return '' +
     '<div class="field">' +
       '<label>'+(labelText||'Pronouns')+'</label>' +
-      '<select class="pron-select" data-id="'+id+'">'+pronounOptionsHtml(val)+'</select>' +
-      '<input type="text" class="pron-other" data-id="'+id+'" placeholder="Enter pronouns" value="'+escAttr(showOther?val:'')+'" style="margin-top:6px;'+(showOther?'':'display:none;')+'">' +
+      '<select class="pron-select" data-id="'+escAttr(id)+'">'+pronounOptionsHtml(val)+'</select>' +
+      '<input type="text" class="pron-other" data-id="'+escAttr(id)+'" placeholder="Enter pronouns" value="'+escAttr(showOther?val:'')+'" style="margin-top:6px;'+(showOther?'':'display:none;')+'">' +
     '</div>';
 }
 
@@ -2753,8 +2766,8 @@ function medalFieldHtml(id, value){
   return '' +
     '<div class="field">' +
       '<label>Medal / Award</label>' +
-      '<select class="medal-select" data-id="'+id+'">'+medalOptionsHtml(val)+'</select>' +
-      '<input type="text" class="medal-other" data-id="'+id+'" placeholder="Enter medal/award name" value="'+escAttr(showOther?val:'')+'" style="margin-top:6px;'+(showOther?'':'display:none;')+'">' +
+      '<select class="medal-select" data-id="'+escAttr(id)+'">'+medalOptionsHtml(val)+'</select>' +
+      '<input type="text" class="medal-other" data-id="'+escAttr(id)+'" placeholder="Enter medal/award name" value="'+escAttr(showOther?val:'')+'" style="margin-top:6px;'+(showOther?'':'display:none;')+'">' +
     '</div>';
 }
 
@@ -2844,11 +2857,11 @@ function crewNameFieldHtml(id, name){
     return '' +
       '<div class="field autocomplete-wrap">' +
         '<label>Player Name</label>' +
-        '<input type="text" class="roster-name-input" data-field="name" data-id="'+id+'" value="'+escAttr(name)+'" placeholder="Search roster or type a name" autocomplete="off">' +
-        '<div class="ac-list roster-ac-list" data-id="'+id+'"></div>' +
+        '<input type="text" class="roster-name-input" data-field="name" data-id="'+escAttr(id)+'" value="'+escAttr(name)+'" placeholder="Search roster or type a name" autocomplete="off">' +
+        '<div class="ac-list roster-ac-list" data-id="'+escAttr(id)+'"></div>' +
       '</div>';
   }
-  return '<div class="field"><label>Player Name</label><input type="text" data-field="name" data-id="'+id+'" value="'+escAttr(name)+'" placeholder="Player name"></div>';
+  return '<div class="field"><label>Player Name</label><input type="text" data-field="name" data-id="'+escAttr(id)+'" value="'+escAttr(name)+'" placeholder="Player name"></div>';
 }
 
 function renderCrewList(containerId, emptyId, arr, allRoles, onChange){
@@ -2862,13 +2875,13 @@ function renderCrewList(containerId, emptyId, arr, allRoles, onChange){
   empty.style.display='none';
   container.innerHTML = arr.map(function(c){
     return '' +
-    '<div class="card" data-id="'+c.id+'">' +
+    '<div class="card" data-id="'+escAttr(c.id)+'">' +
       '<div class="card-head"><span class="card-role">'+escHtml(c.role)+'</span>' +
-        '<button type="button" class="del-x" data-action="del" data-id="'+c.id+'">✕</button></div>' +
+        '<button type="button" class="del-x" data-action="del" data-id="'+escAttr(c.id)+'">✕</button></div>' +
       '' + crewNameFieldHtml(c.id, c.name) +
-      '<div class="field"><label>Callsign</label><input type="text" data-field="callsign" data-id="'+c.id+'" value="'+escAttr(c.callsign)+'" placeholder="e.g. Viper"></div>' +
+      '<div class="field"><label>Callsign</label><input type="text" data-field="callsign" data-id="'+escAttr(c.id)+'" value="'+escAttr(c.callsign)+'" placeholder="e.g. Viper"></div>' +
       '<div class="two-col">' +
-        '<div class="field"><label>Current Rank</label><select data-field="rank" data-id="'+c.id+'">'+rankOptionsHtml(c.rank)+'</select></div>' +
+        '<div class="field"><label>Current Rank</label><select data-field="rank" data-id="'+escAttr(c.id)+'">'+rankOptionsHtml(c.rank)+'</select></div>' +
         '' + pronounFieldHtml(c.id, c.pronouns) +
       '</div>' +
       crewRoleMismatchHtml(c) +
@@ -2910,7 +2923,7 @@ function wireRosterAutocomplete(containerId, arrGetter, rerender){
     listEl.innerHTML = matches.map(function(p){
       /* The usual station is shown so you can tell at a glance who normally takes the station
          you're filling. It is a hint only and never overwrites the card's role. */
-      return '<div class="ac-item" data-pid="'+p.id+'">'+escHtml(p.name)+(p.callsign?' — '+escHtml(p.callsign):'')+
+      return '<div class="ac-item" data-pid="'+escAttr(p.id)+'">'+escHtml(p.name)+(p.callsign?' — '+escHtml(p.callsign):'')+
              (p.role?'<span class="ac-role">'+escHtml(p.role)+'</span>':'')+'</div>';
     }).join('');
     listEl.classList.add('show');
@@ -3114,12 +3127,12 @@ function initBriefing(){
 function renderPoi(){
   var html = state.poi.length ? state.poi.map(function(p){
     return '' +
-    '<div class="card" data-id="'+p.id+'">' +
+    '<div class="card" data-id="'+escAttr(p.id)+'">' +
       '<div class="card-head"><span class="card-role">Point of Interest</span>' +
-        '<button type="button" class="del-x" data-action="del" data-id="'+p.id+'">✕</button></div>' +
-      '<div class="field"><label>Sector</label><input type="text" data-field="sector" data-id="'+p.id+'" value="'+escAttr(p.sector)+'" placeholder="e.g. Sector 7-G"></div>' +
-      '<div class="field"><label>Title</label><input type="text" data-field="title" data-id="'+p.id+'" value="'+escAttr(p.title)+'" placeholder="e.g. Derelict freighter"></div>' +
-      '<div class="field"><label>Description / Notes</label><textarea data-field="notes" data-id="'+p.id+'" placeholder="What was found / observed…">'+escHtml(p.notes)+'</textarea></div>' +
+        '<button type="button" class="del-x" data-action="del" data-id="'+escAttr(p.id)+'">✕</button></div>' +
+      '<div class="field"><label>Sector</label><input type="text" data-field="sector" data-id="'+escAttr(p.id)+'" value="'+escAttr(p.sector)+'" placeholder="e.g. Sector 7-G"></div>' +
+      '<div class="field"><label>Title</label><input type="text" data-field="title" data-id="'+escAttr(p.id)+'" value="'+escAttr(p.title)+'" placeholder="e.g. Derelict freighter"></div>' +
+      '<div class="field"><label>Description / Notes</label><textarea data-field="notes" data-id="'+escAttr(p.id)+'" placeholder="What was found / observed…">'+escHtml(p.notes)+'</textarea></div>' +
     '</div>';
   }).join('') : '';
   ['poiList','poiListBriefing'].forEach(function(id){
@@ -3134,15 +3147,15 @@ function renderPoi(){
 function renderPeople(){
   var html = state.people.length ? state.people.map(function(p){
     return '' +
-    '<div class="card" data-id="'+p.id+'">' +
+    '<div class="card" data-id="'+escAttr(p.id)+'">' +
       '<div class="card-head"><span class="card-role">Contact</span>' +
-        '<button type="button" class="del-x" data-action="del" data-id="'+p.id+'">✕</button></div>' +
-      '<div class="field"><label>Name</label><input type="text" data-field="name" data-id="'+p.id+'" value="'+escAttr(p.name)+'"></div>' +
+        '<button type="button" class="del-x" data-action="del" data-id="'+escAttr(p.id)+'">✕</button></div>' +
+      '<div class="field"><label>Name</label><input type="text" data-field="name" data-id="'+escAttr(p.id)+'" value="'+escAttr(p.name)+'"></div>' +
       '<div class="two-col">' +
         pronounFieldHtml(p.id, p.pronouns) +
-        '<div class="field"><label>Affiliation</label><input type="text" data-field="affiliation" data-id="'+p.id+'" value="'+escAttr(p.affiliation)+'"></div>' +
+        '<div class="field"><label>Affiliation</label><input type="text" data-field="affiliation" data-id="'+escAttr(p.id)+'" value="'+escAttr(p.affiliation)+'"></div>' +
       '</div>' +
-      '<div class="field"><label>Notes</label><textarea data-field="notes" data-id="'+p.id+'">'+escHtml(p.notes)+'</textarea></div>' +
+      '<div class="field"><label>Notes</label><textarea data-field="notes" data-id="'+escAttr(p.id)+'">'+escHtml(p.notes)+'</textarea></div>' +
     '</div>';
   }).join('') : '';
   ['peopleList','peopleListBriefing'].forEach(function(id){
@@ -3584,15 +3597,15 @@ function renderPromotions(){
   empty.style.display='none';
   container.innerHTML = state.promotions.map(function(p){
     return '' +
-    '<div class="card" data-id="'+p.id+'">' +
+    '<div class="card" data-id="'+escAttr(p.id)+'">' +
       '<div class="card-head"><span class="card-role">Promotion</span>' +
-        '<button type="button" class="del-x" data-action="del" data-id="'+p.id+'">✕</button></div>' +
-      '<div class="field"><label>Crew Member</label><select data-field="crewMember" data-kind="promo" data-id="'+p.id+'">'+crewMemberOptions(p.crewMember)+'</select></div>' +
+        '<button type="button" class="del-x" data-action="del" data-id="'+escAttr(p.id)+'">✕</button></div>' +
+      '<div class="field"><label>Crew Member</label><select data-field="crewMember" data-kind="promo" data-id="'+escAttr(p.id)+'">'+crewMemberOptions(p.crewMember)+'</select></div>' +
       '<div class="two-col">' +
-        '<div class="field"><label>Previous Rank</label><select data-field="previousRank" data-id="'+p.id+'">'+rankOptionsHtml(p.previousRank)+'</select></div>' +
-        '<div class="field"><label>New Rank</label><select data-field="newRank" data-id="'+p.id+'">'+rankOptionsHtml(p.newRank)+'</select></div>' +
+        '<div class="field"><label>Previous Rank</label><select data-field="previousRank" data-id="'+escAttr(p.id)+'">'+rankOptionsHtml(p.previousRank)+'</select></div>' +
+        '<div class="field"><label>New Rank</label><select data-field="newRank" data-id="'+escAttr(p.id)+'">'+rankOptionsHtml(p.newRank)+'</select></div>' +
       '</div>' +
-      '<div class="field"><label>Reason (optional)</label><textarea data-field="reason" data-id="'+p.id+'" placeholder="What earned this promotion…">'+escHtml(p.reason||'')+'</textarea></div>' +
+      '<div class="field"><label>Reason (optional)</label><textarea data-field="reason" data-id="'+escAttr(p.id)+'" placeholder="What earned this promotion…">'+escHtml(p.reason||'')+'</textarea></div>' +
     '</div>';
   }).join('');
 }
@@ -3603,12 +3616,12 @@ function renderMedals(){
   empty.style.display='none';
   container.innerHTML = state.medals.map(function(m){
     return '' +
-    '<div class="card" data-id="'+m.id+'">' +
+    '<div class="card" data-id="'+escAttr(m.id)+'">' +
       '<div class="card-head"><span class="card-role">Medal</span>' +
-        '<button type="button" class="del-x" data-action="del" data-id="'+m.id+'">✕</button></div>' +
-      '<div class="field"><label>Crew Member</label><select data-field="crewMember" data-kind="medal" data-id="'+m.id+'">'+crewMemberOptions(m.crewMember)+'</select></div>' +
+        '<button type="button" class="del-x" data-action="del" data-id="'+escAttr(m.id)+'">✕</button></div>' +
+      '<div class="field"><label>Crew Member</label><select data-field="crewMember" data-kind="medal" data-id="'+escAttr(m.id)+'">'+crewMemberOptions(m.crewMember)+'</select></div>' +
       '' + medalFieldHtml(m.id, m.medal) +
-      '<div class="field"><label>Reason</label><textarea data-field="reason" data-id="'+m.id+'">'+escHtml(m.reason)+'</textarea></div>' +
+      '<div class="field"><label>Reason</label><textarea data-field="reason" data-id="'+escAttr(m.id)+'">'+escHtml(m.reason)+'</textarea></div>' +
     '</div>';
   }).join('');
 }
@@ -5792,14 +5805,14 @@ function renderRosterList(){
   empty.style.display='none';
   container.innerHTML = playerRoster.map(function(p){
     return '' +
-    '<div class="roster-card" data-id="'+p.id+'">' +
-      '<div class="roster-card-head"><button type="button" class="del-x" data-action="del" data-id="'+p.id+'">✕</button></div>' +
-      '<div class="field"><label>Name</label><input type="text" data-field="name" data-id="'+p.id+'" value="'+escAttr(p.name)+'" placeholder="Player name"></div>' +
+    '<div class="roster-card" data-id="'+escAttr(p.id)+'">' +
+      '<div class="roster-card-head"><button type="button" class="del-x" data-action="del" data-id="'+escAttr(p.id)+'">✕</button></div>' +
+      '<div class="field"><label>Name</label><input type="text" data-field="name" data-id="'+escAttr(p.id)+'" value="'+escAttr(p.name)+'" placeholder="Player name"></div>' +
       '<div class="roster-row">' +
-        '<div class="field"><label>Callsign</label><input type="text" data-field="callsign" data-id="'+p.id+'" value="'+escAttr(p.callsign)+'" placeholder="e.g. Viper"></div>' +
+        '<div class="field"><label>Callsign</label><input type="text" data-field="callsign" data-id="'+escAttr(p.id)+'" value="'+escAttr(p.callsign)+'" placeholder="e.g. Viper"></div>' +
         '' + pronounFieldHtml(p.id, p.pronouns) +
       '</div>' +
-      '<div class="field"><label>Usual Station</label><select data-field="role" data-id="'+p.id+'">'+rosterRoleOptionsHtml(p.role)+'</select></div>' +
+      '<div class="field"><label>Usual Station</label><select data-field="role" data-id="'+escAttr(p.id)+'">'+rosterRoleOptionsHtml(p.role)+'</select></div>' +
     '</div>';
   }).join('');
 }
@@ -5948,14 +5961,14 @@ function initRoster(){
         playerRoster.push({id:newId(), name:p.name, callsign:p.callsign, pronouns:p.pronouns, role:p.role});
         added++;
       });
-      persistRoster();
+      var saved = persistRoster();
       renderRosterList();
       /* Says what happened to everything in the file, not just what landed — a silent drop
          looks identical to a file that was short in the first place. */
       var bits = [added + ' player' + (added===1?'':'s') + ' imported'];
       if(duplicate) bits.push(duplicate + ' already on the roster');
       if(players.dropped) bits.push(players.dropped + ' skipped (no name)');
-      toast(bits.join(' · ') + ' ✔');
+      toast(bits.join(' · ') + (saved ? ' ✔' : ' — NOT saved'));
       e.target.value = '';
     };
     reader.readAsText(file);

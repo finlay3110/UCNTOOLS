@@ -1,12 +1,12 @@
 name: User guide tests
 
 # The guide must cover every tool the homepage links to, so adding a tool
-# without a guide section (or its screenshot) fails here.
+# without a guide section (or its screenshot) fails here; so does a tool saving
+# data that Back up & Restore leaves out. A tool's own change can do that, so
+# this runs on every change: it takes seconds.
 on:
   push:
-    paths: ['index.html', 'guide/**', '.github/workflows/guide-tests.yml']
   pull_request:
-    paths: ['index.html', 'guide/**', '.github/workflows/guide-tests.yml']
 
 jobs:
   guide:

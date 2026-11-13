@@ -15,7 +15,7 @@ FONTS = {
     "__B64_EXO2_ITALIC__":   "vendor/fonts/Exo2-Italic.ttf",
     "__B64_ORBITRON_BOLD__": "vendor/fonts/Orbitron-Bold.ttf",
 }
-JSPDF = "vendor/jspdf/jspdf.umd.min.js"
+JSPDF = "../shared/vendor/jspdf.umd.min.js"   # the one copy Comms Log and ID Card load too
 TEMPLATE = "src/index.template.html"
 OUTPUT = "index.html"
 

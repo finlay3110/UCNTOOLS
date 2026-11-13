@@ -243,6 +243,7 @@
 </script>
 <script type="module">
   import { DRILLS, ROUND, newRound, time, record, seeded, newSeed, challengeLink, readChallenge, compare, manualLink } from './drills.js';
+  import { sharePicture } from '../shared/challenge.js';
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -399,21 +400,7 @@
   }
 
   $('start').addEventListener('click', start);
-  $('shareRecords').addEventListener('click', () => {
-    const png = recordsPng(), name = 'bridge-drills-records.png';
-    const download = () => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(png);
-      a.download = name;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    };
-    // Tested with the picture itself: some phones share pictures but not other files.
-    const file = new File([png], name, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: 'My Bridge Drills records' }).catch(e => { if (e.name !== 'AbortError') download(); });
-    } else download();
-  });
+  $('shareRecords').addEventListener('click', () => sharePicture(recordsPng(), 'bridge-drills-records.png', 'My Bridge Drills records'));
   // The picture uses the page's fonts: have them ready before anyone taps Share.
   ['800 1em Orbitron', '700 1em Orbitron', '400 1em "Exo 2"', '600 1em "Exo 2"', '700 1em "Exo 2"'].forEach(f => document.fonts.load(f).catch(() => {}));
   showRecords();

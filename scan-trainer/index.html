@@ -324,6 +324,7 @@
 <script type="module">
   import { LEVELS, STAGES, HOLD, error, clean, quality, newStage, tracePath, time,
     seeded, newSeed, challengeLink, readChallenge, compare, record } from './scan.js';
+  import { sharePicture } from '../shared/challenge.js';
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -524,21 +525,7 @@
     const bytes = atob(c.toDataURL('image/png').split(',')[1]);
     return new Blob([Uint8Array.from(bytes, ch => ch.charCodeAt(0))], { type: 'image/png' });
   }
-  $('shareRecords').addEventListener('click', () => {
-    const png = recordsPng(), name = 'scan-trainer-records.png';
-    const download = () => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(png);
-      a.download = name;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    };
-    // Tested with the picture itself: some phones share pictures but not other files.
-    const file = new File([png], name, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: 'My Scan Trainer records' }).catch(e => { if (e.name !== 'AbortError') download(); });
-    } else download();
-  });
+  $('shareRecords').addEventListener('click', () => sharePicture(recordsPng(), 'scan-trainer-records.png', 'My Scan Trainer records'));
   // The picture uses the page's fonts: have them ready before anyone taps Share.
   ['800 1em Orbitron', '700 1em Orbitron', '400 1em "Exo 2"', '600 1em "Exo 2"', '700 1em "Exo 2"'].forEach(f => document.fonts.load(f).catch(() => {}));
 

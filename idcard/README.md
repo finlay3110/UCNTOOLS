@@ -46,7 +46,7 @@ Live at **[finlay3110.github.io/UCNTOOLS/idcard](https://finlay3110.github.io/UC
 index.html          the page itself
 css/style.css        all styling
 js/app.js            form handling, live preview, PDF generation, batch printing
-js/vendor/           jsPDF, vendored locally (not loaded from a CDN)
+../shared/vendor/    jsPDF, the site's one local copy (not loaded from a CDN)
 fonts/               Exo 2 + Orbitron .ttf files, embedded into generated PDFs
 assets/              logo, watermark, and clearance-level background images
 ```
