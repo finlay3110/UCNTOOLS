@@ -57,7 +57,7 @@ css/style.css            UCN dark navy theme
 js/app.js                Tab switching, warp calculator, damage control data
 js/mission.js            Setup, action log, JSON export
 js/pdf-report.js         PDF report in the UCN house style
-js/vendor/               jsPDF, vendored so exports work offline
+js/vendor/               jsPDF 4.2.1, so exports work offline: links to the site's one copy in shared/vendor/ (the deploy publishes the file itself)
 fonts/                   Exo 2 + Orbitron (WOFF2, with TTF fallback)
 assets/                  UCN logo
 ship-maps/               HAVOCK_SHIP_MAP.pdf, Takanami_Ship_Map.pdf
