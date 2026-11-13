@@ -102,6 +102,9 @@ const FORMAT = {
   warp: () => sharedCode('warp.js'),
   latest: () => sharedCode('latest.js'),
   share: () => sharedCode('share.js'),
+  pdf: () => sharedCode('pdf.js'),
+  // The UCN emblem the reports put on their covers, for tools that work offline from one file.
+  emblem: () => [`var UCN_EMBLEM_PNG = 'data:image/png;base64,${fs.readFileSync(path.join(ROOT, 'shared/vendor/ucn-emblem.png')).toString('base64')}';`],
   'offline-sw': () => sharedCode('offline-sw.js'),
 };
 
@@ -140,6 +143,15 @@ const TARGETS = [
   ['scan-trainer/sw.js', ['offline-sw']],
   ['scan-trainer/index.html', ['qr', 'profile', 'latest']],
   ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
+  // The mission reports' page numbers and date style.
+  ['mission-companion/index.html', ['pdf']],
+  ['engineering/js/pdf-report.js', ['pdf']],
+  ['engineering/js/mission.js', ['pdf']],
+  ['navigation/index.html', ['pdf']],
+  ['generallog/index.html', ['pdf']],
+  ['messtracker/index.html', ['pdf', 'emblem']],
+  ['missionstats/src/index.template.html', ['pdf', 'emblem']],
+  ['missionstats/index.html', ['pdf', 'emblem']],
   ['guide/quick-start.html', ['qr']],
   ['bridge-drills/index.html', ['latest']],
   ['crew-rota/index.html', ['latest']],
