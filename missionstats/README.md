@@ -84,7 +84,7 @@ index.html                  the deliverable — open this
 src/index.template.html     source, with placeholders for the vendored blobs
 build/build.py              inlines jsPDF and the four TTFs into index.html
 vendor/fonts/               Exo 2 Regular/Bold/Italic, Orbitron Bold (+ OFL)
-vendor/jspdf/               jsPDF 4.2.1 UMD build (+ MIT licence)
+../shared/vendor/          jsPDF 4.2.1 UMD build (+ MIT licence), shared with Comms Log and ID Card
 test/                       Playwright checks and a CSV fixture
 ```
 
@@ -97,6 +97,8 @@ python3 build/build.py
 Edit `src/index.template.html`, never `index.html` — the latter is generated.
 
 ### Tests
+
+CI runs `smoke.js` and `edge.js`, and fails if `index.html` isn't what `build.py` makes from the template (`.github/workflows/browser-tests.yml`).
 
 ```sh
 NODE_PATH=/opt/node22/lib/node_modules node test/smoke.js        # happy path, offline, ratings, layout, PDF
@@ -125,6 +127,6 @@ SVG on screen, vector polygons in the PDF — rather than typed as characters.
 
 - **Exo 2**, **Orbitron** — SIL Open Font License 1.1 (`vendor/fonts/OFL-*.txt`)
 - **jsPDF** 4.2.1 — MIT, © 2010–2025 James Hall and yWorks GmbH
-  (`vendor/jspdf/LICENSE.txt`)
+  (`shared/vendor/jspdf-LICENSE.txt`)
 
 Both are embedded unmodified.

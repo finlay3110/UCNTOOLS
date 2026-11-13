@@ -1,0 +1,39 @@
+name: Browser tests
+
+# Mission Companion, Mission Stats and Ship Search are single pages with no
+# package of their own, so their checks drive the real page in Chromium.
+# Mission Stats' page is built from src/index.template.html: this also fails
+# if the template was edited and the page not rebuilt.
+on:
+  push:
+    paths: ['mission-companion/**', 'missionstats/**', 'shipsearch/**', 'shared/vendor/**', '.github/workflows/browser-tests.yml']
+  pull_request:
+    paths: ['mission-companion/**', 'missionstats/**', 'shipsearch/**', 'shared/vendor/**', '.github/workflows/browser-tests.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Installing a browser's system libraries has hung for hours on a runner before.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mission Stats' page is built from its template
+        run: python3 missionstats/build/build.py && git diff --exit-code missionstats/index.html
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # --with-deps pulls the system libraries Chromium needs on a bare runner.
+      - name: Install Playwright and Chromium
+        run: npm install --no-save --no-package-lock playwright@1.62.1 && npx playwright install --with-deps chromium
+
+      - name: Mission Companion
+        run: node mission-companion/test/saved-data.js
+
+      - name: Mission Stats
+        run: node missionstats/test/smoke.js && node missionstats/test/edge.js
+
+      - name: Ship Search
+        run: node shipsearch/test.js

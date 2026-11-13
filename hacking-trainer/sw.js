@@ -5,6 +5,7 @@ var PREFIX = 'ucn-hacking-trainer-';
 var FILES = [
   "./",
   "index.html",
+  "../shared/challenge.js",
   "game.js"
 ];
 // Third-party files the tool loads. Fetched with CORS so they can be stored.

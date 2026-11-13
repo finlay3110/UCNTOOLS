@@ -2,9 +2,9 @@ name: Scan Trainer tests
 
 on:
   push:
-    paths: ['scan-trainer/**', '.github/workflows/scan-trainer-tests.yml']
+    paths: ['scan-trainer/**', 'shared/challenge.js', '.github/workflows/scan-trainer-tests.yml']
   pull_request:
-    paths: ['scan-trainer/**', '.github/workflows/scan-trainer-tests.yml']
+    paths: ['scan-trainer/**', 'shared/challenge.js', '.github/workflows/scan-trainer-tests.yml']
 
 jobs:
   figures:

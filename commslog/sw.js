@@ -15,7 +15,7 @@ var FILES = [
   "index.html",
   "js/app.js",
   "js/pdf-export.js",
-  "js/vendor/jspdf.umd.min.js",
+  "../shared/vendor/jspdf.umd.min.js",
   "js/vendor/ucn-fonts.js",
   "js/vendor/ucn-logo.js",
   "manifest.webmanifest",

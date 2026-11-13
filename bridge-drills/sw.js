@@ -5,6 +5,7 @@ var PREFIX = 'ucn-bridge-drills-';
 var FILES = [
   "./",
   "index.html",
+  "../shared/challenge.js",
   "drills.js",
   "icons.js",
   "maps/takanami.jpg",

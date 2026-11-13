@@ -51,15 +51,13 @@ export function tracePath(e, k, w, h, rand = Math.random) {
   return d;
 }
 
-// A repeatable random sequence, so a challenge gives a friend the same contact:
-// every stage's name, hidden setting and starting sliders.
-export const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
-export const newSeed = () => 1 + Math.floor(Math.random() * 2147483645);
+// A repeatable random sequence (shared/challenge.js), so a challenge gives a friend
+// the same contact: every stage's name, hidden setting and starting sliders.
+import { seeded, newSeed, toB64, fromB64 } from '../shared/challenge.js';
+export { seeded, newSeed };
 
 // A challenge in a link: the level and seed that made the contact, and the
 // sender's name and time. Anyone can make a link, so reading one checks everything.
-const toB64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
 export const challengeLink = c => toB64(JSON.stringify({ l: c.level, s: c.seed, t: Math.round(c.ms), n: c.name || '' }));
 export function readChallenge(text) {
   let o;

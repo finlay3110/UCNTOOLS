@@ -275,15 +275,13 @@ export const DRILLS = {
 };
 export const ROUND = 10;
 
-// A repeatable random: the same seed always deals the same round, which is
-// how a friend can be challenged to it.
-export const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
-export const newSeed = () => 1 + Math.floor(Math.random() * 2147483645);
+// A repeatable random (shared/challenge.js): the same seed always deals the same
+// round, which is how a friend can be challenged to it.
+import { seeded, newSeed, toB64, fromB64 } from '../shared/challenge.js';
+export { seeded, newSeed };
 
 // A challenge in a link: the drill, the round's seed, and the sender's name,
 // score and time. Anyone can make a link, so reading one checks everything.
-const toB64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
 export const challengeLink = c => toB64(JSON.stringify({ d: c.drill, s: c.seed, n: c.name || '', sc: c.score, t: Math.round(c.ms) }));
 export function readChallenge(text) {
   let o;

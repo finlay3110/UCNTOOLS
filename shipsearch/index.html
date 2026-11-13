@@ -883,6 +883,17 @@ function isWeekend(dateStr){
 function slotTime(str){ return str.replace('*',''); }
 function isPrivate(str){ return str.includes('*'); }
 
+// With no slot starting at the time asked, each ship's slot that day starting nearest it.
+function nearestSlots(dateStr, timeStr, includePrivate){
+  const weekend = isWeekend(dateStr);
+  const mins = t => +t.slice(0, 2) * 60 + +t.slice(3, 5), off = s => Math.abs(mins(slotTime(s)) - mins(timeStr));
+  return SHIPS.map(ship => {
+    const slots = (weekend ? ship.weekend : ship.weekday).filter(s => includePrivate || !isPrivate(s));
+    const best = slots.reduce((a, s) => (a === null || off(s) < off(a) ? s : a), null);
+    return best && { ship: ship.name, time: slotTime(best), private: isPrivate(best) };
+  }).filter(Boolean);
+}
+
 function findShipAt(dateStr, timeStr, includePrivate){
   const weekend = isWeekend(dateStr);
   const matches = [];
@@ -903,10 +914,12 @@ function renderResultNone(msg){
     `<div class="result-card none"><div class="ship-name">${msg}</div></div>`;
 }
 
-function renderShipMatch(matches, dateStr, timeStr){
+function renderShipMatch(matches, dateStr, timeStr, includePrivate){
   const area = document.getElementById('resultArea');
   if(matches.length === 0){
-    renderResultNone("No ship scheduled at that time.");
+    const near = nearestSlots(dateStr, timeStr, includePrivate);
+    area.innerHTML = `<div class="result-card none"><div class="ship-name">No mission starts at ${timeStr}.</div>` +
+      (near.length ? `<div class="sub">Nearest: ${near.map(n => n.ship + ' ' + n.time + (n.private ? ' (private)' : '')).join(' · ')}</div>` : '') + '</div>';
     return;
   }
   area.innerHTML = matches.map(m => `
@@ -1057,7 +1070,7 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
     const t = document.getElementById('dtTime').value;
     if(!d || !t){ renderResultNone("Please enter both a date and a time."); return; }
     const matches = findShipAt(d, t, includePrivate);
-    renderShipMatch(matches, d, t);
+    renderShipMatch(matches, d, t, includePrivate);
   } else {
     const d = document.getElementById('doDate').value;
     if(!d){ renderResultNone("Please enter a date."); return; }

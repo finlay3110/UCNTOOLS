@@ -152,7 +152,7 @@ match that density, don't strip it.
 
 ## Verifying changes
 
-There are no unit tests. Drive the real app instead:
+`test/saved-data.js` drives the real app on saved data it didn't write (a restored backup with markup in its ids; a roster save on full storage); CI runs it (`.github/workflows/browser-tests.yml`). Otherwise there are no tests: drive the real app:
 
 ```bash
 npx http-server -p 8080 -c-1 --silent     # a service worker needs a real origin, not file://

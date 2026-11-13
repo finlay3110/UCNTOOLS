@@ -27,7 +27,7 @@ const TOC_ROWS_PER_PAGE = 22;
 
 /* ---------------- on-demand vendor loading ---------------- */
 const PDF_ASSETS = [
-  'js/vendor/jspdf.umd.min.js',
+  '../shared/vendor/jspdf.umd.min.js',   // one copy for the site's tools
   'js/vendor/ucn-fonts.js',
   'js/vendor/ucn-logo.js'
 ];

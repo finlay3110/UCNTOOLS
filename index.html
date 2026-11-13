@@ -1481,7 +1481,8 @@
     const file = new Blob([JSON.stringify({ ucnBackup: 1, created: new Date().toISOString(), data })], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(file);
-    a.download = 'ucn-tools-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    const now = new Date();   // the local date: toISOString() alone is UTC's, still yesterday just after midnight in summer
+    a.download = 'ucn-tools-backup-' + new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10) + '.json';
     document.body.appendChild(a);
     a.click();
     a.remove();

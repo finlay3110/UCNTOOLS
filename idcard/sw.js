@@ -19,7 +19,7 @@ var FILES = [
   "fonts/Orbitron-Bold.ttf",
   "index.html",
   "js/app.js",
-  "js/vendor/jspdf.umd.min.js"
+  "../shared/vendor/jspdf.umd.min.js"
 ];
 // Third-party files the tool loads. Fetched with CORS so they can be stored.
 var REMOTE = [
