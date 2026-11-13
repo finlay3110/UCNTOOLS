@@ -103,6 +103,7 @@ const FORMAT = {
   latest: () => sharedCode('latest.js'),
   share: () => sharedCode('share.js'),
   pdf: () => sharedCode('pdf.js'),
+  links: () => sharedCode('links.html'),
   // The UCN emblem the reports put on their covers, for tools that work offline from one file.
   // The UCN logo in every tool's header: one image, one size (not the ID card, not the homepage's crest).
   logo: () => [`<img class="ucn-logo" src="data:image/png;base64,${fs.readFileSync(path.join(ROOT, 'shared/vendor/ucn-logo.png')).toString('base64')}" alt="" width="32" height="32" style="width:32px;height:32px;flex:none;display:block">`],
@@ -145,6 +146,23 @@ const TARGETS = [
   ['scan-trainer/sw.js', ['offline-sw']],
   ['scan-trainer/index.html', ['qr', 'profile', 'latest']],
   ['index.html', ['spaced-ranks', 'profile', 'qr', 'mission']],
+  // Back to Tool Portal and Get latest version, the same in every tool (Mission Companion keeps them in its More menu).
+  ['engineering/index.html', ['links']],
+  ['navigation/index.html', ['links']],
+  ['commslog/index.html', ['links']],
+  ['generallog/index.html', ['links']],
+  ['tactical-aids/index.html', ['links']],
+  ['tractor-drones/index.html', ['links']],
+  ['helm/index.html', ['links']],
+  ['songbook/index.html', ['links']],
+  ['messtracker/index.html', ['links']],
+  ['hacking-trainer/index.html', ['links']],
+  ['bridge-drills/index.html', ['links']],
+  ['scan-trainer/index.html', ['links']],
+  ['crew-rota/index.html', ['links']],
+  ['shipsearch/index.html', ['links']],
+  ['missionstats/src/index.template.html', ['links']],
+  ['missionstats/index.html', ['links']],
   // The UCN logo in each tool's header.
   ['mission-companion/index.html', ['logo']],
   ['engineering/index.html', ['logo']],

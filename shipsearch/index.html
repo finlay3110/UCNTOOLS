@@ -82,20 +82,6 @@
     display:inline-block;
     vertical-align:-2px;
   }
-  .backlink{
-    margin-left:auto;
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    font-size:.7rem;
-    color:var(--cyan);
-    border:1px solid var(--cyan);
-    padding:5px 10px;
-    border-radius:999px;
-    text-decoration:none;
-    white-space:nowrap;
-  }
-  .backlink:hover{background:rgba(79,168,201,.12);}
 
   main{padding:22px;}
 
@@ -286,14 +272,6 @@
     }
     header h1{font-size:1rem;}
     header p{font-size:.66rem;}
-    .backlink{
-      order:3;
-      margin-left:0;
-      width:100%;
-      justify-content:center;
-      text-align:center;
-      margin-top:8px;
-    }
     main{padding:16px;}
     .row2{flex-direction:column;gap:0;}
     .row2>div{flex:none;}
@@ -317,18 +295,14 @@
       <h1>UCN SHIP SEARCH</h1>
       <p>Bridge Command Ship Matrix</p>
     </div>
-    <a class="backlink" href="../">
-      <svg class="icon-inline" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M14.5 5L8 12l6.5 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Portal
-    </a>
-    <a class="backlink" href="./" data-ucn-latest aria-label="Get latest version">
-      <svg class="icon-inline" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Latest
-    </a>
+    <!-- ucn-lists:links (from shared/links.html, written on deploy: edit that file, not this code) -->
+    <!-- The way back to the Tool Portal and "Get latest version" (shared/latest.js), styled here so every tool shows them the same. -->
+    <style>.ucn-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 18px;width:100%;box-sizing:border-box}.ucn-links a{display:inline-flex;align-items:center;min-height:32px;padding:0;border:0;background:none;font:500 13px/1.2 'Exo 2',system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0;text-transform:none;color:#8c98bf;text-decoration:none}.ucn-links a:hover{color:#DD7A2B}.ucn-links a:focus-visible{outline:2px solid #4FA8C9;outline-offset:2px;border-radius:4px}</style>
+    <div class="ucn-links">
+      <a href="../">&larr; Back to Tool Portal</a>
+      <a href="./" data-ucn-latest><span aria-hidden="true">&#8635;</span>&nbsp;Get latest version</a>
+    </div>
+    <!-- ucn-lists:end -->
   </header>
 
   <main>
