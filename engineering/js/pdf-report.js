@@ -29,6 +29,34 @@ let pdfCursorY = MARGIN.top;
 // --------------------------------------------------------------- fonts -----
 let fontsRegistered = false;
 
+// ucn-lists:pdf (from shared/pdf.js, written on deploy: edit that file, not this code)
+/* What the UCN mission reports share, so they number their pages and write
+   their dates the same way: Mission Companion, Engineering, Navigation,
+   General Log, the Mess Log and Mission Stats. Plain ES5, as some of the
+   tools are. */
+
+// "3 / 10" at the foot of every page after the cover. Call it last, once
+// every page exists; the 20mm bottom margin leaves room above the frame.
+function ucnPdfPageNumbers(doc, font) {
+  var total = doc.internal.getNumberOfPages();
+  var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+  for (var i = 2; i <= total; i++) {
+    doc.setPage(i);
+    doc.setFont(font, 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(140, 152, 191);
+    doc.text(i + ' / ' + total, w / 2, h - 11, { align: 'center' });
+  }
+}
+
+// A date as the reports write it, "31 Aug 2182", from "YYYY-MM-DD" in any
+// year. Anything else comes back as it was, and nothing as a dash.
+function ucnPdfDate(ymd) {
+  var m = /^(\d{1,6})-(\d{2})-(\d{2})$/.exec(String(ymd == null ? '' : ymd).trim());
+  if (!m || +m[2] < 1 || +m[2] > 12) return ymd ? String(ymd) : '—';
+  return (+m[3]) + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+m[2] - 1] + ' ' + m[1];
+}
+// ucn-lists:end
 function pdfBodyFont() {
   return fontsRegistered ? 'Exo2' : 'helvetica';
 }
@@ -151,12 +179,14 @@ function pdfHeading(doc, text) {
 }
 
 function pdfSubHeading(doc, text) {
-  pdfEnsureSpace(doc, 10);
+  pdfEnsureSpace(doc, 25);   // the heading and a table's first row: never a heading alone at a page's foot
+  /* The text's top, not its baseline, goes 2mm below what came before (as Mission Stats does): placed by its baseline, it touched a table's last line. 2.8 is 10.5pt's ascent in mm. */
+  pdfCursorY += 2;
   doc.setFont(pdfHeadingFont(), 'bold');
   doc.setFontSize(10.5);
   setText(doc, NAVY);
-  doc.text(String(text).toUpperCase(), MARGIN.left, pdfCursorY);
-  pdfCursorY += 6;
+  doc.text(String(text).toUpperCase(), MARGIN.left, pdfCursorY + 2.8);
+  pdfCursorY += 8.8;
 }
 
 function pdfParagraph(doc, text, opts) {
@@ -528,6 +558,7 @@ export async function buildMissionReport(jsPDF, data, opts) {
 
   // 4. Backfill the reserved page.
   pdfDrawToc(doc, toc);
+  ucnPdfPageNumbers(doc, pdfBodyFont());
 
   return doc;
 }

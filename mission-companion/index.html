@@ -4887,6 +4887,34 @@ function installUiFonts(){
    there is no separate heading style that needs italic/regular variants). Falls back to
    Helvetica/helvetica-bold automatically if font registration ever fails, so a font problem
    degrades gracefully rather than breaking export entirely. */
+// ucn-lists:pdf (from shared/pdf.js, written on deploy: edit that file, not this code)
+/* What the UCN mission reports share, so they number their pages and write
+   their dates the same way: Mission Companion, Engineering, Navigation,
+   General Log, the Mess Log and Mission Stats. Plain ES5, as some of the
+   tools are. */
+
+// "3 / 10" at the foot of every page after the cover. Call it last, once
+// every page exists; the 20mm bottom margin leaves room above the frame.
+function ucnPdfPageNumbers(doc, font) {
+  var total = doc.internal.getNumberOfPages();
+  var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+  for (var i = 2; i <= total; i++) {
+    doc.setPage(i);
+    doc.setFont(font, 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(140, 152, 191);
+    doc.text(i + ' / ' + total, w / 2, h - 11, { align: 'center' });
+  }
+}
+
+// A date as the reports write it, "31 Aug 2182", from "YYYY-MM-DD" in any
+// year. Anything else comes back as it was, and nothing as a dash.
+function ucnPdfDate(ymd) {
+  var m = /^(\d{1,6})-(\d{2})-(\d{2})$/.exec(String(ymd == null ? '' : ymd).trim());
+  if (!m || +m[2] < 1 || +m[2] > 12) return ymd ? String(ymd) : '—';
+  return (+m[3]) + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+m[2] - 1] + ' ' + m[1];
+}
+// ucn-lists:end
 function pdfBodyFont(){ return pdfFontsRegistered ? 'Exo2' : 'helvetica'; }
 function pdfHeadingFont(){ return pdfFontsRegistered ? 'Orbitron' : 'helvetica'; }
 
@@ -4989,12 +5017,14 @@ function pdfHeading(doc, text){
 }
 
 function pdfSubHeading(doc, text){
-  pdfEnsureSpace(doc, 10);
+  pdfEnsureSpace(doc, 25);   // the heading and a table's first row: never a heading alone at a page's foot
+  /* The text's top, not its baseline, goes 2mm below what came before (as Mission Stats does): placed by its baseline, it touched a table's last line. 2.8 is 10.5pt's ascent in mm. */
+  pdfCursorY += 2;
   doc.setFont(pdfHeadingFont(),'bold');
   doc.setFontSize(10.5);
   doc.setTextColor(PDF_NAVY[0],PDF_NAVY[1],PDF_NAVY[2]);
-  doc.text(pdfText(text).toUpperCase(), PDF_MARGIN_L, pdfCursorY);
-  pdfCursorY += 6;
+  doc.text(pdfText(text).toUpperCase(), PDF_MARGIN_L, pdfCursorY + 2.8);
+  pdfCursorY += 8.8;
 }
 
 function pdfParagraph(doc, text, opts){
@@ -5396,7 +5426,7 @@ function pdfCoverPage(doc, s, navyLogoDataUrl){
     ['OPERATION', s.opName||'—'],
     ['SHIP', s.ship||'—'],
     ['MISSION TYPE', pdfMissionTypeDisplay(s)],
-    ['DATE', fmtDate(s.opDate)],
+    ['DATE', ucnPdfDate(s.opDate)],
     ['TIME', s.opTime||'—'],
     ['FILED BY', s.filedBy||'—']
   ];
@@ -5769,6 +5799,7 @@ function buildDirectPdf(s, navyLogoDataUrl, opts){
   }
 
   pdfDrawToc(doc, tocEntries);
+  ucnPdfPageNumbers(doc, pdfBodyFont());
 
   return doc;
 }

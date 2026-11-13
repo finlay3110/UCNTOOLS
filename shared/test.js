@@ -45,4 +45,20 @@ assert.equal(box.ucnMission(), null, 'an old mission no longer fills anything');
 store.set('ucnMission_v1', '{broken');
 assert.equal(box.ucnMission(), null);
 
+// The reports' page numbers and dates (shared/pdf.js).
+const pdf = {};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'pdf.js'), 'utf8'), pdf);
+assert.equal(pdf.ucnPdfDate('2182-08-31'), '31 Aug 2182');
+assert.equal(pdf.ucnPdfDate('2026-01-05'), '5 Jan 2026');
+assert.equal(pdf.ucnPdfDate(''), '\u2014');
+assert.equal(pdf.ucnPdfDate('2182-13-01'), '2182-13-01', 'not a month: left as it was');
+assert.equal(pdf.ucnPdfDate('Stardate 41153'), 'Stardate 41153');
+const drawn = [];
+let page = 1;
+const doc = { internal: { getNumberOfPages: () => 4, pageSize: { getWidth: () => 210, getHeight: () => 297 } },
+  setPage: n => { page = n; }, setFont() {}, setFontSize() {}, setTextColor() {},
+  text: (t, x, y, o) => drawn.push([page, t, x, y, o.align]) };
+pdf.ucnPdfPageNumbers(doc, 'Exo2');
+assert.deepEqual(drawn, [[2, '2 / 4', 105, 286, 'center'], [3, '3 / 4', 105, 286, 'center'], [4, '4 / 4', 105, 286, 'center']], 'every page but the cover');
+
 console.log('shared: all checks passed');
