@@ -147,8 +147,8 @@
   <section class="panel" aria-labelledby="aboutTitle">
     <h2 id="aboutTitle">How it works</h2>
     <ul class="facts">
-      <li>Every scan has stages: two at levels 1 and 2, three at level 3, four at level 4. In each, move the sliders until the noisy red, green and blue signal pulls together into one clean wave, then hold it there until it <b>locks</b>.</li>
-      <li>Each level has that many sliders per stage, from one at <b>level 1</b> to four at <b>level 4</b>, and the signal only comes clean when they are all right.</li>
+      <li>Every scan has stages: two at levels 1 and 2, three at level 3, four at level 4. Moving a slider slides the red, green and blue waves sideways, each at its own speed, and they <b>turn back the moment it passes its setting</b>: that turning point is where it goes. Get every slider there and the waves pull together by themselves, show <b>LOCKED</b>, and the next stage starts.</li>
+      <li>Each level has that many sliders per stage, from one at <b>level 1</b> to four at <b>level 4</b>, counted as the game counts them: with more sliders the signal stays noise until they are all close. Find one slider's turning point, then the next.</li>
       <li>A <b>primary scan</b> gives the contact&rsquo;s faction, class, hull, shields and systems; a <b>secondary scan</b> goes deeper, to the exact signals, internal systems, beam firing arcs, and the shield and beam frequencies.</li>
       <li>More <b>scanner power</b> makes the lock easier and quicker. Ask Engineering for a scanner spike when the scan matters.</li>
     </ul>
@@ -331,7 +331,7 @@
   ucnSharedProfile({ name: 'playerName' });
 </script>
 <script type="module">
-  import { LEVELS, STAGES, HOLD, error, clean, quality, newStage, tracePath, time,
+  import { LEVELS, STAGES, LOCK_DELAY, error, clean, quality, shownError, newStage, tracePath, time,
     seeded, newSeed, challengeLink, readChallenge, compare, record } from './scan.js';
   import { sharePicture } from '../shared/challenge.js';
 
@@ -372,7 +372,7 @@
 
   function startStage(n, avoid) {
     const stage = newStage(level, scan.rand, avoid);
-    scan.n = n; scan.stage = stage; scan.values = [...stage.start]; scan.cleanSince = 0; scan.locked = false;
+    scan.n = n; scan.stage = stage; scan.values = [...stage.start]; scan.cleanSince = 0;
     $('stageTitle').textContent = `[${n}/${STAGES[level]}] ${stage.name}`;
     $('trace').classList.remove('locked');
     $('trace').querySelector('.locked-tag')?.remove();
@@ -389,10 +389,14 @@
     $('sliders').querySelectorAll('input').forEach(r => r.setAttribute('aria-valuetext', `${Math.round(r.value / 10)}%, signal ${q}`));
   }
 
+  // Seconds the signal has been in the lock (0 when it isn't).
+  const held = now => (scan.cleanSince ? (now - scan.cleanSince) / 1000 : 0);
+
   function draw() {
     if (!scan) return;
-    const e = scan.locked ? 0 : error(scan.values, scan.stage.target);
-    paths.forEach((p, i) => p.setAttribute('d', tracePath(e, i - 1, W, H)));
+    const now = performance.now();
+    const e = shownError(error(scan.values, scan.stage.target), held(now));
+    paths.forEach((p, c) => p.setAttribute('d', tracePath(e, c, W, H, still ? 0 : (now - scan.began) / 1000, scan.stage.waves)));
   }
 
   function finish() {
@@ -413,18 +417,14 @@
     $('scan').focus();
   }
 
-  function lockStage() {
-    scan.locked = true;
-    $('trace').classList.add('locked');
-    $('trace').insertAdjacentHTML('beforeend', '<div class="locked-tag" aria-hidden="true">LOCKED</div>');
-    $('sliders').querySelectorAll('input').forEach(r => { r.disabled = true; });
-    draw();
-    const done = scan.n === STAGES[level], current = scan;
-    $('status').textContent = done ? '' : `Stage ${scan.n} locked.`;
-    setTimeout(() => {
-      if (scan !== current) return;   // cancelled meanwhile
-      if (done) finish(); else startStage(scan.n + 1, scan.stage.name);
-    }, 900);
+  // LOCKED shows for the second half of the lock; moving off the setting takes it away.
+  function showLocked(on) {
+    if (on === $('trace').classList.contains('locked')) return;
+    $('trace').classList.toggle('locked', on);
+    if (on) {
+      $('trace').insertAdjacentHTML('beforeend', '<div class="locked-tag" aria-hidden="true">LOCKED</div>');
+      $('status').textContent = `Stage ${scan.n} locked.`;
+    } else $('trace').querySelector('.locked-tag')?.remove();
   }
 
   $('scan').addEventListener('click', () => {
@@ -434,8 +434,8 @@
     $('dialog').hidden = false;
     $('challengeBtn').hidden = true;
     $('status').textContent = (taking ? `Challenge on: ${taking.name || 'your challenger'}'s contact. ` : '') + (level > 1
-      ? `Move ${level > 2 ? 'all the' : 'both'} sliders until the signal comes clean, then hold them there.`
-      : 'Move the slider until the signal comes clean, then hold it there.');
+      ? `Move ${level > 2 ? 'each' : 'both'} slider${level > 2 ? '' : 's'}: the waves turn back when one passes its setting. Get them all there and the waves pull together and lock.`
+      : 'Move the slider: the waves turn back when it passes the setting. Get it there and the waves pull together and lock.');
     startStage(1);
   });
   $('cancel').addEventListener('click', () => {
@@ -445,7 +445,7 @@
     $('scan').focus();
   });
   $('sliders').addEventListener('input', e => {
-    if (!scan || scan.locked) return;
+    if (!scan) return;
     scan.values[+e.target.dataset.i] = e.target.value / 1000;
     const ok = clean(scan.values, scan.stage.target);
     if (ok && !scan.cleanSince) scan.cleanSince = performance.now();
@@ -538,12 +538,16 @@
   // The picture uses the page's fonts: have them ready before anyone taps Share.
   ['800 1em Orbitron', '700 1em Orbitron', '400 1em "Exo 2"', '600 1em "Exo 2"', '700 1em "Exo 2"'].forEach(f => document.fonts.load(f).catch(() => {}));
 
-  // The noise flickers, the clock runs, and a clean signal held long enough locks.
+  // The waves drift and flicker, the clock runs, and a signal kept in the lock
+  // pulls together, shows LOCKED, and at LOCK_DELAY the stage is done.
   function frame() {
-    if (scan && !scan.locked) {
-      $('clock').textContent = time((performance.now() - scan.began) / 1000);
-      if (scan.cleanSince && performance.now() - scan.cleanSince >= HOLD * 1000) lockStage();
-      else if (!still) draw();
+    if (scan) {
+      const now = performance.now();
+      $('clock').textContent = time((now - scan.began) / 1000);
+      showLocked(held(now) >= LOCK_DELAY / 2);
+      if (held(now) >= LOCK_DELAY) {
+        if (scan.n === STAGES[level]) finish(); else startStage(scan.n + 1, scan.stage.name);
+      } else if (!still || scan.cleanSince) draw();   // with reduced motion, only the pull into the lock moves
     }
     requestAnimationFrame(frame);
   }
