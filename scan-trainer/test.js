@@ -1,6 +1,6 @@
 // Checks the sums in scan.js. Run: node test.js (CI runs it on every change).
 import assert from 'node:assert/strict';
-import { LEVELS, STAGES, LOCK_ERROR, HOLD, NAMES, error, clean, quality, newStage, tracePath, time,
+import { LEVELS, STAGES, LOCK_ERROR, LOCK_DELAY, NAMES, error, clean, quality, shownError, newStage, wave, tracePath, time,
   seeded, newSeed, challengeLink, readChallenge, compare, record } from './scan.js';
 
 // A repeatable "random" for the checks.
@@ -9,17 +9,16 @@ const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 
 assert.deepEqual(LEVELS, [1, 2, 3, 4]);
 assert.deepEqual(STAGES, { 1: 2, 2: 2, 3: 3, 4: 4 });
-assert.ok(HOLD > 0);
+assert.equal(LOCK_DELAY, 2);
 assert.equal(new Set(NAMES).size, NAMES.length, 'no name twice');
 
-// Stages: one hidden setting per slider, kept off the ends, sliders starting well off it.
+// Stages: one hidden setting per slider, each slider starting at least 0.2 off its own; 2 to 5 waves.
 for (let i = 0; i < 500; i++) {
   for (const n of LEVELS) {
     const s = newStage(n, rand);
     assert.equal(s.target.length, n); assert.equal(s.start.length, n);
-    for (const t of s.target) assert.ok(t >= 0.1 && t <= 0.9, t);
-    for (const v of s.start) assert.ok(v >= 0 && v <= 1, v);
-    assert.ok(error(s.start, s.target) >= 0.3, 'starts noisy');
+    s.target.forEach((t, j) => { assert.ok(t >= 0 && t <= 1, t); assert.ok(s.start[j] >= 0 && s.start[j] <= 1); assert.ok(Math.abs(s.start[j] - t) >= 0.2, 'starts well off'); });
+    assert.ok(s.waves >= 2 && s.waves <= 5, s.waves);
     assert.ok(NAMES.includes(s.name));
   }
 }
@@ -33,23 +32,43 @@ assert.ok(clean([0.52], [0.5]));
 assert.ok(!clean([0.5 + LOCK_ERROR], [0.5]), 'the edge is not clean');
 assert.ok(!clean([0.5, 0.2], [0.5, 0.6]), 'one slider right is not enough at level 2');
 assert.ok(clean([0.51, 0.61], [0.5, 0.6]));
-// Levels 3 and 4: counted per pair of sliders, so 2% off on each of four is clean, 4% off is not.
-assert.ok(Math.abs(error([0.4, 0.6, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5]) - 0.1) < 1e-12);
-assert.ok(clean([0.52, 0.48, 0.52, 0.48], [0.5, 0.5, 0.5, 0.5]));
-assert.ok(!clean([0.54, 0.46, 0.54, 0.46], [0.5, 0.5, 0.5, 0.5]));
+// Every level counts the plain total, as the game does: at level 4, 1% off on each slider locks, 2% off does not.
+assert.ok(Math.abs(error([0.4, 0.6, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5]) - 0.2) < 1e-12);
+assert.ok(clean([0.51, 0.49, 0.51, 0.49], [0.5, 0.5, 0.5, 0.5]));
+assert.ok(!clean([0.52, 0.48, 0.52, 0.48], [0.5, 0.5, 0.5, 0.5]));
 assert.ok(!clean([0.5, 0.5, 0.2], [0.5, 0.5, 0.5]), 'every slider counts at level 3');
+
+// In the lock the shown error fades to nothing over half the delay; outside it, it is the real one.
+assert.equal(shownError(0.04, 0), 0.04);
+assert.ok(Math.abs(shownError(0.04, LOCK_DELAY / 4) - 0.02) < 1e-12, 'half way through the pull');
+assert.equal(shownError(0.04, LOCK_DELAY / 2), 0);
+assert.equal(shownError(0.3, 5), 0.3, 'out of the lock nothing fades');
 assert.equal(quality(0.01), 'clean'); assert.equal(quality(0.1), 'strong'); assert.equal(quality(0.2), 'fair'); assert.equal(quality(0.6), 'weak');
 
+// The waves: each colour shifts sideways with the error at its own rate (red
+// slowest), so all three move as a slider does; the shift grows with distance
+// either side of the setting, so they turn back as the slider passes it.
+const shifts = e => [0, 1, 2].map(c => wave(e, c, 0, 3).shift);
+assert.deepEqual(shifts(0), [0, 0, 0], 'on target: in step');
+assert.deepEqual(shifts(0.1).map(v => +v.toFixed(6)), [10, 14.5, 19], 'different speeds, red slowest');
+const sweep = [0.3, 0.4, 0.5, 0.6, 0.7].map(v => wave(error([v], [0.5]), 0, 0, 3).shift);
+assert.ok(sweep[0] > sweep[1] && sweep[1] > sweep[2] && sweep[2] < sweep[3] && sweep[3] < sweep[4], 'they turn back at the setting');
+assert.equal(wave(0.4, 0, 0, 3).turns, 3, 'red keeps its width');
+assert.ok(wave(0.4, 2, 0, 3).turns > wave(0.4, 1, 0, 3).turns && wave(0.4, 1, 0, 3).turns > 3, 'green and blue stretch, blue more');
+assert.equal(wave(0, 0, 2.5, 3).shift, 2.5, 'all drift with time');
+assert.equal(wave(7, 0, 0, 3).noise, 1, 'error past 1 counts as 1');
 // The trace: on target the three colours draw the same clean line; off target they differ.
-const zero = () => 0.5;   // no noise
-const lines = e => [-1, 0, 1].map(k => tracePath(e, k, 300, 60, zero));
+const zero = () => 0.5;   // no jitter
+const lines = (e, t = 0) => [0, 1, 2].map(c => tracePath(e, c, 300, 60, t, 3, zero));
 assert.equal(new Set(lines(0)).size, 1, 'one clean wave');
-assert.equal(new Set(lines(0.5)).size, 3, 'three drifting lines');
+assert.equal(new Set(lines(0, 4.2)).size, 1, 'still one wave as it drifts');
+assert.equal(new Set(lines(0.3)).size, 3, 'three lines apart');
 const ys = d => d.split(/[ML]/).filter(Boolean).map(p => +p.split(' ')[1]);
-for (const d of [...lines(0), ...lines(5)]) for (const y of ys(d)) assert.ok(y >= 1 && y <= 59, 'stays in the box');
-assert.ok(tracePath(0, 0, 300, 60, zero).startsWith('M0 30.0'));
+for (const d of [...lines(0), ...lines(0.5), ...lines(5)]) for (const y of ys(d)) assert.ok(y >= 1 && y <= 59, 'stays in the box');
+assert.ok(tracePath(0, 0, 300, 60, 0, 3, zero).startsWith('M0 30.0'));
+assert.equal(new Set(ys(tracePath(1, 0, 300, 60, 0, 3, zero))).size, 1, 'at full error the wave is gone: only noise (flat here)');
 
-// Challenges: the same seed gives the same contact, every stage.
+// Challenges: the same seed gives the same contact, every stage, waves and all.
 const contact = seed => { const r = seeded(seed), a = newStage(4, r); return [a, newStage(4, r, a.name)]; };
 const sd = newSeed();
 assert.ok(Number.isInteger(sd) && sd >= 1 && sd <= 2147483646);
