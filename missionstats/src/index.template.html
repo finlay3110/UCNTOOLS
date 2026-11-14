@@ -89,9 +89,7 @@ main{
   padding-bottom:calc(84px + var(--safe-bottom));
 }
 .panel{ display:none; padding:12px 12px 24px; }
-.portal-row{ padding:12px 12px 0; }
-.portal-link{ display:inline-block; margin:0; padding:4px 0; font-size:13px; color:var(--muted); text-decoration:none; }
-.portal-link:hover, .portal-link:focus-visible{ color:var(--orange); }
+.ucn-links{ padding:8px 12px 0; }
 .panel.active{ display:block; animation:fadeUp .18s ease-out; }
 @keyframes fadeUp{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
 @media (prefers-reduced-motion: reduce){ .panel.active{ animation:none; } }
@@ -399,7 +397,7 @@ nav{
     padding-bottom:48px;
   }
   .panel{ max-width:1180px; margin:0 auto; padding:18px 24px 48px; }
-  .portal-row{ max-width:1180px; margin:0 auto; padding:18px 24px 0; }
+  .ucn-links{ max-width:1180px; margin:0 auto; padding:14px 24px 0; }
   /* Forms stay legible instead of stretching to the full width. */
   #tab-setup, #tab-more{ max-width:640px; margin:0; }
   #tab-import{ max-width:900px; margin:0; }
@@ -430,7 +428,7 @@ nav{
 }
 
 @media (min-width:1400px){
-  .panel, .portal-row{ max-width:1340px; }
+  .panel, .ucn-links{ max-width:1340px; }
   #logBody{ grid-template-columns:1fr 1fr 1fr; }
   .tiles{ grid-template-columns:repeat(4, 1fr); }
 }
@@ -2846,7 +2844,14 @@ if (document.readyState === 'loading'){
 </header>
 
 <main>
-  <div class="portal-row"><a class="portal-link" href="../">&larr; Back to Tool Portal</a> <a class="portal-link" href="./" data-ucn-latest style="margin-left:14px"><span aria-hidden="true">&#8635;</span>&nbsp;Get latest version</a></div>
+  <!-- ucn-lists:links (from shared/links.html, written on deploy: edit that file, not this code) -->
+  <!-- The way back to the Tool Portal and "Get latest version" (shared/latest.js), styled here so every tool shows them the same. -->
+  <style>.ucn-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 18px;width:100%;box-sizing:border-box}.ucn-links a{display:inline-flex;align-items:center;min-height:32px;padding:0;border:0;background:none;font:500 13px/1.2 'Exo 2',system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0;text-transform:none;color:#8c98bf;text-decoration:none}.ucn-links a:hover{color:#DD7A2B}.ucn-links a:focus-visible{outline:2px solid #4FA8C9;outline-offset:2px;border-radius:4px}</style>
+  <div class="ucn-links">
+    <a href="../">&larr; Back to Tool Portal</a>
+    <a href="./" data-ucn-latest><span aria-hidden="true">&#8635;</span>&nbsp;Get latest version</a>
+  </div>
+  <!-- ucn-lists:end -->
 
   <!-- ============================ SETUP ============================ -->
   <section class="panel" id="tab-setup" role="tabpanel" aria-labelledby="nav-setup">
