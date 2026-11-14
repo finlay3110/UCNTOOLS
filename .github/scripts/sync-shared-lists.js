@@ -182,6 +182,7 @@ const TARGETS = [
   ['scan-trainer/index.html', ['logo']],
   ['crew-rota/index.html', ['logo']],
   ['guide/index.html', ['logo']],
+  ['admin/index.html', ['logo']],
   // The mission reports' page numbers and date style.
   ['mission-companion/index.html', ['pdf']],
   ['engineering/js/pdf-report.js', ['pdf']],
