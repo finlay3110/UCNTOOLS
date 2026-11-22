@@ -74,7 +74,7 @@ The homepage's **What's new** card is written at each deploy from merged pull re
 
 ## Deploying
 
-Every push to `main` deploys the whole site via `.github/workflows/deploy.yml`, which also rebuilds `tactical-aids/manifest.json` from the PDFs in `tactical-aids/pdfs/`. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+Every push to `main` deploys the whole site via `.github/workflows/deploy.yml`, which also rebuilds `tactical-aids/manifest.json` from the PDFs in `tactical-aids/pdfs/`. If GitHub is slow to list the uploaded site, the deploy waits 20 seconds and tries once more; should a deploy still fail, start a fresh one from the Actions tab (**Deploy to GitHub Pages → Run workflow** on `main`) rather than **Re-run failed jobs**, which trips over the site it already uploaded. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 Each tool's old CI checks still run when that tool's folder changes; Engineering's and Navigation's also run when `shared/` changes, after writing the shared files in exactly as the deploy does. Tactical Aids needs no check: the deploy rebuilds its PDF list (and copies in the ship maps from `engineering/ship-maps/`) every time.
 

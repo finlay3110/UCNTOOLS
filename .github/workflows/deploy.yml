@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -75,7 +75,19 @@ jobs:
         with:
           path: .
 
+      # GitHub sometimes doesn't list the artifact just uploaded for a moment, and
+      # this fails with 'No artifacts named "github-pages"' (it has, twice). So on
+      # a failure, wait and try once more; the job still fails if that does too.
       - id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before trying the deploy again
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 20
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
 
       # Optional: with a DISCORD_WEBHOOK_URL secret set (Settings → Secrets and
